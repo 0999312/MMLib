@@ -28,9 +28,9 @@ public class ItemDrinkBase extends ItemFoodBase {
 	private final PotionEffect[][] effect;
 	private final ItemStack ContainerItem;
 
-	public ItemDrinkBase(String modId, String name, FoodInfo[] info, PotionEffect[][] effects,
+	public ItemDrinkBase(String modid,String name, FoodInfo[] info, PotionEffect[][] effects,
 			ItemStack container) {
-		super(modId, name, 1, info);
+		super(modid,name, 1, info);
 		this.ContainerItem = container;
 		this.effect = effects != null && effects.length > 0 ? effects : null;
 	}

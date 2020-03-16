@@ -15,7 +15,7 @@ public class ItemRegister {
 
 	public static void register(String modid, Item item) {
 		ForgeRegistries.ITEMS
-				.register(item.setRegistryName(item.getUnlocalizedName().substring(5)));
+				.register(item.setRegistryName(item.getUnlocalizedName().substring(6+modid.length())));
 	}
 
 	@SideOnly(Side.CLIENT)

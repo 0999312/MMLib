@@ -49,8 +49,8 @@ public class BlockRegister {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerRender(String modid, Block block) {
-		ModelResourceLocation model = new ModelResourceLocation(modid + ":" + block.getRegistryName().getResourcePath(),
+	public static void registerRender(Block block) {
+		ModelResourceLocation model = new ModelResourceLocation(block.getRegistryName(),
 				"inventory");
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, model);
 	}

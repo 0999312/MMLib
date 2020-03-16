@@ -17,10 +17,11 @@ import net.minecraftforge.fml.common.Loader;
 
 public class ItemFoodBase extends ItemFood {
 	private final FoodInfo[] info;
+	private boolean fastEat;
 
-	public ItemFoodBase(String modid, String name, int stackSize, FoodInfo[] info) {
+	public ItemFoodBase(String modid,String name, int stackSize, FoodInfo[] info) {
 		super(info[0].getAmount(), info[0].getCalories(), info[0].isWolfFood());
-		this.setUnlocalizedName(modid + "." + name);
+		this.setUnlocalizedName(modid+"."+name);
 		this.setHasSubtypes(info != null && info.length > 0);
 		this.setMaxStackSize(stackSize);
 		this.setMaxDamage(0);
@@ -86,5 +87,21 @@ public class ItemFoodBase extends ItemFood {
 			}
 	    }
 		return null;
+    }
+    @Override
+    public int getMaxItemUseDuration(ItemStack stack) {
+        if (isFastEat()) {
+            return 20;
+        }
+		return 32;
+    }
+
+    public ItemFoodBase setFastEat() {
+        this.fastEat = true;
+        return this;
+    }
+
+    public boolean isFastEat() {
+        return fastEat;
     }
 }

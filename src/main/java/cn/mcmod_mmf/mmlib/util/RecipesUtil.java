@@ -29,6 +29,37 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class RecipesUtil {
+    public static boolean compareMulti(Object[] input, Object[] output) {
+        if (input.length != output.length) return false;
+        for (Object i : input) {
+            for (Object l : output) {
+                if (!compareItems(i, l))
+                    return false;
+            }
+        }
+        return true;
+    }
+    
+    public static boolean compareItems(Object input, Object output) {
+        if (input instanceof ItemStack && output instanceof ItemStack) {
+            return ItemStack.areItemsEqual((ItemStack) input, (ItemStack) output);
+        }
+        if (input instanceof OredictItemStack) {
+            return ((OredictItemStack) input).isMatchingSomething(output);
+        }
+        if (output instanceof OredictItemStack) {
+            return ((OredictItemStack) output).isMatchingSomething(input);
+        }
+        if (input instanceof String) {
+            return new OredictItemStack((String) input, 1).isMatchingSomething(output);
+        }
+        if (output instanceof String) {
+            return new OredictItemStack((String) output, 1).isMatchingSomething(input);
+        }
+
+        return false;
+    }
+    
 	public static boolean containsMatch(boolean strict, NonNullList<ItemStack> inputs, @Nonnull ItemStack... targets) {
 		for (ItemStack input : inputs) {
 			for (ItemStack target : targets) {

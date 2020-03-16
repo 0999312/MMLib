@@ -1,0 +1,5 @@
+{
+    "ingredients": {
+        "wildcard_oredict": "cn.mcmod_mmf.mmlib.util.OreWildIngredientFactory"
+    }
+}
