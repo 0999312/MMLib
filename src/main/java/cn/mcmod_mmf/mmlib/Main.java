@@ -3,6 +3,11 @@ package cn.mcmod_mmf.mmlib;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import net.dries007.tfc.api.registries.TFCRegistries;
+import net.dries007.tfc.objects.blocks.plants.BlockPlantTFC;
+import net.dries007.tfc.objects.items.food.ItemFoodTFC;
+import net.dries007.tfc.types.DefaultPlants;
+import net.dries007.tfc.util.agriculture.Food;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -12,6 +17,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Optional.Method;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -31,12 +37,13 @@ public class Main {
 	public void preInit(FMLPreInitializationEvent event) {
 		logger.info("Presented by Zaia");
 		registerVanillaFoods();
-		if(Loader.isModLoaded("tfc"))
-			;
+
 	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
+		if(Loader.isModLoaded("tfc"))
+			registerTFCOreDict();
 	}
 
 	public static Logger getLogger() {
@@ -51,6 +58,170 @@ public class Main {
     		ITextComponent component = ITextComponent.Serializer.jsonToComponent(json);
             event.player.sendMessage(component);
         }
+	}
+	@Method(modid = "tfc")
+	private static void registerTFCOreDict(){
+		OreDictionary.registerOre("listAllchickenraw", ItemFoodTFC.get(Food.CHICKEN));
+		OreDictionary.registerOre("listAllchickencooked", ItemFoodTFC.get(Food.COOKED_CHICKEN));
+		OreDictionary.registerOre("listAllporkraw", ItemFoodTFC.get(Food.PORK));
+		OreDictionary.registerOre("listAllporkcooked", ItemFoodTFC.get(Food.COOKED_PORK));
+		OreDictionary.registerOre("listAllbeefraw", ItemFoodTFC.get(Food.BEEF));
+		OreDictionary.registerOre("listAllbeefcooked", ItemFoodTFC.get(Food.COOKED_BEEF));
+		OreDictionary.registerOre("listAllmuttonraw", ItemFoodTFC.get(Food.MUTTON));
+		OreDictionary.registerOre("listAllmuttoncooked", ItemFoodTFC.get(Food.COOKED_MUTTON));
+		OreDictionary.registerOre("listAllrabbitraw", ItemFoodTFC.get(Food.RABBIT));
+		OreDictionary.registerOre("listAllrabbitcooked", ItemFoodTFC.get(Food.COOKED_RABBIT));
+		
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.CHICKEN));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_CHICKEN));
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.PORK));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_PORK));
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.BEEF));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_BEEF));
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.MUTTON));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_MUTTON));
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.RABBIT));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_RABBIT));
+		
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.BEAR));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_BEAR));
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.CALAMARI));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_CALAMARI));
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.HORSE_MEAT));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_HORSE_MEAT));
+		
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.PHEASANT));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_PHEASANT));
+		OreDictionary.registerOre("listAllturkeyraw", ItemFoodTFC.get(Food.PHEASANT));
+		OreDictionary.registerOre("listAllturkeycooked", ItemFoodTFC.get(Food.COOKED_PHEASANT));
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.WOLF));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_WOLF));
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.VENISON));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_VENISON));
+		OreDictionary.registerOre("listAllvenisonraw", ItemFoodTFC.get(Food.VENISON));
+		OreDictionary.registerOre("listAllvenisoncooked", ItemFoodTFC.get(Food.COOKED_VENISON));
+		
+		OreDictionary.registerOre("listAllfishraw", ItemFoodTFC.get(Food.FISH));
+		OreDictionary.registerOre("listAllfishfresh", ItemFoodTFC.get(Food.FISH));
+		OreDictionary.registerOre("listAllfishcooked", ItemFoodTFC.get(Food.COOKED_FISH));
+		
+		OreDictionary.registerOre("cropWheat", ItemFoodTFC.get(Food.WHEAT_GRAIN));
+		OreDictionary.registerOre("cropRice", ItemFoodTFC.get(Food.RICE_GRAIN));
+		OreDictionary.registerOre("cropRye", ItemFoodTFC.get(Food.RYE_GRAIN));
+		OreDictionary.registerOre("cropCorn", ItemFoodTFC.get(Food.MAIZE));
+		OreDictionary.registerOre("cropOats", ItemFoodTFC.get(Food.OAT_GRAIN));
+		OreDictionary.registerOre("cropBarley", ItemFoodTFC.get(Food.BARLEY_GRAIN));
+		
+		OreDictionary.registerOre("foodFlour", ItemFoodTFC.get(Food.WHEAT_FLOUR));
+		OreDictionary.registerOre("foodFlour", ItemFoodTFC.get(Food.RICE_FLOUR));
+		OreDictionary.registerOre("foodFlour", ItemFoodTFC.get(Food.RYE_FLOUR));
+		OreDictionary.registerOre("foodFlour", ItemFoodTFC.get(Food.CORNMEAL_FLOUR));
+		OreDictionary.registerOre("foodFlour", ItemFoodTFC.get(Food.OAT_FLOUR));
+		OreDictionary.registerOre("foodFlour", ItemFoodTFC.get(Food.BARLEY_FLOUR));
+		
+		OreDictionary.registerOre("listAllgrain", ItemFoodTFC.get(Food.WHEAT_GRAIN));
+		OreDictionary.registerOre("listAllgrain", ItemFoodTFC.get(Food.BARLEY_GRAIN));
+		OreDictionary.registerOre("listAllgrain", ItemFoodTFC.get(Food.RICE_GRAIN));
+		OreDictionary.registerOre("listAllgrain", ItemFoodTFC.get(Food.OAT_GRAIN));
+		OreDictionary.registerOre("listAllgrain", ItemFoodTFC.get(Food.RYE_GRAIN));
+		OreDictionary.registerOre("listAllgrain", ItemFoodTFC.get(Food.MAIZE));
+		
+		OreDictionary.registerOre("foodDough", ItemFoodTFC.get(Food.WHEAT_DOUGH));
+		OreDictionary.registerOre("foodDough", ItemFoodTFC.get(Food.RICE_DOUGH));
+		OreDictionary.registerOre("foodDough", ItemFoodTFC.get(Food.RYE_DOUGH));
+		OreDictionary.registerOre("foodDough", ItemFoodTFC.get(Food.CORNMEAL_DOUGH));
+		OreDictionary.registerOre("foodDough", ItemFoodTFC.get(Food.OAT_DOUGH));
+		OreDictionary.registerOre("foodDough", ItemFoodTFC.get(Food.BARLEY_DOUGH));
+		OreDictionary.registerOre("bread", ItemFoodTFC.get(Food.BARLEY_BREAD));
+		OreDictionary.registerOre("foodBread", ItemFoodTFC.get(Food.BARLEY_BREAD));
+		OreDictionary.registerOre("bread", ItemFoodTFC.get(Food.CORNBREAD));
+		OreDictionary.registerOre("foodBread", ItemFoodTFC.get(Food.CORNBREAD));
+		OreDictionary.registerOre("bread", ItemFoodTFC.get(Food.OAT_BREAD));
+		OreDictionary.registerOre("foodBread", ItemFoodTFC.get(Food.OAT_BREAD));
+		OreDictionary.registerOre("bread", ItemFoodTFC.get(Food.RICE_BREAD));
+		OreDictionary.registerOre("foodBread", ItemFoodTFC.get(Food.RICE_BREAD));
+		OreDictionary.registerOre("bread", ItemFoodTFC.get(Food.RYE_BREAD));
+		OreDictionary.registerOre("foodBread", ItemFoodTFC.get(Food.RYE_BREAD));
+		OreDictionary.registerOre("bread", ItemFoodTFC.get(Food.WHEAT_BREAD));
+		OreDictionary.registerOre("foodBread", ItemFoodTFC.get(Food.WHEAT_BREAD));
+		
+		OreDictionary.registerOre("cropCarrot", ItemFoodTFC.get(Food.CARROT));
+		OreDictionary.registerOre("cropPotato", ItemFoodTFC.get(Food.POTATO));
+		OreDictionary.registerOre("cropTomato", ItemFoodTFC.get(Food.TOMATO));
+		OreDictionary.registerOre("cropOnion", ItemFoodTFC.get(Food.ONION));
+		OreDictionary.registerOre("cropGarlic", ItemFoodTFC.get(Food.GARLIC));
+		OreDictionary.registerOre("cropSeaweed", ItemFoodTFC.get(Food.SEAWEED));
+		OreDictionary.registerOre("cropCabbage", ItemFoodTFC.get(Food.CABBAGE));
+		OreDictionary.registerOre("cropSoybean", ItemFoodTFC.get(Food.SOYBEAN));
+		OreDictionary.registerOre("cropWinterSquash", ItemFoodTFC.get(Food.SQUASH));
+		OreDictionary.registerOre("cropBellpepper", ItemFoodTFC.get(Food.GREEN_BELL_PEPPER));
+		OreDictionary.registerOre("cropBellpepper", ItemFoodTFC.get(Food.RED_BELL_PEPPER));
+		OreDictionary.registerOre("cropBellpepper", ItemFoodTFC.get(Food.YELLOW_BELL_PEPPER));
+		OreDictionary.registerOre("cropBeet", ItemFoodTFC.get(Food.BEET));
+		
+		OreDictionary.registerOre("listAllveggie", ItemFoodTFC.get(Food.CARROT));
+		OreDictionary.registerOre("listAllveggie", ItemFoodTFC.get(Food.POTATO));
+		OreDictionary.registerOre("listAllveggie", ItemFoodTFC.get(Food.TOMATO));
+		OreDictionary.registerOre("listAllveggie", ItemFoodTFC.get(Food.ONION));
+		OreDictionary.registerOre("listAllveggie", ItemFoodTFC.get(Food.GARLIC));
+		OreDictionary.registerOre("listAllveggie", ItemFoodTFC.get(Food.SEAWEED));
+		OreDictionary.registerOre("listAllveggie", ItemFoodTFC.get(Food.CABBAGE));
+		OreDictionary.registerOre("listAllveggie", ItemFoodTFC.get(Food.SOYBEAN));
+		OreDictionary.registerOre("listAllveggie", ItemFoodTFC.get(Food.SQUASH));
+		OreDictionary.registerOre("listAllveggie", ItemFoodTFC.get(Food.GREEN_BELL_PEPPER));
+		OreDictionary.registerOre("listAllveggie", ItemFoodTFC.get(Food.RED_BELL_PEPPER));
+		OreDictionary.registerOre("listAllveggie", ItemFoodTFC.get(Food.YELLOW_BELL_PEPPER));
+		OreDictionary.registerOre("listAllveggie", ItemFoodTFC.get(Food.BEET));
+
+		OreDictionary.registerOre("listAllmushroom", BlockPlantTFC.get(TFCRegistries.PLANTS.getValue(DefaultPlants.PORCINI)));
+
+		OreDictionary.registerOre("cropApple", ItemFoodTFC.get(Food.RED_APPLE));
+		OreDictionary.registerOre("cropApple", ItemFoodTFC.get(Food.GREEN_APPLE));
+		OreDictionary.registerOre("cropBanana", ItemFoodTFC.get(Food.BANANA));
+		OreDictionary.registerOre("cropLemon", ItemFoodTFC.get(Food.LEMON));
+		OreDictionary.registerOre("cropOrange", ItemFoodTFC.get(Food.ORANGE));
+		OreDictionary.registerOre("cropPlum", ItemFoodTFC.get(Food.PLUM));
+		OreDictionary.registerOre("cropStrawberry", ItemFoodTFC.get(Food.STRAWBERRY));
+		OreDictionary.registerOre("cropCherry", ItemFoodTFC.get(Food.CHERRY));
+		OreDictionary.registerOre("cropBlackberry", ItemFoodTFC.get(Food.BLACKBERRY));
+		OreDictionary.registerOre("cropBlueberry", ItemFoodTFC.get(Food.BLUEBERRY));
+		OreDictionary.registerOre("cropGooseberry", ItemFoodTFC.get(Food.GOOSEBERRY));
+		OreDictionary.registerOre("cropRaspberry", ItemFoodTFC.get(Food.RASPBERRY));
+		OreDictionary.registerOre("cropCranberry", ItemFoodTFC.get(Food.CRANBERRY));
+		OreDictionary.registerOre("cropElderberry", ItemFoodTFC.get(Food.ELDERBERRY));
+		
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.RED_APPLE));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.GREEN_APPLE));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.BANANA));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.LEMON));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.ORANGE));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.PLUM));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.CHERRY));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.STRAWBERRY));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.BLACKBERRY));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.BLUEBERRY));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.GOOSEBERRY));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.RASPBERRY));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.CRANBERRY));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.ELDERBERRY));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.BUNCH_BERRY));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.CLOUD_BERRY));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.WINTERGREEN_BERRY));
+		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.SNOW_BERRY));
+		
+		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.STRAWBERRY));
+		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.BLACKBERRY));
+		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.BLUEBERRY));
+		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.GOOSEBERRY));
+		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.RASPBERRY));
+		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.CRANBERRY));
+		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.ELDERBERRY));
+		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.BUNCH_BERRY));
+		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.CLOUD_BERRY));
+		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.WINTERGREEN_BERRY));
+		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.SNOW_BERRY));
+		OreDictionary.registerOre("foodCheese", ItemFoodTFC.get(Food.CHEESE));
+		
 	}
 	private static void registerVanillaFoods() {
 		  OreDictionary.registerOre("listAllchickenraw", Items.CHICKEN);
