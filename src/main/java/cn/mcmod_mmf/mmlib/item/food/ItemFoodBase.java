@@ -2,6 +2,7 @@ package cn.mcmod_mmf.mmlib.item.food;
 
 import javax.annotation.Nullable;
 
+import net.dries007.tfc.api.capability.food.FoodData;
 import net.dries007.tfc.api.capability.food.FoodHandler;
 import net.dries007.tfc.api.capability.food.FoodHeatHandler;
 import net.minecraft.creativetab.CreativeTabs;
@@ -74,7 +75,7 @@ public class ItemFoodBase extends ItemFood {
     	if(Loader.isModLoaded("tfc")){
 	    	if(getInfo()!=null) {
 				FoodInfo info = stack.getMetadata() < getInfo().length?getInfo()[stack.getMetadata()]: new FoodInfo("null_food",0, 0, false);
-				ICapabilitySerializable<NBTTagCompound> capa = info.isHeatable() ? new FoodHeatHandler(nbt, info.getNutrients(), info.getCalories(), info.getWater(), info.getDecayModifier(), info.getHeatCapacity(), info.getCookingTemp()) : new FoodHandler(nbt,  info.getNutrients(), info.getCalories(), info.getWater(), info.getDecayModifier());
+				ICapabilitySerializable<NBTTagCompound> capa = info.isHeatable() ? new FoodHeatHandler(nbt, new FoodData(info.getAmount(), info.getWater(), info.getCalories(), info.getNutrients(), info.getDecayModifier()),info.getHeatCapacity(),info.getCookingTemp()):new FoodHandler(nbt, new FoodData(info.getAmount(), info.getWater(), info.getCalories(), info.getNutrients(), info.getDecayModifier()));
 				if(info.isNeverDecay()){
 					if(capa instanceof FoodHeatHandler){
 						((FoodHeatHandler)capa).setNonDecaying();

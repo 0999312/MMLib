@@ -82,14 +82,12 @@ public class ItemDrinkBase extends ItemFoodBase {
 					Potion por = effect1.getPotion();
 					if (por == null)
 						continue;
-					int amp = effect1.getAmplifier();
 					int dur = effect1.getDuration();
 					if (player.isPotionActive(effect1.getPotion())) {
 						PotionEffect check = player.getActivePotionEffect(por);
 						dur += check.getDuration();
-						amp++;
 					}
-					player.addPotionEffect(new PotionEffect(effect1.getPotion(), dur, amp));
+					player.addPotionEffect(new PotionEffect(effect1.getPotion(), dur, effect1.getAmplifier()));
 				}
 			}
 		}

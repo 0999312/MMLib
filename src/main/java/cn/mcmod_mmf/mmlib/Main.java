@@ -1,5 +1,7 @@
 package cn.mcmod_mmf.mmlib;
 
+import java.util.Calendar;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,11 +10,17 @@ import net.dries007.tfc.objects.blocks.plants.BlockPlantTFC;
 import net.dries007.tfc.objects.items.food.ItemFoodTFC;
 import net.dries007.tfc.types.DefaultPlants;
 import net.dries007.tfc.util.agriculture.Food;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.server.SPacketCustomSound;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -25,21 +33,27 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
 @EventBusSubscriber
-@Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION, dependencies = "required-after:forge@[14.23.5.2847,);after:tfc;")
+@Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION, dependencies = "required-after:forge@[14.23.5.2847,);after:tfc@[1.0.6.133,);")
 public class Main {
 	public static final String MODID = "mm_lib";
 	public static final String NAME = "Mysterious Mountain Lib";
 	public static final String VERSION = "@version@";
 
 	private static final Logger logger = LogManager.getLogger(NAME);
+	public static final Calendar CALENDER = Calendar.getInstance();
 
+	
+	public static final SoundEvent ZAIA_ENTERPRISE = new SoundEvent(new ResourceLocation("mm_lib", "presented_by_zaia"));
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		logger.info("Presented by Zaia");
 		registerVanillaFoods();
 
 	}
-
+	@SubscribeEvent
+	public static void onSoundEvenrRegistration(RegistryEvent.Register<SoundEvent> event) {
+	    event.getRegistry().register(ZAIA_ENTERPRISE.setRegistryName(new ResourceLocation("mm_lib", "presented_by_zaia")));
+	}
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		if(Loader.isModLoaded("tfc"))
@@ -52,11 +66,19 @@ public class Main {
 	
 	@SubscribeEvent
 	public static void welcomeUsing(PlayerLoggedInEvent event) {
+    	boolean april_first = false;
+    	if (CALENDER.get(2) + 1 == 4 && CALENDER.get(5) == 1)
+    		april_first = true;
         if (MMLibConfig.info) {
-    		String json = I18n.translateToLocal("mm_lib.info.welcome");
+    		String json = april_first?I18n.translateToLocal("mm_lib.info.welcome_foolish"):I18n.translateToLocal("mm_lib.info.welcome");
     		json = json.replaceAll("%name%", event.player.getName());
     		ITextComponent component = ITextComponent.Serializer.jsonToComponent(json);
             event.player.sendMessage(component);
+        }
+        if(april_first){
+        	if(event.player instanceof EntityPlayerMP){
+        		((EntityPlayerMP)event.player).connection.sendPacket(new SPacketCustomSound(ZAIA_ENTERPRISE.getRegistryName().toString(), SoundCategory.PLAYERS, event.player.posX, event.player.posY, event.player.posZ, 1F, 1F));
+        	}
         }
 	}
 	@Method(modid = "tfc")
@@ -85,8 +107,11 @@ public class Main {
 		
 		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.BEAR));
 		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_BEAR));
-		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.CALAMARI));
-		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_CALAMARI));
+		OreDictionary.registerOre("listAllfishraw", ItemFoodTFC.get(Food.CALAMARI));
+		OreDictionary.registerOre("listAllfishcooked", ItemFoodTFC.get(Food.COOKED_CALAMARI));
+		OreDictionary.registerOre("listAllfishfresh", ItemFoodTFC.get(Food.CALAMARI));
+		OreDictionary.registerOre("foodCalamariraw", ItemFoodTFC.get(Food.CALAMARI));
+		OreDictionary.registerOre("foodCalamaricooked", ItemFoodTFC.get(Food.COOKED_CALAMARI));
 		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.HORSE_MEAT));
 		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_HORSE_MEAT));
 		
@@ -100,6 +125,19 @@ public class Main {
 		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_VENISON));
 		OreDictionary.registerOre("listAllvenisonraw", ItemFoodTFC.get(Food.VENISON));
 		OreDictionary.registerOre("listAllvenisoncooked", ItemFoodTFC.get(Food.COOKED_VENISON));
+		
+		OreDictionary.registerOre("listAllduckraw", ItemFoodTFC.get(Food.DUCK));
+		OreDictionary.registerOre("listAllduckcooked", ItemFoodTFC.get(Food.COOKED_DUCK));
+		OreDictionary.registerOre("listAllmuttonraw", ItemFoodTFC.get(Food.CHEVON));
+		OreDictionary.registerOre("listAllmuttoncooked", ItemFoodTFC.get(Food.COOKED_CHEVON));
+		
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.DUCK));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_DUCK));
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.CHEVON));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_CHEVON));
+		OreDictionary.registerOre("slabCobblestone", new ItemStack(Blocks.STONE_SLAB,1,3));
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.GRAN_FELINE));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_GRAN_FELINE));
 		
 		OreDictionary.registerOre("listAllfishraw", ItemFoodTFC.get(Food.FISH));
 		OreDictionary.registerOre("listAllfishfresh", ItemFoodTFC.get(Food.FISH));

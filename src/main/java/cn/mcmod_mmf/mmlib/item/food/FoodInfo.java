@@ -7,11 +7,11 @@ public class FoodInfo {
 	private final boolean isWolfFood;
 	//TFC-TNG FoodHandler parameters
 	private final float water;
-	private final float carbohydrates;
-	private final float fat;
-	private final float protein;
-	private final float vitamins;
-	private final float minerals;
+	private final float grain;
+	private final float fruit;
+	private final float veg;
+	private final float meat;
+	private final float dairy;
 	private final boolean isNonDecaying;
 	private final float decayModifier;
 	private final boolean heatable;
@@ -22,8 +22,7 @@ public class FoodInfo {
 		this(name,amount, calories, iswolffood, 1f, 1f,0f,0f,0f,0f,1f,0f,0f);
 	}
 	
-	public FoodInfo(String name,int amount,float calories,boolean iswolffood, float water, float carbohydrates, float fat, float protein, float vitamins,
-			float minerals, float decayModifier, float heatCapacity, float cookingTemp) {
+	public FoodInfo(String name,int amount,float calories,boolean iswolffood, float water, float grain, float fruit, float veg, float meat, float dairy, float decayModifier, float heatCapacity, float cookingTemp) {
 		this.name = name;
 		this.amount = amount;
 		this.calories = calories;
@@ -31,11 +30,11 @@ public class FoodInfo {
 		
 		//TFC-TNG FoodHandler parameters
 		this.water = water;
-		this.carbohydrates = carbohydrates;
-		this.fat = fat;
-		this.protein = protein;
-		this.vitamins = vitamins;
-		this.minerals = minerals;
+		this.grain = grain;
+		this.fruit = fruit;
+		this.veg = veg;
+		this.meat = meat;
+		this.dairy = dairy;
 		this.decayModifier = decayModifier;
 		this.isNonDecaying = decayModifier <= 0;
 		this.heatable = cookingTemp >= 0;
@@ -62,9 +61,9 @@ public class FoodInfo {
 	public float getWater() {
 		return water;
 	}
-
+	
 	public float[] getNutrients() {
-		return new float[] { carbohydrates, fat, protein, vitamins, minerals };
+		return new float[] { grain, fruit, veg, meat, dairy };
 	}
 
 	public boolean isHeatable() {

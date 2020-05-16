@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "mm_lib",
+  "name": "Mysterious Mountain Lib",
+  "description": "a library for Syameimaru Zheng's most of mods.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["Syameimaru Zheng"],
+  "credits": "MMF-Group, MCMOD Modding Group, Zaia Enterprise China",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
