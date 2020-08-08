@@ -15,15 +15,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional.Interface;
-import net.minecraftforge.fml.common.Optional.Method;
-import toughasnails.api.stat.capability.ITemperature;
-import toughasnails.api.stat.capability.IThirst;
-import toughasnails.api.temperature.Temperature;
-import toughasnails.api.temperature.TemperatureHelper;
-import toughasnails.api.thirst.ThirstHelper;
 
-@Interface(iface = "toughasnails.api.thirst.IDrink", modid = "toughasnails")
 public class ItemDrinkBase extends ItemFoodBase {
 	private final PotionEffect[][] effect;
 	private final ItemStack ContainerItem;
@@ -90,40 +82,6 @@ public class ItemDrinkBase extends ItemFoodBase {
 					player.addPotionEffect(new PotionEffect(effect1.getPotion(), dur, effect1.getAmplifier()));
 				}
 			}
-		}
-	}
-
-	@Method(modid = "toughasnails")
-	public void drink(EntityLivingBase entity) {
-		EntityPlayer player = (EntityPlayer) entity;
-		IThirst thirst = ThirstHelper.getThirstData(player);
-
-		thirst.addStats(getThirst(), getHydration());
-	}
-
-	@Method(modid = "toughasnails")
-	public int getThirst() {
-		return 8;
-	}
-
-	@Method(modid = "toughasnails")
-	public float getHydration() {
-		return 0.6F;
-	}
-
-	@Method(modid = "toughasnails")
-	public float getPoisonChance() {
-		return 0.0F;
-	}
-
-	@Method(modid = "toughasnails")
-	public void changeTemperature(EntityLivingBase entity) {
-		EntityPlayer player = (EntityPlayer) entity;
-		ITemperature temperature = TemperatureHelper.getTemperatureData(player);
-		if (temperature.getTemperature().getRawValue() <= 10) {
-			temperature.setTemperature(new Temperature(temperature.getTemperature().getRawValue() + 1));
-		} else if (temperature.getTemperature().getRawValue() >= 14) {
-			temperature.setTemperature(new Temperature(temperature.getTemperature().getRawValue() - 1));
 		}
 	}
 

@@ -6,12 +6,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
 public class ItemBase extends Item {
-	protected String[] subNames;
+	private final String modid;
+	private final String[] subNames;
 	public Item containerItem;
 	public ItemBase(String modid, String name, int stackSize, String... subNames) {
-		this.setUnlocalizedName(modid+"."+name);
+		StringBuilder namebuilder = new StringBuilder(modid);
+		this.setUnlocalizedName(namebuilder.append('.').append(name).toString());
 		this.setHasSubtypes(subNames!=null&&subNames.length > 0);
 		this.setMaxStackSize(stackSize);
+		this.modid=modid;
 		this.subNames = subNames!=null&&subNames.length > 0?subNames: null;
 		this.setMaxDamage(0);
 		this.setNoRepair();
@@ -32,7 +35,8 @@ public class ItemBase extends Item {
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
 		if(getSubNames()!=null) {
-			String subName = stack.getMetadata() < getSubNames().length?"item."+getSubNames()[stack.getMetadata()]: "";
+			StringBuilder name_builder = new StringBuilder("item.");
+			String subName = stack.getMetadata() < getSubNames().length?name_builder.append(modid).append('.').append(getSubNames()[stack.getMetadata()]).toString(): "";
 			return subName;
 		}
 		return this.getUnlocalizedName();

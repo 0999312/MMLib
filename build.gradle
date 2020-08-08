@@ -11,7 +11,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = "1.3.1"
+version = "1.5.0"
 group = "cn.mcmod_mmf.mmlib" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "MMLib"
 
@@ -91,7 +91,7 @@ repositories {
 }
 
 dependencies {
-    compile "vazkii.patchouli:Patchouli:1.0-10.51"
+    compile "vazkii.patchouli:Patchouli:1.0-16.84"
 	
 	// compile against the JEI API but do not include it at runtime
     deobfProvided "mezz.jei:jei_1.12.2:4.14.3.238:api"
@@ -99,8 +99,6 @@ dependencies {
     runtime "mezz.jei:jei_1.12.2:4.14.3.238"
 	
 	deobfCompile "jei-integration:jeiintegration_1.12.2:1.5.1.36"
-
-	deobfCompile "mcp.mobius.waila:Hwyla:1.8.26-B41_1.12.2"
 }
 
 

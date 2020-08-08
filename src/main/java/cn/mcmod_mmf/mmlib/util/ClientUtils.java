@@ -39,10 +39,18 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
-public class ClientUtils {
+public final class ClientUtils {
+	private static final ClientUtils instance = new ClientUtils();
+
+	private ClientUtils() {
+	}
+
+	public static ClientUtils getInstance() {
+		return instance;
+	}
 
 	@SideOnly(Side.CLIENT)
-	public static void drawTexturedRect(float x, float y, float w, float h, double... uv) {
+	public void drawTexturedRect(float x, float y, float w, float h, double... uv) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder worldrenderer = tessellator.getBuffer();
 		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
@@ -54,7 +62,7 @@ public class ClientUtils {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void drawRepeatedFluidSprite(FluidStack fluid, float x, float y, float w, float h) {
+	public void drawRepeatedFluidSprite(FluidStack fluid, float x, float y, float w, float h) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks()
 				.getAtlasSprite(fluid.getFluid().getStill(fluid).toString());
@@ -70,7 +78,7 @@ public class ClientUtils {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void drawRepeatedSprite(float x, float y, float w, float h, int iconWidth, int iconHeight, float uMin,
+	public void drawRepeatedSprite(float x, float y, float w, float h, int iconWidth, int iconHeight, float uMin,
 			float uMax, float vMin, float vMax) {
 
 		int iterMaxW = (int) (w / iconWidth);
@@ -100,19 +108,19 @@ public class ClientUtils {
 				(uMin + iconUDif * leftoverWf), vMin, (vMin + iconVDif * leftoverHf));
 	}
 
-	public static Map<ResourceLocation, CustomModelPOJO> pojo_cache = Maps.newHashMap();
-	public static Map<ResourceLocation, ModelBase> model_cache = Maps.newHashMap();
+	public Map<ResourceLocation, CustomModelPOJO> pojo_cache = Maps.newHashMap();
+	public Map<ResourceLocation, ModelBase> model_cache = Maps.newHashMap();
 
 	@Nullable
 	@SideOnly(Side.CLIENT)
-	public static CustomModelPOJO loadModel(ResourceLocation modelLocation) {
+	public CustomModelPOJO loadModel(ResourceLocation modelLocation) {
 		InputStream input = null;
 		if (pojo_cache.containsKey(modelLocation))
 			return pojo_cache.get(modelLocation);
 		try {
 			input = Minecraft.getMinecraft().getResourceManager().getResource(modelLocation).getInputStream();
-			CustomModelPOJO pojo = JSON_Creator.gson.fromJson(new InputStreamReader(input, StandardCharsets.UTF_8),
-					CustomModelPOJO.class);
+			CustomModelPOJO pojo = JSON_Creator.getInstance().GSON
+					.fromJson(new InputStreamReader(input, StandardCharsets.UTF_8), CustomModelPOJO.class);
 
 			// 先判断是不是 1.10.0 版本基岩版模型文件
 			if (!pojo.getFormatVersion().equals("1.10.0")) {
@@ -142,7 +150,7 @@ public class ClientUtils {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static ModelBase getModelBaseFromJSON(ResourceLocation modelLocation) {
+	public ModelBase getModelBaseFromJSON(ResourceLocation modelLocation) {
 		if (model_cache.containsKey(modelLocation))
 			return model_cache.get(modelLocation);
 		ModelBase model = new ModelBaseJson(loadModel(modelLocation));
@@ -151,7 +159,7 @@ public class ClientUtils {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static ModelBiped getModelBipedFromJSON(ResourceLocation modelLocation) {
+	public ModelBiped getModelBipedFromJSON(ResourceLocation modelLocation) {
 		if (model_cache.containsKey(modelLocation) && model_cache.get(modelLocation) instanceof ModelBiped)
 			return (ModelBiped) model_cache.get(modelLocation);
 		ModelBiped model = new ModelBipedJson(loadModel(modelLocation));
@@ -160,7 +168,7 @@ public class ClientUtils {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static ModelBiped getArmorModelFromJSON(ResourceLocation modelLocation) {
+	public ModelBiped getArmorModelFromJSON(ResourceLocation modelLocation) {
 		if (model_cache.containsKey(modelLocation) && model_cache.get(modelLocation) instanceof ModelBiped)
 			return (ModelBiped) model_cache.get(modelLocation);
 		ModelBiped model = new ModelCustomArmorJson(loadModel(modelLocation));
@@ -168,75 +176,68 @@ public class ClientUtils {
 		return model;
 	}
 
-    @SideOnly(Side.CLIENT)
-    public static ModelBiped getCustomArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, EntityEquipmentSlot armorSlot, ModelBiped model, ModelBiped model1, ModelBiped model2)
-      {
-        if (model == null)
-        {
-          EntityEquipmentSlot type = ((ItemArmor)itemStack.getItem()).armorType;
-          if ((type == EntityEquipmentSlot.CHEST) || (type == EntityEquipmentSlot.FEET)) {
-            model = model1;
-          } else {
-            model = model2;
-          }
-        }
-        if (model != null)
-        {
-          model.bipedHead.showModel = (armorSlot == EntityEquipmentSlot.HEAD);
-          model.bipedHeadwear.showModel = (armorSlot == EntityEquipmentSlot.HEAD);
-          model.bipedBody.showModel = (armorSlot == EntityEquipmentSlot.CHEST);
-          model.bipedRightArm.showModel = (armorSlot == EntityEquipmentSlot.CHEST);
-          model.bipedLeftArm.showModel = (armorSlot == EntityEquipmentSlot.CHEST);
-          model.bipedRightLeg.showModel = (armorSlot == EntityEquipmentSlot.LEGS||armorSlot == EntityEquipmentSlot.FEET);
-          model.bipedLeftLeg.showModel = (armorSlot == EntityEquipmentSlot.LEGS||armorSlot == EntityEquipmentSlot.FEET);
-          model.isSneak = entityLiving.isSneaking();
-          
-          model.isRiding = entityLiving.isRiding();
-          model.isChild = entityLiving.isChild();
-          ItemStack itemstack = entityLiving.getHeldItemMainhand();
-          ItemStack itemstack1 = entityLiving.getHeldItemOffhand();
-          ModelBiped.ArmPose modelbiped$armpose = ModelBiped.ArmPose.EMPTY;
-          ModelBiped.ArmPose modelbiped$armpose1 = ModelBiped.ArmPose.EMPTY;
-          if ((itemstack != null) && (!itemstack.isEmpty()))
-          {
-            modelbiped$armpose = ModelBiped.ArmPose.ITEM;
-            if (entityLiving.getItemInUseCount() > 0)
-            {
-              EnumAction enumaction = itemstack.getItemUseAction();
-              if (enumaction == EnumAction.BLOCK) {
-                modelbiped$armpose = ModelBiped.ArmPose.BLOCK;
-              } else if (enumaction == EnumAction.BOW) {
-                modelbiped$armpose = ModelBiped.ArmPose.BOW_AND_ARROW;
-              }
-            }
-          }
-          if ((itemstack1 != null) && (!itemstack1.isEmpty()))
-          {
-            modelbiped$armpose1 = ModelBiped.ArmPose.ITEM;
-            if (entityLiving.getItemInUseCount() > 0)
-            {
-              EnumAction enumaction1 = itemstack1.getItemUseAction();
-              if (enumaction1 == EnumAction.BLOCK) {
-                modelbiped$armpose1 = ModelBiped.ArmPose.BLOCK;
-              }
-            }
-          }
-          if (entityLiving.getPrimaryHand() == EnumHandSide.RIGHT)
-          {
-            model.rightArmPose = modelbiped$armpose;
-            model.leftArmPose = modelbiped$armpose1;
-          }
-          else
-          {
-            model.rightArmPose = modelbiped$armpose1;
-            model.leftArmPose = modelbiped$armpose;
-          }
-        }
-        return model;
-      }
-	
 	@SideOnly(Side.CLIENT)
-	public static ModelBiped getCustomArmorModel(EntityLivingBase entityLiving, ItemStack itemStack,
+	public ModelBiped getCustomArmorModel(EntityLivingBase entityLiving, ItemStack itemStack,
+			EntityEquipmentSlot armorSlot, ModelBiped model, ModelBiped model1, ModelBiped model2) {
+		if (model == null) {
+			EntityEquipmentSlot type = ((ItemArmor) itemStack.getItem()).armorType;
+			if ((type == EntityEquipmentSlot.CHEST) || (type == EntityEquipmentSlot.FEET)) {
+				model = model1;
+			} else {
+				model = model2;
+			}
+		}
+		if (model != null) {
+			model.bipedHead.showModel = (armorSlot == EntityEquipmentSlot.HEAD);
+			model.bipedHeadwear.showModel = (armorSlot == EntityEquipmentSlot.HEAD);
+			model.bipedBody.showModel = (armorSlot == EntityEquipmentSlot.CHEST);
+			model.bipedRightArm.showModel = (armorSlot == EntityEquipmentSlot.CHEST);
+			model.bipedLeftArm.showModel = (armorSlot == EntityEquipmentSlot.CHEST);
+			model.bipedRightLeg.showModel = (armorSlot == EntityEquipmentSlot.LEGS
+					|| armorSlot == EntityEquipmentSlot.FEET);
+			model.bipedLeftLeg.showModel = (armorSlot == EntityEquipmentSlot.LEGS
+					|| armorSlot == EntityEquipmentSlot.FEET);
+			model.isSneak = entityLiving.isSneaking();
+
+			model.isRiding = entityLiving.isRiding();
+			model.isChild = entityLiving.isChild();
+			ItemStack itemstack = entityLiving.getHeldItemMainhand();
+			ItemStack itemstack1 = entityLiving.getHeldItemOffhand();
+			ModelBiped.ArmPose modelbiped$armpose = ModelBiped.ArmPose.EMPTY;
+			ModelBiped.ArmPose modelbiped$armpose1 = ModelBiped.ArmPose.EMPTY;
+			if ((itemstack != null) && (!itemstack.isEmpty())) {
+				modelbiped$armpose = ModelBiped.ArmPose.ITEM;
+				if (entityLiving.getItemInUseCount() > 0) {
+					EnumAction enumaction = itemstack.getItemUseAction();
+					if (enumaction == EnumAction.BLOCK) {
+						modelbiped$armpose = ModelBiped.ArmPose.BLOCK;
+					} else if (enumaction == EnumAction.BOW) {
+						modelbiped$armpose = ModelBiped.ArmPose.BOW_AND_ARROW;
+					}
+				}
+			}
+			if ((itemstack1 != null) && (!itemstack1.isEmpty())) {
+				modelbiped$armpose1 = ModelBiped.ArmPose.ITEM;
+				if (entityLiving.getItemInUseCount() > 0) {
+					EnumAction enumaction1 = itemstack1.getItemUseAction();
+					if (enumaction1 == EnumAction.BLOCK) {
+						modelbiped$armpose1 = ModelBiped.ArmPose.BLOCK;
+					}
+				}
+			}
+			if (entityLiving.getPrimaryHand() == EnumHandSide.RIGHT) {
+				model.rightArmPose = modelbiped$armpose;
+				model.leftArmPose = modelbiped$armpose1;
+			} else {
+				model.rightArmPose = modelbiped$armpose1;
+				model.leftArmPose = modelbiped$armpose;
+			}
+		}
+		return model;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public ModelBiped getCustomArmorModel(EntityLivingBase entityLiving, ItemStack itemStack,
 			EntityEquipmentSlot armorSlot, ModelBiped model) {
 		if (model != null) {
 			model.bipedHead.showModel = (armorSlot == EntityEquipmentSlot.HEAD);

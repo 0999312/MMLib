@@ -62,7 +62,7 @@ public class OreWildcardIngredient extends OreIngredient {
             return false;
 
         for (ItemStack target : this.ores)
-            if (RecipesUtil.itemMatches(target, input, false))
+            if (RecipesUtil.getInstance().itemMatches(target, input, false))
                 return true;
 
         return false;

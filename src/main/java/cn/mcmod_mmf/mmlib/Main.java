@@ -30,6 +30,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 @EventBusSubscriber
@@ -41,14 +42,13 @@ public class Main {
 
 	private static final Logger logger = LogManager.getLogger(NAME);
 	public static final Calendar CALENDER = Calendar.getInstance();
-
 	
 	public static final SoundEvent ZAIA_ENTERPRISE = new SoundEvent(new ResourceLocation("mm_lib", "presented_by_zaia"));
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		logger.info("Presented by Zaia");
 		registerVanillaFoods();
-
+        EntityRegistry.registerModEntity(new ResourceLocation("mmlib:seat_block"), EntitySeat.class, "SeatBlock", 0, this, 80, 1, false);
 	}
 	@SubscribeEvent
 	public static void onSoundEvenrRegistration(RegistryEvent.Register<SoundEvent> event) {
@@ -82,7 +82,7 @@ public class Main {
         }
 	}
 	@Method(modid = "tfc")
-	private static void registerTFCOreDict(){
+	private void registerTFCOreDict(){
 		OreDictionary.registerOre("listAllchickenraw", ItemFoodTFC.get(Food.CHICKEN));
 		OreDictionary.registerOre("listAllchickencooked", ItemFoodTFC.get(Food.COOKED_CHICKEN));
 		OreDictionary.registerOre("listAllporkraw", ItemFoodTFC.get(Food.PORK));
@@ -261,7 +261,7 @@ public class Main {
 		OreDictionary.registerOre("foodCheese", ItemFoodTFC.get(Food.CHEESE));
 		
 	}
-	private static void registerVanillaFoods() {
+	private void registerVanillaFoods() {
 		  OreDictionary.registerOre("listAllchickenraw", Items.CHICKEN);
 		  OreDictionary.registerOre("listAllegg", Items.EGG);
 		  OreDictionary.registerOre("listAllchickencooked", Items.COOKED_CHICKEN);
@@ -277,6 +277,7 @@ public class Main {
 		  OreDictionary.registerOre("foodBread", Items.BREAD);
 		  OreDictionary.registerOre("cropCarrot", Items.CARROT);
 		  OreDictionary.registerOre("cropPotato", Items.POTATO);
+		  OreDictionary.registerOre("slabCobblestone", new ItemStack(Blocks.STONE_SLAB,1,3));
 		  OreDictionary.registerOre("cropPumpkin", Blocks.PUMPKIN);
 		  OreDictionary.registerOre("cropWheat", Items.WHEAT);
 		  OreDictionary.registerOre("listAllmushroom", Blocks.RED_MUSHROOM);
@@ -312,6 +313,7 @@ public class Main {
 		  OreDictionary.registerOre("listAllwater", Items.WATER_BUCKET);
 		  OreDictionary.registerOre("listAllmilk", Items.MILK_BUCKET);
 		  OreDictionary.registerOre("listAllsugar", Items.SUGAR);
+		  OreDictionary.registerOre("blockMossy", Blocks.MOSSY_COBBLESTONE);
 		  if(!Loader.isModLoaded("sakura"))
 			  OreDictionary.registerOre("sakuraLeaves", new ItemStack(Items.DYE,1,9));
 	}

@@ -14,9 +14,6 @@ import java.util.TreeSet;
 import javax.annotation.Nonnull;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -29,38 +26,63 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class RecipesUtil {
-    public static boolean compareMulti(Object[] input, Object[] output) {
-        if (input.length != output.length) return false;
-        for (Object i : input) {
-            for (Object l : output) {
-                if (!compareItems(i, l))
-                    return false;
-            }
-        }
-        return true;
-    }
-    
-    public static boolean compareItems(Object input, Object output) {
-        if (input instanceof ItemStack && output instanceof ItemStack) {
-            return ItemStack.areItemsEqual((ItemStack) input, (ItemStack) output);
-        }
-        if (input instanceof OredictItemStack) {
-            return ((OredictItemStack) input).isMatchingSomething(output);
-        }
-        if (output instanceof OredictItemStack) {
-            return ((OredictItemStack) output).isMatchingSomething(input);
-        }
-        if (input instanceof String) {
-            return new OredictItemStack((String) input, 1).isMatchingSomething(output);
-        }
-        if (output instanceof String) {
-            return new OredictItemStack((String) output, 1).isMatchingSomething(input);
-        }
+	private static final RecipesUtil instance = new RecipesUtil();
 
-        return false;
-    }
-    
-	public static boolean containsMatch(boolean strict, NonNullList<ItemStack> inputs, @Nonnull ItemStack... targets) {
+	private RecipesUtil() {
+	}
+	public void addOreDictionarySmelting(String ore, ItemStack output, float exp) {
+		for (ItemStack item : OreDictionary.getOres(ore)) {
+			GameRegistry.addSmelting(item, output, exp);
+		}
+	}
+
+	public void addOreDictionarySmelting(String ore, ItemStack output) {
+		for (ItemStack item : OreDictionary.getOres(ore)) {
+			GameRegistry.addSmelting(item, output, 0F);
+		}
+	}
+	public static RecipesUtil getInstance() {
+		return instance;
+	}
+
+	public boolean compareMulti(Object[] input, Object[] output) {
+		if (input.length != output.length)
+			return false;
+		for (Object i : input) {
+			for (Object l : output) {
+				if (!compareItems(i, l))
+					return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean compareItems(Object input, Object output) {
+		if (input instanceof ItemStack && output instanceof ItemStack) {
+			ItemStack inputItem = (ItemStack) input,outputItem = (ItemStack) output;
+			boolean flag = true;
+			if(inputItem.hasTagCompound()&&outputItem.hasTagCompound()){
+				flag = outputItem.getTagCompound().equals(inputItem.getTagCompound());
+			}
+			return ItemStack.areItemsEqual((ItemStack) input, (ItemStack) output) && flag;
+		}
+		if (input instanceof OredictItemStack) {
+			return ((OredictItemStack) input).isMatchingSomething(output);
+		}
+		if (output instanceof OredictItemStack) {
+			return ((OredictItemStack) output).isMatchingSomething(input);
+		}
+		if (input instanceof String) {
+			return new OredictItemStack((String) input, 1).isMatchingSomething(output);
+		}
+		if (output instanceof String) {
+			return new OredictItemStack((String) output, 1).isMatchingSomething(input);
+		}
+
+		return false;
+	}
+
+	public boolean containsMatch(boolean strict, NonNullList<ItemStack> inputs, @Nonnull ItemStack... targets) {
 		for (ItemStack input : inputs) {
 			for (ItemStack target : targets) {
 				if (itemMatches(target, input, strict)) {
@@ -71,7 +93,7 @@ public class RecipesUtil {
 		return false;
 	}
 
-	public static boolean canIncrease(@Nonnull ItemStack itemstack, @Nonnull ItemStack itemstack1) {
+	public boolean canIncrease(@Nonnull ItemStack itemstack, @Nonnull ItemStack itemstack1) {
 		if (itemstack1.isEmpty()) {
 			return true;
 		}
@@ -81,7 +103,7 @@ public class RecipesUtil {
 		return itemstack1.getCount() + itemstack.getCount() <= itemstack.getMaxStackSize();
 	}
 
-	public static boolean itemMatches(@Nonnull ItemStack target, @Nonnull ItemStack input, boolean strict) {
+	public boolean itemMatches(@Nonnull ItemStack target, @Nonnull ItemStack input, boolean strict) {
 		if (input.isEmpty() && !target.isEmpty() || !input.isEmpty() && target.isEmpty()) {
 			return false;
 		}
@@ -91,25 +113,24 @@ public class RecipesUtil {
 								|| input.getMetadata() == OreDictionary.WILDCARD_VALUE)));
 	}
 
-	public static void addRecipe(Item item, IRecipe value) {
+	public void addRecipe(Item item, IRecipe value) {
 		addRecipe(item.getRegistryName(), value);
 	}
 
-	public static void addRecipe(String modId, String key, IRecipe value) {
+	public void addRecipe(String modId, String key, IRecipe value) {
 		addRecipe(new ResourceLocation(modId, key), value);
 	}
 
-	public static void addRecipe(ResourceLocation key, IRecipe value) {
+	public void addRecipe(ResourceLocation key, IRecipe value) {
 		if (value.getRegistryName() == null)
 			value.setRegistryName(key);
 		ForgeRegistries.RECIPES.register(value);
 	}
 
-	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-	private static File RECIPE_DIR = null;
-	private static final Set<String> USED_OD_NAMES = new TreeSet<>();
+	private File RECIPE_DIR = null;
+	private final Set<String> USED_OD_NAMES = new TreeSet<>();
 
-	public static void addShapedRecipe(ItemStack result, Object... components) {
+	public void addShapedRecipe(ItemStack result, Object... components) {
 		setupDir();
 
 		Map<String, Object> json = new HashMap<>();
@@ -156,13 +177,13 @@ public class RecipesUtil {
 		}
 
 		try (FileWriter w = new FileWriter(f)) {
-			GSON.toJson(json, w);
+			JSON_Creator.getInstance().GSON.toJson(json, w);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void setupDir() {
+	private void setupDir() {
 		if (RECIPE_DIR == null) {
 			RECIPE_DIR = new File("json_create" + "\\recipes\\");
 		}
@@ -172,7 +193,7 @@ public class RecipesUtil {
 		}
 	}
 
-	public static void addShapelessRecipe(ItemStack result, Object... components) {
+	public void addShapelessRecipe(ItemStack result, Object... components) {
 		setupDir();
 
 		Map<String, Object> json = new HashMap<>();
@@ -200,13 +221,13 @@ public class RecipesUtil {
 		}
 
 		try (FileWriter w = new FileWriter(f)) {
-			GSON.toJson(json, w);
+			JSON_Creator.getInstance().GSON.toJson(json, w);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static Map<String, Object> serializeItem(Object thing) {
+	private Map<String, Object> serializeItem(Object thing) {
 		if (thing instanceof Item) {
 			return serializeItem(new ItemStack((Item) thing));
 		}
@@ -242,7 +263,7 @@ public class RecipesUtil {
 	}
 
 	// Call this after you are done generating
-	public static void generateConstants() {
+	public void generateConstants() {
 		List<Map<String, Object>> json = new ArrayList<>();
 		for (String s : USED_OD_NAMES) {
 			Map<String, Object> entry = new HashMap<>();
@@ -252,43 +273,13 @@ public class RecipesUtil {
 		}
 
 		try (FileWriter w = new FileWriter(new File(RECIPE_DIR, "_constants.json"))) {
-			GSON.toJson(json, w);
+			JSON_Creator.getInstance().GSON.toJson(json, w);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	// Call this after you are done generating
-	public static void generateAllConstants() {
-		setupDir();
-		List<Map<String, Object>> json = new ArrayList<>();
-		for (String s : OreDictionary.getOreNames()) {
-			Map<String, Object> entry = new HashMap<>();
-			entry.put("name", s.toUpperCase(Locale.ROOT));
-			entry.put("ingredient", ImmutableMap.of("type", "forge:ore_dict", "ore", s));
-			json.add(entry);
-		}
-
-		try (FileWriter w = new FileWriter(new File(RECIPE_DIR, "_constants.json"))) {
-			GSON.toJson(json, w);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void addOreDictionarySmelting(String ore, ItemStack output, float exp) {
-		for (ItemStack item : OreDictionary.getOres(ore)) {
-			GameRegistry.addSmelting(item, output, exp);
-		}
-	}
-
-	public static void addOreDictionarySmelting(String ore, ItemStack output) {
-		for (ItemStack item : OreDictionary.getOres(ore)) {
-			GameRegistry.addSmelting(item, output, 0F);
-		}
-	}
-
-	public static NBTTagCompound getItemTagCompound(ItemStack stack) {
+	public NBTTagCompound getItemTagCompound(ItemStack stack) {
 		NBTTagCompound tag;
 		if (stack.hasTagCompound()) {
 			tag = stack.getTagCompound();

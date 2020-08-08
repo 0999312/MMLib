@@ -29,7 +29,7 @@ public class BlockSlabBase extends BlockBase {
 	protected static final AxisAlignedBB AABB_TOP_HALF = new AxisAlignedBB(0.0D, 0.5D, 0.0D, 1.0D, 1.0D, 1.0D);
 
 	public BlockSlabBase(Material materialIn) {
-		super(materialIn);
+		super(materialIn,true);
 		this.setDefaultState(blockState.getBaseState().withProperty(HALF, EnumBlockFrostHalf.BOTTOM));
 		this.useNeighborBrightness = true;
 	}
@@ -138,33 +138,23 @@ public class BlockSlabBase extends BlockBase {
 	}
 
 	public enum EnumBlockFrostHalf implements IStringSerializable {
-
 		TOP("top"),
-
 		BOTTOM("bottom"),
-
 		FULL("full");
 
 		private final String name;
-
 		EnumBlockFrostHalf(String name) {
-
 			this.name = name;
-
 		}
 
 		@Override
 		public String toString() {
-
 			return this.name;
-
 		}
 
 		@Override
 		public String getName() {
-
 			return this.name;
-
 		}
 
 		public static EnumBlockFrostHalf byMetadata(int metadata) {

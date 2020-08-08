@@ -11,19 +11,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidBlock;
 
-public class WorldUtil {
-
-    public static boolean isItemFuel(ItemStack stack){
+public final class WorldUtil {
+	private static final WorldUtil instance = new WorldUtil();
+	private WorldUtil() {
+		// TODO Auto-generated constructor stub
+	}
+    public boolean isItemFuel(ItemStack stack){
         return TileEntityFurnace.getItemBurnTime(stack) > 0;
     }
     
     @Nullable
-    public static BlockPos.MutableBlockPos findGround(World world, BlockPos pos, boolean ignoreLeaves, boolean stopOnFluid, boolean useWorldHeight){
+    public BlockPos.MutableBlockPos findGround(World world, BlockPos pos, boolean ignoreLeaves, boolean stopOnFluid, boolean useWorldHeight){
         return findGround(world, pos, ignoreLeaves, stopOnFluid, useWorldHeight, 8);
     }
 
     @Nullable
-    public static BlockPos.MutableBlockPos findGround(World world, BlockPos pos, boolean ignoreLeaves, boolean stopOnFluid, boolean useWorldHeight, int offset) {
+    public BlockPos.MutableBlockPos findGround(World world, BlockPos pos, boolean ignoreLeaves, boolean stopOnFluid, boolean useWorldHeight, int offset) {
         if (useWorldHeight)
             pos = world.getHeight(pos);
         if (pos.getY() <= 4) {
@@ -44,5 +47,8 @@ public class WorldUtil {
         }
         return null;
     }
+	public static WorldUtil getInstance() {
+		return instance;
+	}
 
 }

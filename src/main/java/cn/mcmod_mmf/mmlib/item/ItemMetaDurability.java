@@ -17,21 +17,21 @@ public class ItemMetaDurability extends ItemBase {
 	
 	@Override
 	public boolean showDurabilityBar(ItemStack stack) {
-		return amount.get(RecipesUtil.getItemTagCompound(stack),0)>0;
+		return amount.get(RecipesUtil.getInstance().getItemTagCompound(stack),0)>0;
 	} 
 	 
 	 @Override
 	public double getDurabilityForDisplay(ItemStack stack) {
-		return (double)amount.get(RecipesUtil.getItemTagCompound(stack),0)/4.0F;
+		return (double)amount.get(RecipesUtil.getInstance().getItemTagCompound(stack),0)/4.0F;
 	}
 	
     @Override
     public ItemStack getContainerItem(ItemStack itemStack) {
-    	NBTTagCompound tag = RecipesUtil.getItemTagCompound(itemStack);
+    	NBTTagCompound tag = RecipesUtil.getInstance().getItemTagCompound(itemStack);
         int dmg = amount.get(tag,0);
         if (dmg < getMaxAmount()) {
             ItemStack stack = itemStack.copy();
-            NBTTagCompound tag_result = RecipesUtil.getItemTagCompound(stack);
+            NBTTagCompound tag_result = RecipesUtil.getInstance().getItemTagCompound(stack);
             amount.add(tag_result, 1);
             return stack;
         }

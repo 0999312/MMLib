@@ -6,16 +6,21 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.*;
 
-public class JSON_Creator {
-	public static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-	public static void genBlock(String modId,String blockName, String textureName, String path){
+public final class JSON_Creator {
+    private static final JSON_Creator instance = new JSON_Creator();  
+    	private JSON_Creator (){}  
+    public static JSON_Creator getInstance() {  
+    	return instance;  
+    }  
+	public final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+	public void genBlock(String modId,String blockName, String textureName, String path){
         File fileDir = new File(path + "\\blockstates\\");
         if(!fileDir.exists()){
             fileDir.mkdirs();
         }
         try {
             Writer writer = new OutputStreamWriter(new FileOutputStream(fileDir + "\\" + blockName + ".json"), "UTF-8");
-			JsonWriter jw = gson.newJsonWriter(writer);
+			JsonWriter jw = GSON.newJsonWriter(writer);
 
             jw.beginObject();
             jw.name("variants");
@@ -43,7 +48,7 @@ public class JSON_Creator {
     }
 
 	
-    private static void genBlockModel(String modId,String blockName, String textureName, String path){
+    private void genBlockModel(String modId,String blockName, String textureName, String path){
         File fileDir = new File(path + "\\models\\block\\");
         if(!fileDir.exists()){
             fileDir.mkdirs();
@@ -51,7 +56,7 @@ public class JSON_Creator {
 
         try {
             Writer writer = new OutputStreamWriter(new FileOutputStream(fileDir + "\\" + blockName + ".json"), "UTF-8");
-			JsonWriter jw = gson.newJsonWriter(writer);
+			JsonWriter jw = GSON.newJsonWriter(writer);
 
             jw.beginObject();
             jw.name("parent").value("block/cube_all");
@@ -73,7 +78,7 @@ public class JSON_Creator {
 
     }
 
-    public static void genCake(String modId, String blockName, String textureName, String path){
+    public void genCake(String modId, String blockName, String textureName, String path){
         File fileDir = new File(path + "\\blockstates\\");
         if(!fileDir.exists()){
             fileDir.mkdirs();
@@ -81,7 +86,7 @@ public class JSON_Creator {
 
         try {
             Writer writer = new OutputStreamWriter(new FileOutputStream(fileDir + "\\" + blockName + ".json"), "UTF-8");
-			JsonWriter jw = gson.newJsonWriter(writer);
+			JsonWriter jw = GSON.newJsonWriter(writer);
 
             jw.beginObject();
             jw.name("variants");
@@ -143,14 +148,14 @@ public class JSON_Creator {
     }
 
 	
-    private static void genCakeModel(String modId, String blockName, String textureName, String path){
+    private void genCakeModel(String modId, String blockName, String textureName, String path){
         File fileDir = new File(path + "\\models\\block\\");
         if(!fileDir.exists()){
             fileDir.mkdirs();
         }
         try {
             Writer writer = new OutputStreamWriter(new FileOutputStream(fileDir + "\\" + blockName+"_uneaten"+ ".json"), "UTF-8");
-			JsonWriter jw = gson.newJsonWriter(writer);
+			JsonWriter jw = GSON.newJsonWriter(writer);
 
             jw.beginObject();
             jw.name("parent").value("block/cake_uneaten");
@@ -168,7 +173,7 @@ public class JSON_Creator {
             writer.close();
             
             Writer writer1 = new OutputStreamWriter(new FileOutputStream(fileDir + "\\" + blockName+"_slice1"+ ".json"), "UTF-8");
-			JsonWriter jw1 = gson.newJsonWriter(writer1);
+			JsonWriter jw1 = GSON.newJsonWriter(writer1);
 
             jw1.beginObject();
             jw1.name("parent").value("block/cake_slice1");
@@ -187,7 +192,7 @@ public class JSON_Creator {
             writer1.close();
             
             Writer writer11 = new OutputStreamWriter(new FileOutputStream(fileDir + "\\" + blockName+"_slice2"+ ".json"), "UTF-8");
-			JsonWriter jw11 = gson.newJsonWriter(writer11);
+			JsonWriter jw11 = GSON.newJsonWriter(writer11);
 
             jw11.beginObject();
             jw11.name("parent").value("block/cake_slice2");
@@ -206,7 +211,7 @@ public class JSON_Creator {
             writer11.close();
             
             Writer writer111 = new OutputStreamWriter(new FileOutputStream(fileDir + "\\" + blockName+"_slice3"+ ".json"), "UTF-8");
-			JsonWriter jw111 = gson.newJsonWriter(writer111);
+			JsonWriter jw111 = GSON.newJsonWriter(writer111);
 
             jw111.beginObject();
             jw111.name("parent").value("block/cake_slice3");
@@ -225,7 +230,7 @@ public class JSON_Creator {
             writer111.close();
             
             Writer writer1111 = new OutputStreamWriter(new FileOutputStream(fileDir + "\\" + blockName+"_slice4"+ ".json"), "UTF-8");
-			JsonWriter jw1111 = gson.newJsonWriter(writer1111);
+			JsonWriter jw1111 = GSON.newJsonWriter(writer1111);
 
             jw1111.beginObject();
             jw1111.name("parent").value("block/cake_slice4");
@@ -244,7 +249,7 @@ public class JSON_Creator {
             writer1111.close();
             
             Writer writer11111 = new OutputStreamWriter(new FileOutputStream(fileDir + "\\" + blockName+"_slice5"+ ".json"), "UTF-8");
-			JsonWriter jw11111 = gson.newJsonWriter(writer11111);
+			JsonWriter jw11111 = GSON.newJsonWriter(writer11111);
 
             jw11111.beginObject();
             jw11111.name("parent").value("block/cake_slice5");
@@ -263,7 +268,7 @@ public class JSON_Creator {
             writer11111.close();
             
             Writer writer111111 = new OutputStreamWriter(new FileOutputStream(fileDir + "\\" + blockName+"_slice6"+ ".json"), "UTF-8");
-			JsonWriter jw111111 = gson.newJsonWriter(writer111111);
+			JsonWriter jw111111 = GSON.newJsonWriter(writer111111);
 
             jw111111.beginObject();
             jw111111.name("parent").value("block/cake_slice6");
@@ -292,7 +297,7 @@ public class JSON_Creator {
 
     }
     
-    private static void genBlockItemModel(String modId, String blockName, String path){
+    private void genBlockItemModel(String modId, String blockName, String path){
         File fileDir = new File(path + "\\models\\item\\");
         if(!fileDir.exists()){
             fileDir.mkdirs();
@@ -300,7 +305,7 @@ public class JSON_Creator {
 
         try {
             Writer writer = new OutputStreamWriter(new FileOutputStream(fileDir + "\\" + blockName + ".json"), "UTF-8");
-			JsonWriter jw = gson.newJsonWriter(writer);
+			JsonWriter jw = GSON.newJsonWriter(writer);
 
             jw.beginObject();
             jw.name("parent").value(modId + ":block/" + blockName);
@@ -318,7 +323,7 @@ public class JSON_Creator {
 
     }
     
-    public static void genItem(String modId, String itemName, String textureName, String path){
+    public void genItem(String modId, String itemName, String textureName, String path){
         File fileDir = new File(path + "\\models\\item\\");
         if(!fileDir.exists()){
             fileDir.mkdirs();
@@ -326,7 +331,7 @@ public class JSON_Creator {
         
         try {
             Writer writer = new OutputStreamWriter(new FileOutputStream(fileDir + "\\" + itemName + ".json"), "UTF-8");
-			JsonWriter jw = gson.newJsonWriter(writer);
+			JsonWriter jw = GSON.newJsonWriter(writer);
 
             jw.beginObject();
             jw.name("parent").value("item/generated");
@@ -347,14 +352,14 @@ public class JSON_Creator {
         }
     }
 
-    public static void genTool(String modId, String itemName, String textureName, String path){
+    public void genTool(String modId, String itemName, String textureName, String path){
         File fileDir = new File(path + "\\models\\item\\");
         if(!fileDir.exists()){
             fileDir.mkdirs();
         }
         try {
             Writer writer = new OutputStreamWriter(new FileOutputStream(fileDir + "\\" + itemName + ".json"), "UTF-8");
-			JsonWriter jw = gson.newJsonWriter(writer);
+			JsonWriter jw = GSON.newJsonWriter(writer);
 
             jw.beginObject();
             jw.name("parent").value("item/handheld");

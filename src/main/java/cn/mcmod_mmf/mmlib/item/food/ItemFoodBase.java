@@ -17,8 +17,10 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.fml.common.Loader;
 
 public class ItemFoodBase extends ItemFood {
+	private final String modid;
 	private final FoodInfo[] info;
 	private boolean fastEat;
+
 
 	public ItemFoodBase(String modid,String name, int stackSize, FoodInfo[] info) {
 		super(info[0].getAmount(), info[0].getCalories(), info[0].isWolfFood());
@@ -27,6 +29,7 @@ public class ItemFoodBase extends ItemFood {
 		this.setMaxStackSize(stackSize);
 		this.setMaxDamage(0);
 		this.setNoRepair();
+		this.modid=modid;
 		this.info = info != null && info.length > 0 ? info : null;
 	}
 
@@ -57,9 +60,9 @@ public class ItemFoodBase extends ItemFood {
 
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		if (getInfo() != null) {
-			String subName = stack.getMetadata() < getInfo().length ? "item." + getInfo()[stack.getMetadata()].getName()
-					: "null_food";
+		if(getInfo()!=null) {
+			StringBuilder name_builder = new StringBuilder("item.");
+			String subName = stack.getMetadata() < getInfo().length?name_builder.append(modid).append('.').append(getInfo()[stack.getMetadata()].getName()).toString(): "null_food";
 			return subName;
 		}
 		return this.getUnlocalizedName();

@@ -11,70 +11,83 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemRegister {
+public final class ItemRegister {
+	private static final ItemRegister instance = new ItemRegister();
 
-	public static void register(String modid, Item item) {
-		ForgeRegistries.ITEMS
-				.register(item.setRegistryName(item.getUnlocalizedName().substring(6+modid.length())));
+	private ItemRegister() {
+	}
+
+	public static ItemRegister getInstance() {
+		return instance;
+	}
+	public void register(String modid, Item item) {
+		ForgeRegistries.ITEMS.register(item.setRegistryName(item.getUnlocalizedName().substring(6+modid.length())));
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerRender(ItemBase item) {
+	public void registerRender(ItemBase item) {
 		registerRender(item, false);
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerRender(ItemFoodBase item) {
+	public void registerRender(ItemFoodBase item) {
 		registerRender(item, false);
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerRender(ItemBase item, boolean json_create) {
-		for (int i = 0; i < item.getSubNames().length; i++) {
-			String name = item.getSubNames()[i].substring(item.getRegistryName().getResourceDomain().length() + 1);
+	public void registerRender(ItemBase item, boolean json_create) {
+		String name;
+		final String modid = item.getRegistryName().getResourceDomain();
+		final int length = item.getSubNames().length;
+		
+		for (int i = 0; i < length; i++) {
+			name = item.getSubNames()[i];
 			if (json_create)
-				JSON_Creator.genItem(item.getRegistryName().getResourceDomain(), name, name, "json_create");
+				JSON_Creator.getInstance().genItem(modid, name, name, "json_create");
 			ModelResourceLocation model = new ModelResourceLocation(
-					new ResourceLocation(item.getRegistryName().getResourceDomain(), name), "inventory");
+					new ResourceLocation(modid, name), "inventory");
 			ModelLoader.setCustomModelResourceLocation(item, i, model);
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerRender(ItemFoodBase item, boolean json_create) {
-		for (int i = 0; i < item.getInfo().length; i++) {
-			String name = item.getInfo()[i].getName().substring(item.getRegistryName().getResourceDomain().length() + 1);
+	public void registerRender(ItemFoodBase item, boolean json_create) {
+		String name;
+		final String modid = item.getRegistryName().getResourceDomain();
+		final int length = item.getInfo().length;
+		for (int i = 0; i < length; i++) {
+			name = item.getInfo()[i].getName();
 			if (json_create)
-				JSON_Creator.genItem(item.getRegistryName().getResourceDomain(), name, name, "json_create");
+				JSON_Creator.getInstance().genItem(modid, name, name, "json_create");
 			ModelResourceLocation model = new ModelResourceLocation(
-					new ResourceLocation(item.getRegistryName().getResourceDomain(), name), "inventory");
+					new ResourceLocation(modid, name), "inventory");
 			ModelLoader.setCustomModelResourceLocation(item, i, model);
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerRender(Item item, int meta, String name) {
+	public void registerRender(Item item, int meta, String name) {
 		ModelResourceLocation model = new ModelResourceLocation(name, "inventory");
 		ModelLoader.setCustomModelResourceLocation(item, meta, model);
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerRender(Item item, int meta, String name, String textureName) {
-		JSON_Creator.genItem(item.getRegistryName().getResourceDomain(), name, textureName, "json_create");
+	public void registerRender(Item item, int meta, String name, String textureName) {
+		JSON_Creator.getInstance().genItem(item.getRegistryName().getResourceDomain(), name, textureName, "json_create");
 		ModelResourceLocation model = new ModelResourceLocation(name, "inventory");
 		ModelLoader.setCustomModelResourceLocation(item, meta, model);
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerRender(Item item, String textureName) {
-		JSON_Creator.genItem(item.getRegistryName().getResourceDomain(), item.getRegistryName().getResourcePath(),
+	public void registerRender(Item item, String textureName) {
+		JSON_Creator.getInstance().genItem(item.getRegistryName().getResourceDomain(), item.getRegistryName().getResourcePath(),
 				textureName, "json_create");
 		ModelResourceLocation model = new ModelResourceLocation(item.getRegistryName(), "inventory");
 		ModelLoader.setCustomModelResourceLocation(item, 0, model);
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerRender(Item item) {
+	public void registerRender(Item item) {
 		ModelResourceLocation model = new ModelResourceLocation(item.getRegistryName(), "inventory");
 		ModelLoader.setCustomModelResourceLocation(item, 0, model);
 	}

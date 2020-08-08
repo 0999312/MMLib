@@ -13,57 +13,54 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 public final class StringUtil {
+	private static final StringUtil instance = new StringUtil();
+	public static StringUtil getInstance() {
+		return instance;
+	}
 	private StringUtil() {
 	}
-	public static String toString(Object o, String nullDefault) {
-
+	public String toString(Object o, String nullDefault) {
 		return (o != null) ? o.toString() : nullDefault;
 	}
 
 	/* KEY HELPERS */
-	public static boolean isAltKeyDown() {
-
+	public boolean isAltKeyDown() {
 		return Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU);
 	}
 
-	public static boolean isControlKeyDown() {
-
+	public boolean isControlKeyDown() {
 		return Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
 	}
 
-	public static boolean isShiftKeyDown() {
-
+	public boolean isShiftKeyDown() {
 		return Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 	}
 
 	/* FORMAT HELPERS */
-	public static int getSplitStringHeight(FontRenderer fontRenderer, String input, int width) {
+	public int getSplitStringHeight(FontRenderer fontRenderer, String input, int width) {
 
 		@SuppressWarnings ("rawtypes") List stringRows = fontRenderer.listFormattedStringToWidth(input, width);
 		return stringRows.size() * fontRenderer.FONT_HEIGHT;
 	}
 
-	public static String titleCase(String input) {
-
+	public String titleCase(String input) {
 		return input.substring(0, 1).toUpperCase(Locale.US) + input.substring(1);
 	}
 
-	public static String localize(String key) {
-
+	public String localize(String key) {
 		return I18n.translateToLocal(key);
 	}
 
-	public static String localizeFormat(String key, Object... format) {
-
+	public String localizeFormat(String key, Object... format) {
 		return I18n.translateToLocalFormatted(key, format);
 	}
 
-	public static boolean canLocalize(String key) {
+	public boolean canLocalize(String key) {
 
 		return I18n.canTranslate(key);
 	}
 
-	public static String getKeyName(int key) {
+	public String getKeyName(int key) {
 
 		if (key < 0) {
 			return I18n.translateToLocalFormatted("key.mouseButton", key + 101);
@@ -73,7 +70,7 @@ public final class StringUtil {
 		return Keyboard.getKeyName(key);
 	}
 
-	public static String getFluidName(FluidStack stack) {
+	public String getFluidName(FluidStack stack) {
 
 		Fluid fluid = stack.getFluid();
 
@@ -90,7 +87,7 @@ public final class StringUtil {
 		return name;
 	}
 
-	public static String getFluidName(FluidStack stack, String defaultName) {
+	public String getFluidName(FluidStack stack, String defaultName) {
 
 		if (stack == null) {
 			return defaultName;
@@ -98,7 +95,7 @@ public final class StringUtil {
 		return getFluidName(stack);
 	}
 
-	public static String getItemName(ItemStack stack) {
+	public String getItemName(ItemStack stack) {
 
 		String name = "" + END;
 		if (stack.getRarity() == EnumRarity.UNCOMMON) {
@@ -112,8 +109,7 @@ public final class StringUtil {
 
 		return name;
 	}
-
-	public static String getScaledNumber(long number) {
+	public String getScaledNumber(long number) {
 
 		if (number >= 1000000000) {
 			return number / 1000000000 + "." + (number % 1000000000 / 100000000) + (number % 100000000 / 10000000) + "G";
@@ -125,8 +121,7 @@ public final class StringUtil {
 			return String.valueOf(number);
 		}
 	}
-
-	public static String toNumerals(short v) {
+	public String toNumerals(short v) {
 
 		String s = "potion.potency." + v;
 		if (I18n.canTranslate(s)) {
@@ -147,37 +142,36 @@ public final class StringUtil {
 		return r.toString();
 	}
 
-	public static String formatNumber(long number) {
+	public String formatNumber(long number) {
 		return NumberFormat.getInstance().format(number);
 	}
 
 	/* ITEM TEXT HELPERS */
-	public static String getActivationText(String key) {
+	public String getActivationText(String key) {
 
 		return BRIGHT_BLUE + localize(key) + END;
 	}
 
-	public static String getDeactivationText(String key) {
+	public String getDeactivationText(String key) {
 
 		return YELLOW + localize(key) + END;
 	}
 
-	public static String getInfoText(String key) {
+	public String getInfoText(String key) {
 
 		return BRIGHT_GREEN + localize(key) + END;
 	}
 
-	public static String getNoticeText(String key) {
-
+	public String getNoticeText(String key) {
 		return ORANGE + localize(key) + END;
 	}
 
-	public static String getFlavorText(String key) {
+	public String getFlavorText(String key) {
 
 		return LIGHT_GRAY + ITALIC + localize(key) + END;
 	}
 
-	public static String getRarity(int level) {
+	public String getRarity(int level) {
 
 		switch (level) {
 			case 2:
@@ -189,7 +183,7 @@ public final class StringUtil {
 		}
 	}
 
-	public static String shiftForDetails() {
+	public String shiftForDetails() {
 		return localize("info.mm_lib.holdShiftForDetails");
 	}
 

@@ -3,14 +3,20 @@ package cn.mcmod_mmf.mmlib.util;
 import java.util.Random;
 
 public final class MathUtil {
+	private static final MathUtil instance = new MathUtil();
+
 	private MathUtil() {
 	}
 
-	public static final Random RANDOM = new Random();
-	public static final double PHI = 1.618034;
-	public static final double[] SIN_TABLE = new double[65536];
+	public static MathUtil getInstance() {
+		return instance;
+	}
 
-	static {
+	public final Random RANDOM = new Random();
+	public final double PHI = 1.618034;
+	public final double[] SIN_TABLE = new double[65536];
+
+	{
 		for (int i = 0; i < 65536; i++) {
 			SIN_TABLE[i] = Math.sin(i / 65536D * 2 * Math.PI);
 		}
@@ -20,57 +26,57 @@ public final class MathUtil {
 		SIN_TABLE[49152] = -1;
 	}
 
-	public static double sin(double d) {
+	public double sin(double d) {
 
 		return SIN_TABLE[(int) ((float) d * 10430.378F) & 65535];
 	}
 
-	public static double cos(double d) {
+	public double cos(double d) {
 
 		return SIN_TABLE[(int) ((float) d * 10430.378F + 16384.0F) & 65535];
 	}
 
-	public static int clamp(int a, int min, int max) {
+	public int clamp(int a, int min, int max) {
 
 		return a < min ? min : (a > max ? max : a);
 	}
 
-	public static float clamp(float a, float min, float max) {
+	public float clamp(float a, float min, float max) {
 
 		return a < min ? min : (a > max ? max : a);
 	}
 
-	public static double clamp(double a, double min, double max) {
+	public double clamp(double a, double min, double max) {
 
 		return a < min ? min : (a > max ? max : a);
 	}
 
-	public static float approachLinear(float a, float b, float max) {
+	public float approachLinear(float a, float b, float max) {
 
 		return a > b ? a - b < max ? b : a - max : b - a < max ? b : a + max;
 	}
 
-	public static double approachLinear(double a, double b, double max) {
+	public double approachLinear(double a, double b, double max) {
 
 		return a > b ? a - b < max ? b : a - max : b - a < max ? b : a + max;
 	}
 
-	public static float interpolate(float a, float b, float d) {
+	public float interpolate(float a, float b, float d) {
 
 		return a + (b - a) * d;
 	}
 
-	public static double interpolate(double a, double b, double d) {
+	public double interpolate(double a, double b, double d) {
 
 		return a + (b - a) * d;
 	}
 
-	public static double approachExp(double a, double b, double ratio) {
+	public double approachExp(double a, double b, double ratio) {
 
 		return a + (b - a) * ratio;
 	}
 
-	public static double approachExp(double a, double b, double ratio, double cap) {
+	public double approachExp(double a, double b, double ratio, double cap) {
 
 		double d = (b - a) * ratio;
 
@@ -80,7 +86,7 @@ public final class MathUtil {
 		return a + d;
 	}
 
-	public static double retreatExp(double a, double b, double c, double ratio, double kick) {
+	public double retreatExp(double a, double b, double c, double ratio, double kick) {
 
 		double d = (Math.abs(c - a) + kick) * ratio;
 
@@ -90,7 +96,7 @@ public final class MathUtil {
 		return a + Math.signum(b - a) * d;
 	}
 
-	public static double clip(double value, double min, double max) {
+	public double clip(double value, double min, double max) {
 
 		if (value > max) {
 			value = max;
@@ -100,18 +106,18 @@ public final class MathUtil {
 		return value;
 	}
 
-	public static boolean between(double a, double x, double b) {
+	public boolean between(double a, double x, double b) {
 
 		return a <= x && x <= b;
 	}
 
-	public static int approachExpI(int a, int b, double ratio) {
+	public int approachExpI(int a, int b, double ratio) {
 
 		int r = (int) Math.round(approachExp(a, b, ratio));
 		return r == a ? b : r;
 	}
 
-	public static int retreatExpI(int a, int b, int c, double ratio, int kick) {
+	public int retreatExpI(int a, int b, int c, double ratio, int kick) {
 
 		int r = (int) Math.round(retreatExp(a, b, c, ratio, kick));
 		return r == a ? b : r;
@@ -121,7 +127,7 @@ public final class MathUtil {
 	 * Unchecked implementation to round a number. Parameter should be known to
 	 * be valid in advance.
 	 */
-	public static int round(double d) {
+	public int round(double d) {
 
 		return (int) (d + 0.5D);
 	}
@@ -130,7 +136,7 @@ public final class MathUtil {
 	 * Unchecked implementation to round a number up. Parameter should be known
 	 * to be valid in advance.
 	 */
-	public static int ceil(double d) {
+	public int ceil(double d) {
 
 		return (int) (d + 0.9999D);
 	}
@@ -139,7 +145,7 @@ public final class MathUtil {
 	 * Unchecked implementation to round a number down. Parameter should be
 	 * known to be valid in advance.
 	 */
-	public static int floor(double d) {
+	public int floor(double d) {
 
 		int i = (int) d;
 		return d < i ? i - 1 : i;
@@ -149,17 +155,17 @@ public final class MathUtil {
 	 * Unchecked implementation to determine the smaller of two Floats.
 	 * Parameters should be known to be valid in advance.
 	 */
-	public static float minF(float a, float b) {
+	public float minF(float a, float b) {
 
 		return a < b ? a : b;
 	}
 
-	public static float minF(int a, float b) {
+	public float minF(int a, float b) {
 
 		return a < b ? a : b;
 	}
 
-	public static float minF(float a, int b) {
+	public float minF(float a, int b) {
 
 		return a < b ? a : b;
 	}
@@ -168,22 +174,22 @@ public final class MathUtil {
 	 * Unchecked implementation to determine the larger of two Floats.
 	 * Parameters should be known to be valid in advance.
 	 */
-	public static float maxF(float a, float b) {
+	public float maxF(float a, float b) {
 
 		return a > b ? a : b;
 	}
 
-	public static float maxF(int a, float b) {
+	public float maxF(int a, float b) {
 
 		return a > b ? a : b;
 	}
 
-	public static float maxF(float a, int b) {
+	public float maxF(float a, int b) {
 
 		return a > b ? a : b;
 	}
 
-	public static double maxAbs(double a, double b) {
+	public double maxAbs(double a, double b) {
 
 		if (a < 0.0D) {
 			a = -a;
@@ -194,13 +200,13 @@ public final class MathUtil {
 		return a > b ? a : b;
 	}
 
-	public static int setBit(int mask, int bit, boolean value) {
+	public int setBit(int mask, int bit, boolean value) {
 
 		mask |= (value ? 1 : 0) << bit;
 		return mask;
 	}
 
-	public static boolean isBitSet(int mask, int bit) {
+	public boolean isBitSet(int mask, int bit) {
 
 		return (mask & 1 << bit) != 0;
 	}
