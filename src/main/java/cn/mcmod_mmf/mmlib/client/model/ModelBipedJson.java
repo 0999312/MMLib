@@ -65,13 +65,13 @@ public class ModelBipedJson extends ModelBiped {
         float height = pojo.getGeometryModel().getVisibleBoundsHeight() / 2.0f;
         renderBoundingBox = new AxisAlignedBB(offsetX - width, offsetY - height, offsetZ - width, offsetX + width, offsetY + height, offsetZ + width);
         //不要在循环里创建对象引用
-        String name;
-        @Nullable List<Float> rotation;
-        @Nullable String parent;
-        List<Float> uv,size;
-        ModelRenderer model;
-        boolean mirror;
-        float inflate;
+        String name = null;
+        @Nullable List<Float> rotation= null;
+        @Nullable String parent= null;
+        List<Float> uv= null,size= null;
+        ModelRenderer model= null;
+        boolean mirror= false;
+        float inflate= 0;
         // 往 indexBones 里面注入数据，为后续坐标转换做参考
         for (BonesItem bones : pojo.getGeometryModel().getBones()) {
             // 塞索引，这是给后面坐标转换用的

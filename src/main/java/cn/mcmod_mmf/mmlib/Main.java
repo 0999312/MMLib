@@ -1,12 +1,16 @@
 package cn.mcmod_mmf.mmlib;
 
 import java.util.Calendar;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import cn.mcmod_mmf.mmlib.compat.TFCCompat;
+import cn.mcmod_mmf.mmlib.recipe.UniversalFluid;
 import net.dries007.tfc.api.registries.TFCRegistries;
 import net.dries007.tfc.objects.blocks.plants.BlockPlantTFC;
+import net.dries007.tfc.objects.fluids.FluidsTFC;
 import net.dries007.tfc.objects.items.food.ItemFoodTFC;
 import net.dries007.tfc.types.DefaultPlants;
 import net.dries007.tfc.util.agriculture.Food;
@@ -20,7 +24,9 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -34,7 +40,7 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 @EventBusSubscriber
-@Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION, dependencies = "required-after:forge@[14.23.5.2847,);after:tfc@[1.0.6.133,);")
+@Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION, dependencies = "required-after:forge@[14.23.5.2847,);after:tfc@[1.0.6.133,);after:harvestcraft;")
 public class Main {
 	public static final String MODID = "mm_lib";
 	public static final String NAME = "Mysterious Mountain Lib";
@@ -44,20 +50,73 @@ public class Main {
 	public static final Calendar CALENDER = Calendar.getInstance();
 	
 	public static final SoundEvent ZAIA_ENTERPRISE = new SoundEvent(new ResourceLocation("mm_lib", "presented_by_zaia"));
+	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		logger.info("Presented by Zaia");
+        if(Loader.isModLoaded("tfc")){
+        	MinecraftForge.EVENT_BUS.register(TFCCompat.getInstance());
+
+        }
 		registerVanillaFoods();
         EntityRegistry.registerModEntity(new ResourceLocation("mmlib:seat_block"), EntitySeat.class, "SeatBlock", 0, this, 80, 1, false);
 	}
+	
 	@SubscribeEvent
 	public static void onSoundEvenrRegistration(RegistryEvent.Register<SoundEvent> event) {
 	    event.getRegistry().register(ZAIA_ENTERPRISE.setRegistryName(new ResourceLocation("mm_lib", "presented_by_zaia")));
 	}
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		if(Loader.isModLoaded("tfc"))
+		UniversalFluid.getInstance().addFluid("listAllwater", FluidRegistry.WATER);
+		if(Loader.isModLoaded("harvestcraft")) {
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.CropRegistry.getFood("spiceleaf"));
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.CropRegistry.getFood("curryleaf"));
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.CropRegistry.getFood("ginger"));
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.CropRegistry.getFood("garlic"));
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.CropRegistry.getFood("kenaf"));
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.CropRegistry.getFood("jute"));
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.CropRegistry.getFood("mustardseeds"));
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.CropRegistry.getFood("sisal"));
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.CropRegistry.getFood("flax"));
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.item.ItemRegistry.ediblerootItem);
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.FruitRegistry.getFood("cinnamon"));
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.FruitRegistry.getFood("nutmeg"));
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.FruitRegistry.getFood("vanillabean"));
+			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.FruitRegistry.getFood("peppercorn"));
+		}
+		if(Loader.isModLoaded("tfc")) {
 			registerTFCOreDict();
+        	registeFood4TFC();
+        	TFCCompat.getInstance().addInfo();
+		}
+
+	}
+
+	private void registeFood4TFC() {
+		UniversalFluid.getInstance().addFluid("listAllwater", FluidsTFC.FRESH_WATER.get());
+		UniversalFluid.getInstance().addFluid("listAlloil",FluidsTFC.OLIVE_OIL.get());
+		List<ItemStack> berry = OreDictionary.getOres("listAllberry");
+		List<ItemStack> grain = OreDictionary.getOres("listAllgrain");
+		List<ItemStack> veggie = OreDictionary.getOres("listAllveggie");
+		List<ItemStack> greenveggie = OreDictionary.getOres("listAllgreenveggie");
+		List<ItemStack> fruit = OreDictionary.getOres("listAllfruit");
+		fruit.removeAll(berry);
+		List<ItemStack> nut = OreDictionary.getOres("listAllnut");
+		List<ItemStack> fiber = OreDictionary.getOres("listAllfiber");
+		List<ItemStack> yogurt = OreDictionary.getOres("listAllyogurt");
+		List<ItemStack> juice = OreDictionary.getOres("listAlljuice");
+		List<ItemStack> spice = OreDictionary.getOres("listAllspice");
+		TFCCompat.getInstance().addFoodInfo(berry, 2, 0.5F, 5, 0, 0, 1, 0, 0, 1.75F, 0F, 0F);
+		TFCCompat.getInstance().addFoodInfo(grain, 2, 0.5F, 0, 1, 0, 0, 0, 0, 1.4F, 0F, 0F);
+		TFCCompat.getInstance().addFoodInfo(veggie, 2, 0.5F, 5, 0, 1.5F, 0.3F, 0, 0, 1.4F, 0F, 0F);
+		TFCCompat.getInstance().addFoodInfo(greenveggie, 2, 0.5F, 5, 0, 1.5F, 0.3F, 0, 0, 1.4F, 0F, 0F);
+		TFCCompat.getInstance().addFoodInfo(fruit, 2, 0.5F, 10, 0, 0, 1.5F, 0, 0, 1.72F, 0F, 0F);
+		TFCCompat.getInstance().addFoodInfo(nut, 1, 0.5F, 5, 1F, 0.5F, 0, 0, 0.7F, 0.5F, 0F, 0F);
+		TFCCompat.getInstance().addFoodInfo(fiber, 0, 0F, 0, 0, 0, 0, 0, 0, 0F, 0F, 0F);
+		TFCCompat.getInstance().addFoodInfo(yogurt, 2, 1.25F, 15, 0, 0, 0.3F, 1.9F, 0, 6.5F, 0F, 0F);
+		TFCCompat.getInstance().addFoodInfo(juice, 2, 1.25F, 25,  0, 0.3F, 1.5F, 0, 0, 5.25F, 0F, 0F);
+		TFCCompat.getInstance().addFoodInfo(spice, 1, 0.7F, 0, 0, 0, 0, 0, 0, 0.25F, 0F, 0F);
 	}
 
 	public static Logger getLogger() {
@@ -125,16 +184,8 @@ public class Main {
 		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_VENISON));
 		OreDictionary.registerOre("listAllvenisonraw", ItemFoodTFC.get(Food.VENISON));
 		OreDictionary.registerOre("listAllvenisoncooked", ItemFoodTFC.get(Food.COOKED_VENISON));
-		
-		OreDictionary.registerOre("listAllduckraw", ItemFoodTFC.get(Food.DUCK));
-		OreDictionary.registerOre("listAllduckcooked", ItemFoodTFC.get(Food.COOKED_DUCK));
-		OreDictionary.registerOre("listAllmuttonraw", ItemFoodTFC.get(Food.CHEVON));
-		OreDictionary.registerOre("listAllmuttoncooked", ItemFoodTFC.get(Food.COOKED_CHEVON));
-		
-		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.DUCK));
-		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_DUCK));
-		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.CHEVON));
-		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_CHEVON));
+		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.CAMELIDAE));
+		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_CAMELIDAE));
 		OreDictionary.registerOre("slabCobblestone", new ItemStack(Blocks.STONE_SLAB,1,3));
 		OreDictionary.registerOre("listAllmeatraw", ItemFoodTFC.get(Food.GRAN_FELINE));
 		OreDictionary.registerOre("listAllmeatcooked", ItemFoodTFC.get(Food.COOKED_GRAN_FELINE));
@@ -246,7 +297,7 @@ public class Main {
 		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.CLOUD_BERRY));
 		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.WINTERGREEN_BERRY));
 		OreDictionary.registerOre("listAllfruit", ItemFoodTFC.get(Food.SNOW_BERRY));
-		
+//		Food.duc
 		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.STRAWBERRY));
 		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.BLACKBERRY));
 		OreDictionary.registerOre("listAllberry", ItemFoodTFC.get(Food.BLUEBERRY));

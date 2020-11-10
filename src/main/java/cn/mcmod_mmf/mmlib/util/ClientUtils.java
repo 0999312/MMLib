@@ -23,8 +23,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.GL11;
 
-import com.google.common.collect.Maps;
-
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import cn.mcmod_mmf.mmlib.Main;
 import cn.mcmod_mmf.mmlib.client.model.ModelBaseJson;
 import cn.mcmod_mmf.mmlib.client.model.ModelBipedJson;
@@ -35,7 +35,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
@@ -108,15 +109,15 @@ public final class ClientUtils {
 				(uMin + iconUDif * leftoverWf), vMin, (vMin + iconVDif * leftoverHf));
 	}
 
-	public Map<ResourceLocation, CustomModelPOJO> pojo_cache = Maps.newHashMap();
-	public Map<ResourceLocation, ModelBase> model_cache = Maps.newHashMap();
+	public final Cache<ResourceLocation, CustomModelPOJO> pojo_cache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
 	@Nullable
 	@SideOnly(Side.CLIENT)
 	public CustomModelPOJO loadModel(ResourceLocation modelLocation) {
 		InputStream input = null;
-		if (pojo_cache.containsKey(modelLocation))
-			return pojo_cache.get(modelLocation);
+		//缓存的好处
+		if (pojo_cache.getIfPresent(modelLocation) != null)
+			return pojo_cache.getIfPresent(modelLocation);
 		try {
 			input = Minecraft.getMinecraft().getResourceManager().getResource(modelLocation).getInputStream();
 			CustomModelPOJO pojo = JSON_Creator.getInstance().GSON
@@ -151,28 +152,19 @@ public final class ClientUtils {
 
 	@SideOnly(Side.CLIENT)
 	public ModelBase getModelBaseFromJSON(ResourceLocation modelLocation) {
-		if (model_cache.containsKey(modelLocation))
-			return model_cache.get(modelLocation);
 		ModelBase model = new ModelBaseJson(loadModel(modelLocation));
-		model_cache.put(modelLocation, model);
 		return model;
 	}
 
 	@SideOnly(Side.CLIENT)
 	public ModelBiped getModelBipedFromJSON(ResourceLocation modelLocation) {
-		if (model_cache.containsKey(modelLocation) && model_cache.get(modelLocation) instanceof ModelBiped)
-			return (ModelBiped) model_cache.get(modelLocation);
 		ModelBiped model = new ModelBipedJson(loadModel(modelLocation));
-		model_cache.put(modelLocation, model);
 		return model;
 	}
 
 	@SideOnly(Side.CLIENT)
 	public ModelBiped getArmorModelFromJSON(ResourceLocation modelLocation) {
-		if (model_cache.containsKey(modelLocation) && model_cache.get(modelLocation) instanceof ModelBiped)
-			return (ModelBiped) model_cache.get(modelLocation);
 		ModelBiped model = new ModelCustomArmorJson(loadModel(modelLocation));
-		model_cache.put(modelLocation, model);
 		return model;
 	}
 

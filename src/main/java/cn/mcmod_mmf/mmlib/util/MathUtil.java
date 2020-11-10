@@ -14,11 +14,15 @@ public final class MathUtil {
 
 	public final Random RANDOM = new Random();
 	public final double PHI = 1.618034;
-	public final double[] SIN_TABLE = new double[65536];
+	private static final float[] SIN_TABLE = new float[65536];
 
-	{
+	public static float[] getSinTable() {
+		return SIN_TABLE;
+	}
+
+	static {
 		for (int i = 0; i < 65536; i++) {
-			SIN_TABLE[i] = Math.sin(i / 65536D * 2 * Math.PI);
+			SIN_TABLE[i] = (float) Math.sin(i * Math.PI * 2.0 / 65536.0);
 		}
 		SIN_TABLE[0] = 0;
 		SIN_TABLE[16384] = 1;
@@ -26,14 +30,16 @@ public final class MathUtil {
 		SIN_TABLE[49152] = -1;
 	}
 
-	public double sin(double d) {
-
-		return SIN_TABLE[(int) ((float) d * 10430.378F) & 65535];
+	public float sin(float deg) {
+		return SIN_TABLE[(int) (65536.0 / 360.0 * deg) & 0xffff];
 	}
 
-	public double cos(double d) {
+	public float cos(float deg) {
+		return SIN_TABLE[((int) (65536.0 / 360.0 * deg) + 65536 / 4) & 0xffff];
+	}
 
-		return SIN_TABLE[(int) ((float) d * 10430.378F + 16384.0F) & 65535];
+	public float toRadians(float angdeg) {
+		return angdeg * (float) Math.PI / 180.0f;
 	}
 
 	public int clamp(int a, int min, int max) {
@@ -124,8 +130,8 @@ public final class MathUtil {
 	}
 
 	/**
-	 * Unchecked implementation to round a number. Parameter should be known to
-	 * be valid in advance.
+	 * Unchecked implementation to round a number. Parameter should be known to be
+	 * valid in advance.
 	 */
 	public int round(double d) {
 
@@ -133,8 +139,8 @@ public final class MathUtil {
 	}
 
 	/**
-	 * Unchecked implementation to round a number up. Parameter should be known
-	 * to be valid in advance.
+	 * Unchecked implementation to round a number up. Parameter should be known to
+	 * be valid in advance.
 	 */
 	public int ceil(double d) {
 
@@ -142,8 +148,8 @@ public final class MathUtil {
 	}
 
 	/**
-	 * Unchecked implementation to round a number down. Parameter should be
-	 * known to be valid in advance.
+	 * Unchecked implementation to round a number down. Parameter should be known to
+	 * be valid in advance.
 	 */
 	public int floor(double d) {
 
@@ -152,8 +158,8 @@ public final class MathUtil {
 	}
 
 	/**
-	 * Unchecked implementation to determine the smaller of two Floats.
-	 * Parameters should be known to be valid in advance.
+	 * Unchecked implementation to determine the smaller of two Floats. Parameters
+	 * should be known to be valid in advance.
 	 */
 	public float minF(float a, float b) {
 
@@ -171,8 +177,8 @@ public final class MathUtil {
 	}
 
 	/**
-	 * Unchecked implementation to determine the larger of two Floats.
-	 * Parameters should be known to be valid in advance.
+	 * Unchecked implementation to determine the larger of two Floats. Parameters
+	 * should be known to be valid in advance.
 	 */
 	public float maxF(float a, float b) {
 

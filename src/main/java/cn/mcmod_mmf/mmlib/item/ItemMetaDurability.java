@@ -22,7 +22,7 @@ public class ItemMetaDurability extends ItemBase {
 	 
 	 @Override
 	public double getDurabilityForDisplay(ItemStack stack) {
-		return (double)amount.get(RecipesUtil.getInstance().getItemTagCompound(stack),0)/4.0F;
+		return (double)amount.get(RecipesUtil.getInstance().getItemTagCompound(stack),0)/max_amount;
 	}
 	
     @Override

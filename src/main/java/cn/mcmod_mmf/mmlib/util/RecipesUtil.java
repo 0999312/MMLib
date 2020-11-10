@@ -21,6 +21,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
@@ -29,6 +30,9 @@ public class RecipesUtil {
 	private static final RecipesUtil instance = new RecipesUtil();
 
 	private RecipesUtil() {
+	}
+	public static RecipesUtil getInstance() {
+		return instance;
 	}
 	public void addOreDictionarySmelting(String ore, ItemStack output, float exp) {
 		for (ItemStack item : OreDictionary.getOres(ore)) {
@@ -41,10 +45,8 @@ public class RecipesUtil {
 			GameRegistry.addSmelting(item, output, 0F);
 		}
 	}
-	public static RecipesUtil getInstance() {
-		return instance;
-	}
 
+	public final List<FluidStack> EMPTY_FLUID =  new ArrayList<FluidStack>();
 	public boolean compareMulti(Object[] input, Object[] output) {
 		if (input.length != output.length)
 			return false;

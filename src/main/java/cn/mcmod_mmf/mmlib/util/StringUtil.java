@@ -39,7 +39,7 @@ public final class StringUtil {
 	/* FORMAT HELPERS */
 	public int getSplitStringHeight(FontRenderer fontRenderer, String input, int width) {
 
-		@SuppressWarnings ("rawtypes") List stringRows = fontRenderer.listFormattedStringToWidth(input, width);
+		List stringRows = fontRenderer.listFormattedStringToWidth(input, width);
 		return stringRows.size() * fontRenderer.FONT_HEIGHT;
 	}
 

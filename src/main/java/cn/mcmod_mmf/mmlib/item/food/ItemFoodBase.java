@@ -32,7 +32,7 @@ public class ItemFoodBase extends ItemFood {
 		this.modid=modid;
 		this.info = info != null && info.length > 0 ? info : null;
 	}
-
+	
 	@Override
 	public int getHealAmount(ItemStack stack) {
 		return stack.getMetadata() < getInfo().length ? getInfo()[stack.getMetadata()].getAmount() : 0;

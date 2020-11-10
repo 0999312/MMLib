@@ -65,13 +65,13 @@ public class ModelBaseJson extends ModelBase {
             modelMap.put(bones.getName(), new ModelRenderer(this));
         }
         //不要在循环里创建对象引用
-        String name;
-        @Nullable List<Float> rotation;
-        @Nullable String parent;
-        List<Float> uv,size;
-        ModelRenderer model;
-        boolean mirror;
-        float inflate;
+        String name = null;
+        @Nullable List<Float> rotation= null;
+        @Nullable String parent= null;
+        List<Float> uv= null,size= null;
+        ModelRenderer model= null;
+        boolean mirror= false;
+        float inflate= 0;
         // 开始往 ModelRenderer 实例里面塞数据
         for (BonesItem bones : pojo.getGeometryModel().getBones()) {
             // 骨骼名称，注意因为后面动画的需要，头部、手部、腿部等骨骼命名必须是固定死的
