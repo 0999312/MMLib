@@ -1,5 +1,6 @@
 package cn.mcmod_mmf.mmlib.item.food;
 
+import cn.mcmod_mmf.mmlib.item.info.FoodInfo;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;

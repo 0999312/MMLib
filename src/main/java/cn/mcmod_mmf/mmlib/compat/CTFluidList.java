@@ -1,10 +1,12 @@
 package cn.mcmod_mmf.mmlib.compat;
 
 import cn.mcmod_mmf.mmlib.recipe.UniversalFluid;
+import cn.mcmod_mmf.mmlib.register.MMLibRegistries;
 import crafttweaker.IAction;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.liquid.ILiquidStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -30,11 +32,6 @@ public class CTFluidList {
 			CTCompat.getInstance().actions.add(new Addition(name, fluids[i].getFluid()));
 		}
 	}
-	
-	@ZenMethod
-	public static void ClearAllFluidMap() {
-		CTCompat.getInstance().actions.add(new ClearFluidMap());
-	}
 
 	@ZenMethod
 	public static void ClearFluidMap(String name) {
@@ -52,7 +49,7 @@ public class CTFluidList {
 
 		@Override
 		public void apply() {
-			UniversalFluid.getInstance().removeFluid(name, itemInput);
+			MMLibRegistries.UNIVERSAL_FLUID.getValue(new ResourceLocation(name)).removeFluid(itemInput.getFluid());
 		}
 
 		@Override
@@ -77,7 +74,9 @@ public class CTFluidList {
 
 		@Override
 		public void apply() {
-			UniversalFluid.getInstance().addFluid(name, itemInput);
+			if(!MMLibRegistries.UNIVERSAL_FLUID.containsKey(new ResourceLocation(name)))
+				MMLibRegistries.UNIVERSAL_FLUID.register(new UniversalFluid().setRegistryName(name));
+			UniversalFluid.get(name).addFluid(itemInput);
 		}
 
 		@Override
@@ -95,7 +94,7 @@ public class CTFluidList {
 
 		@Override
 		public void apply() {
-			UniversalFluid.getInstance().removeFluidList(name);
+			MMLibRegistries.UNIVERSAL_FLUID.getValue(new ResourceLocation(name)).getFluidList().clear();
 		}
 
 		@Override
@@ -104,15 +103,4 @@ public class CTFluidList {
 		}
 	}
 
-	private static final class ClearFluidMap implements IAction {
-		@Override
-		public void apply() {
-			UniversalFluid.getInstance().clearAll();
-		}
-
-		@Override
-		public String describe() {
-			return "Removing all universal fluid";
-		}
-	}
 }

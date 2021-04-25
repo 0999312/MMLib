@@ -6,8 +6,10 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import cn.mcmod_mmf.mmlib.compat.CTCompat;
 import cn.mcmod_mmf.mmlib.compat.TFCCompat;
 import cn.mcmod_mmf.mmlib.recipe.UniversalFluid;
+import cn.mcmod_mmf.mmlib.register.MMLibRegistries;
 import net.dries007.tfc.api.registries.TFCRegistries;
 import net.dries007.tfc.objects.blocks.plants.BlockPlantTFC;
 import net.dries007.tfc.objects.fluids.FluidsTFC;
@@ -38,9 +40,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.registries.RegistryBuilder;
 
 @EventBusSubscriber
-@Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION, dependencies = "required-after:forge@[14.23.5.2847,);after:tfc@[1.0.6.133,);after:harvestcraft;")
+@Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION, dependencies = "required-after:forge@[14.23.5.2847,);after:tfc@[1.7.17.175,);after:harvestcraft;after:toughasnails")
 public class Main {
 	public static final String MODID = "mm_lib";
 	public static final String NAME = "Mysterious Mountain Lib";
@@ -54,6 +57,9 @@ public class Main {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		logger.info("Presented by Zaia");
+		/* Ah...Snownee...
+		 * if(Loader.isModLoaded("kiwi")) { logger.info("Hello, Snownee. F*** you."); }
+		 */
         if(Loader.isModLoaded("tfc")){
         	MinecraftForge.EVENT_BUS.register(TFCCompat.getInstance());
 
@@ -68,7 +74,9 @@ public class Main {
 	}
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		UniversalFluid.getInstance().addFluid("listAllwater", FluidRegistry.WATER);
+		if (Loader.isModLoaded("crafttweaker")) {
+			CTCompat.getInstance().Init();
+		}
 		if(Loader.isModLoaded("harvestcraft")) {
 			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.CropRegistry.getFood("spiceleaf"));
 			OreDictionary.registerOre("listAllspice", com.pam.harvestcraft.blocks.CropRegistry.getFood("curryleaf"));
@@ -90,12 +98,14 @@ public class Main {
         	registeFood4TFC();
         	TFCCompat.getInstance().addInfo();
 		}
-
+		
 	}
 
+	
+	
 	private void registeFood4TFC() {
-		UniversalFluid.getInstance().addFluid("listAllwater", FluidsTFC.FRESH_WATER.get());
-		UniversalFluid.getInstance().addFluid("listAlloil",FluidsTFC.OLIVE_OIL.get());
+		MMLibRegistries.UNIVERSAL_FLUID.getValue(new ResourceLocation(Main.MODID,"water")).addFluid(FluidsTFC.FRESH_WATER.get());
+		MMLibRegistries.UNIVERSAL_FLUID.getValue(new ResourceLocation(Main.MODID,"food_oil")).addFluid(FluidsTFC.OLIVE_OIL.get());
 		List<ItemStack> berry = OreDictionary.getOres("listAllberry");
 		List<ItemStack> grain = OreDictionary.getOres("listAllgrain");
 		List<ItemStack> veggie = OreDictionary.getOres("listAllveggie");
@@ -368,5 +378,17 @@ public class Main {
 		  if(!Loader.isModLoaded("sakura"))
 			  OreDictionary.registerOre("sakuraLeaves", new ItemStack(Items.DYE,1,9));
 	}
-	
+	@SubscribeEvent
+    public static void onNewRegistryEvent(RegistryEvent.NewRegistry event){
+    	new RegistryBuilder<UniversalFluid>().setName(new ResourceLocation(MODID, "universal_fluid")).allowModification().setType(UniversalFluid.class).create();
+    }
+    
+	@SubscribeEvent
+    public static void RegisterUniverFluid(RegistryEvent.Register<UniversalFluid> event){
+    	event.getRegistry().register(new UniversalFluid(FluidRegistry.WATER).setRegistryName("water"));
+    	event.getRegistry().register(new UniversalFluid(FluidRegistry.LAVA).setRegistryName("lava"));
+    	event.getRegistry().register(new UniversalFluid().setRegistryName("food_oil"));
+    	event.getRegistry().register(new UniversalFluid().setRegistryName("milk"));
+    	event.getRegistry().register(new UniversalFluid().setRegistryName("soy_sauce"));
+    }
 }

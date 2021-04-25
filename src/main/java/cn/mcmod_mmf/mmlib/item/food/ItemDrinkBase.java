@@ -1,5 +1,6 @@
 package cn.mcmod_mmf.mmlib.item.food;
 
+import cn.mcmod_mmf.mmlib.item.info.FoodInfo;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,8 +16,11 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Optional.Interface;
+import toughasnails.api.thirst.IDrink;
 
-public class ItemDrinkBase extends ItemFoodBase {
+@Interface(iface = "toughasnails.api.thirst.IDrink", modid = "toughasnails")
+public class ItemDrinkBase extends ItemFoodBase implements IDrink {
 	private final PotionEffect[][] effect;
 	private final ItemStack ContainerItem;
 
@@ -68,6 +72,7 @@ public class ItemDrinkBase extends ItemFoodBase {
 
 	@Override
 	protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
+		super.onFoodEaten(stack, worldIn, player);
 		if (getEffectList(stack) != null && getEffectList(stack).length > 0) {
 			for (PotionEffect effect1 : getEffectList(stack)) {
 				if (effect1 != null && effect1.getPotion() != null) {
@@ -88,4 +93,5 @@ public class ItemDrinkBase extends ItemFoodBase {
 	public ItemStack getContainer() {
 		return ContainerItem;
 	}
+	
 }

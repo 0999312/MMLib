@@ -1,55 +1,104 @@
 package cn.mcmod_mmf.mmlib.recipe;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
+import cn.mcmod_mmf.mmlib.Main;
+import cn.mcmod_mmf.mmlib.register.MMLibRegistries;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.IForgeRegistryEntry.Impl;
 
-public class UniversalFluid {
-	private static final UniversalFluid instance = new UniversalFluid();
-	private UniversalFluid() {
+public class UniversalFluid extends Impl<UniversalFluid> {
+
+	public static UniversalFluid get(String name) {
+        String modid;
+        String path;
+        
+        String str[] = name.split(":",2);
+        if(str.length == 2){
+            modid = str[0];
+            path = str[1];
+        }else{
+            modid = Main.MODID;
+            path = name;
+        }
+        
+		return UniversalFluid.get(modid,path);
+	}
+
+	public static UniversalFluid get(String modid,String name) {
+		
+		return UniversalFluid.get(new ResourceLocation(modid,name));
+	}
+
+	
+	public static UniversalFluid get(ResourceLocation name) {
+		try {
+			if (MMLibRegistries.UNIVERSAL_FLUID.getValue(name) == null) {
+				throw new RuntimeException(String.format("We DO NOT have this fluid:%s , Maybe next time.", name.toString()));
+			}
+			
+		} catch (Exception e) {
+			Main.getLogger().fatal("Fatal error! This is likely a programming mistake.", e);
+			throw new RuntimeException(e);
+		}
+		return MMLibRegistries.UNIVERSAL_FLUID.getValue(name);
+	}
+	private final NonNullList<Fluid> fluidList = NonNullList.create();
+	
+	public UniversalFluid() {
 		
 	}
-	public static UniversalFluid getInstance() {
-		return instance;
-	}
-	private final Map<String, List<Fluid>> FLUID_MAP = Maps.newHashMap();
-	private final Map<String, List<Fluid>> READONLY_MAP = Collections.unmodifiableMap(FLUID_MAP);
-
-	public void addFluid(String name, Fluid... input) {
-		if (FLUID_MAP.containsKey(name)) {
-			for(Fluid fluid : input)
-			FLUID_MAP.get(name).add(fluid);
-			
-			return;
+	
+	public UniversalFluid(Fluid... fluids) {
+		for(Fluid fluid:fluids) {
+			this.fluidList.add(fluid);
 		}
-		List<Fluid> fluids = Lists.newArrayList(input[0]);
-		for(int i=1;i<input.length;i++) {
-			fluids.add(input[i]);
-		}
-		FLUID_MAP.put(name, fluids);
-	}
-
-	public void removeFluid(String name, Fluid input) {
-		FLUID_MAP.get(name).remove(input);
-	}
-	public void removeFluid(String name, FluidStack input) {
-		removeFluid(name, input.getFluid());
-	}
-	public void removeFluidList(String name) {
-		FLUID_MAP.get(name).clear();
-	}
-	public void clearAll() {
-		FLUID_MAP.clear();
 	}
 	
-	public Map<String, List<Fluid>> getFluidMap() {
-		return READONLY_MAP;
+	public NonNullList<Fluid> getFluidList() {
+		return fluidList;
+	}
+	
+	public void addFluid(Fluid... fluids) {
+		for(Fluid fluid:fluids) {
+			addFluid(fluid);
+		}
+	}
+	
+	public void addFluid(Fluid fluid) {
+		this.fluidList.add(fluid);
+	}
+	
+	public void removeFluid(Fluid... fluids) {
+		for(Fluid fluid:fluids) {
+			removeFluid(fluid);
+		}
+	}
+	
+	public void removeFluid(Fluid fluid) {
+		this.fluidList.remove(fluid);
+	}
+	
+	public boolean hasFluid(Fluid target) {
+		boolean flag = false;
+		for(Fluid fluid : getFluidList()) {
+			if(fluid.equals(target)) {
+				flag = true;
+				break;
+			}
+		}
+		return flag;
+	}
+	
+	public List<FluidStack> getFluidList(int amount) {
+		List<FluidStack> list = Lists.newArrayList();
+		fluidList.forEach((k) -> list.add(new FluidStack(k, amount)));
+		return list;
 	}
 	
 }
