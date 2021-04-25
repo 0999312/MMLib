@@ -57,9 +57,7 @@ public class Main {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		logger.info("Presented by Zaia");
-		/* Ah...Snownee...
-		 * if(Loader.isModLoaded("kiwi")) { logger.info("Hello, Snownee. F*** you."); }
-		 */
+
         if(Loader.isModLoaded("tfc")){
         	MinecraftForge.EVENT_BUS.register(TFCCompat.getInstance());
 
