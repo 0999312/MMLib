@@ -1,17 +1,17 @@
 package cn.mcmod_mmf.mmlib.client.model;
 
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.EnumHandSide;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.model.Model;
+import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 
 import cn.mcmod_mmf.mmlib.client.model.pojo.BonesItem;
 import cn.mcmod_mmf.mmlib.client.model.pojo.CubesItem;
@@ -26,8 +26,8 @@ import java.util.List;
  * @author TartaricAcid
  * @date 2019/7/9 14:18
  **/
-@SideOnly(Side.CLIENT)
-public class ModelBaseJson extends ModelBase {
+@OnlyIn(Dist.CLIENT)
+public class ModelBaseJson extends Model {
     public final AxisAlignedBB renderBoundingBox;
     /**
      * 存储 ModelRender 子模型的 HashMap
@@ -43,10 +43,10 @@ public class ModelBaseJson extends ModelBase {
     private final List<ModelRenderer> shouldRender = Lists.newLinkedList();
 
     public ModelBaseJson(CustomModelPOJO pojo) {
-
+    	super(RenderType::entityCutoutNoCull);
         // 材质的长度、宽度
-        textureWidth = pojo.getGeometryModel().getTexturewidth();
-        textureHeight = pojo.getGeometryModel().getTextureheight();
+        texWidth = pojo.getGeometryModel().getTexturewidth();
+        texHeight = pojo.getGeometryModel().getTextureheight();
 
         List<Float> offset = pojo.getGeometryModel().getVisibleBoundsOffset();
         float offsetX = offset.get(0);
@@ -64,27 +64,23 @@ public class ModelBaseJson extends ModelBase {
             // 因为后面添加 parent 需要，所以先塞空对象，然后二次遍历再进行数据存储
             modelMap.put(bones.getName(), new ModelRenderer(this));
         }
-        //不要在循环里创建对象引用
-        String name = null;
-        @Nullable List<Float> rotation= null;
-        @Nullable String parent= null;
-        List<Float> uv= null,size= null;
-        ModelRenderer model= null;
-        boolean mirror= false;
-        float inflate= 0;
+
         // 开始往 ModelRenderer 实例里面塞数据
         for (BonesItem bones : pojo.getGeometryModel().getBones()) {
             // 骨骼名称，注意因为后面动画的需要，头部、手部、腿部等骨骼命名必须是固定死的
-        	name = bones.getName();
+            String name = bones.getName();
             // 旋转点，可能为空
-        	rotation = bones.getRotation();
+            @Nullable List<Float> rotation = bones.getRotation();
             // 父骨骼的名称，可能为空
-        	parent = bones.getParent();
+            @Nullable String parent = bones.getParent();
             // 塞进 HashMap 里面的模型对象
-        	model = modelMap.get(name);
+            ModelRenderer model = modelMap.get(name);
+
+            // 镜像参数
+            model.mirror = bones.isMirror();
 
             // 旋转点
-            model.setRotationPoint(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
+            model.setPos(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
 
             // Nullable 检查，设置旋转角度
             if (rotation != null) {
@@ -106,63 +102,27 @@ public class ModelBaseJson extends ModelBase {
 
             // 塞入 Cube List
             for (CubesItem cubes : bones.getCubes()) {
-                uv = cubes.getUv();
-                size = cubes.getSize();
-                mirror = cubes.isMirror();
-                inflate = cubes.getInflate();
-
-                model.cubeList.add(new ModelBoxFloat(model, uv.get(0), uv.get(1),
-                        convertOrigin(bones, cubes, 0), convertOrigin(bones, cubes, 1), convertOrigin(bones, cubes, 2),
-                        size.get(0), size.get(1), size.get(2), inflate, mirror));
+                List<Float> size = cubes.getSize();
+                boolean mirror = cubes.isMirror();
+                float inflate = cubes.getInflate();
+                model.addBox(convertOrigin(bones, cubes, 0), convertOrigin(bones, cubes, 1), convertOrigin(bones, cubes, 2),
+                        size.get(0), size.get(1), size.get(2), inflate, mirror);
             }
         }
     }
 
-    @Override
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+	@Override
+	public void renderToBuffer(MatrixStack p_225598_1_, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_,
+			float p_225598_5_, float p_225598_6_, float p_225598_7_, float p_225598_8_) {
         for (ModelRenderer model : shouldRender) {
-            model.render(scale);
+            model.render(p_225598_1_, p_225598_2_, p_225598_3_, p_225598_4_, p_225598_5_, p_225598_6_, p_225598_7_, p_225598_8_);
         }
-    }
-
+	}
+    
     private void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
-    }
-
-    public boolean hasBackpackPositioningModel() {
-        return modelMap.get("backpackPositioningBone") != null;
-    }
-
-    public ModelRenderer getBackpackPositioningModel() {
-        return modelMap.get("backpackPositioningBone");
-    }
-
-    public boolean hasArmPositioningModel(EnumHandSide side) {
-        ModelRenderer arm = (side == EnumHandSide.LEFT ? modelMap.get("armLeftPositioningBone") : modelMap.get("armRightPositioningBone"));
-        return arm != null;
-    }
-
-    public void postRenderArmPositioningModel(float scale, EnumHandSide side) {
-        ModelRenderer arm = (side == EnumHandSide.LEFT ? modelMap.get("armLeftPositioningBone") : modelMap.get("armRightPositioningBone"));
-        if (arm != null) {
-            arm.postRender(scale);
-        }
-    }
-
-    public void postRenderArm(float scale, EnumHandSide side) {
-        ModelRenderer arm = (side == EnumHandSide.LEFT ? modelMap.get("armLeft") : modelMap.get("armRight"));
-        if (arm != null) {
-            arm.postRender(scale);
-        }
-    }
-
-    public void postRenderCustomHead(float scale) {
-        ModelRenderer customHead = modelMap.get("head");
-        if (customHead != null) {
-            customHead.postRender(scale);
-        }
+        modelRenderer.xRot = x;
+        modelRenderer.yRot = y;
+        modelRenderer.zRot = z;
     }
 
     /**
@@ -213,4 +173,6 @@ public class ModelBaseJson extends ModelBase {
     private float convertRotation(float degree) {
         return (float) (degree * Math.PI / 180);
     }
+
+
 }

@@ -1,16 +1,13 @@
 package cn.mcmod_mmf.mmlib.client.model;
 
-import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.EnumHandSide;
+import net.minecraft.client.renderer.entity.model.BipedModel;
+import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import cn.mcmod_mmf.mmlib.client.model.pojo.BonesItem;
@@ -26,36 +23,37 @@ import java.util.List;
  * @author TartaricAcid
  * @date 2019/7/9 14:18
  **/
-@SideOnly(Side.CLIENT)
-public class ModelBipedJson extends ModelBiped {
+@OnlyIn(Dist.CLIENT)
+public class ModelBipedJson extends BipedModel<LivingEntity> {
     public final AxisAlignedBB renderBoundingBox;
     /**
      * 存储 ModelRender 子模型的 HashMap
      */
-    private final HashMap<String, ModelRenderer> modelMap = Maps.newHashMap();
+    protected final HashMap<String, ModelRenderer> modelMap = Maps.newHashMap();
     /**
      * 存储 Bones 的 HashMap，主要是给后面寻找父骨骼进行坐标转换用的
      */
-    private final HashMap<String, BonesItem> indexBones = Maps.newHashMap();
+    protected final HashMap<String, BonesItem> indexBones = Maps.newHashMap();
     /**
      * 哪些模型需要渲染。加载进父骨骼的子骨骼是不需要渲染的
+     * 大概用不着这个，所以注释掉了。
      */
-    private final List<ModelRenderer> shouldRender = Lists.newLinkedList();
-
+//    protected final List<ModelRenderer> shouldRender = Lists.newLinkedList();
+    
     public ModelBipedJson(CustomModelPOJO pojo) {
-
+    	super(1F);
         // 材质的长度、宽度
-        textureWidth = pojo.getGeometryModel().getTexturewidth();
-        textureHeight = pojo.getGeometryModel().getTextureheight();
+        texWidth = pojo.getGeometryModel().getTexturewidth();
+        texHeight = pojo.getGeometryModel().getTextureheight();
 
         //清理Biped骨架确保后续加载时骨架为空。
-        this.bipedHeadwear.cubeList.clear();
-        this.bipedHead.cubeList.clear();
-        this.bipedBody.cubeList.clear();
-        this.bipedLeftArm.cubeList.clear();
-        this.bipedRightArm.cubeList.clear();
-        this.bipedLeftLeg.cubeList.clear();
-        this.bipedRightLeg.cubeList.clear();
+        this.hat = new ModelRenderer(this);
+        this.head = new ModelRenderer(this);
+        this.body = new ModelRenderer(this);
+        this.leftArm = new ModelRenderer(this);
+        this.rightArm = new ModelRenderer(this);
+        this.leftLeg = new ModelRenderer(this);
+        this.rightLeg = new ModelRenderer(this);
         
         List<Float> offset = pojo.getGeometryModel().getVisibleBoundsOffset();
         float offsetX = offset.get(0);
@@ -64,14 +62,7 @@ public class ModelBipedJson extends ModelBiped {
         float width = pojo.getGeometryModel().getVisibleBoundsWidth() / 2.0f;
         float height = pojo.getGeometryModel().getVisibleBoundsHeight() / 2.0f;
         renderBoundingBox = new AxisAlignedBB(offsetX - width, offsetY - height, offsetZ - width, offsetX + width, offsetY + height, offsetZ + width);
-        //不要在循环里创建对象引用
-        String name = null;
-        @Nullable List<Float> rotation= null;
-        @Nullable String parent= null;
-        List<Float> uv= null,size= null;
-        ModelRenderer model= null;
-        boolean mirror= false;
-        float inflate= 0;
+        
         // 往 indexBones 里面注入数据，为后续坐标转换做参考
         for (BonesItem bones : pojo.getGeometryModel().getBones()) {
             // 塞索引，这是给后面坐标转换用的
@@ -84,50 +75,28 @@ public class ModelBipedJson extends ModelBiped {
         // 开始往 ModelRenderer 实例里面塞数据
         for (BonesItem bones : pojo.getGeometryModel().getBones()) {
             // 骨骼名称，注意因为后面动画的需要，头部、手部、腿部等骨骼命名必须是固定死的
-            name = bones.getName();
+            String name = bones.getName();
             // 旋转点，可能为空
-            rotation = bones.getRotation();
-
-            // 塞进 HashMap 里面的模型对象
-            model = modelMap.get(name);
-            
+            @Nullable List<Float> rotation = bones.getRotation();
             // 父骨骼的名称，可能为空
-            parent = bones.getParent();
-            
-            // 旋转点
-            model.setRotationPoint(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
+            @Nullable String parent = bones.getParent();
+            // 塞进 HashMap 里面的模型对象
+            ModelRenderer model = modelMap.get(name);
+            // 镜像参数
+            model.mirror = bones.isMirror();
 
+            // 旋转点
+            model.setPos(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
             // Nullable 检查，设置旋转角度
             if (rotation != null) {
                 setRotationAngle(model, convertRotation(rotation.get(0)), convertRotation(rotation.get(1)), convertRotation(rotation.get(2)));
             }
-            getShouldRender().add(this.bipedHead);
-            getShouldRender().add(this.bipedBody);
-            getShouldRender().add(this.bipedRightArm);
-            getShouldRender().add(this.bipedLeftArm);
-            getShouldRender().add(this.bipedRightLeg);
-            getShouldRender().add(this.bipedLeftLeg);
+            
             // Null 检查，进行父骨骼绑定，Biped模型需要绑定ModelBiped的模型，位置硬编码
             // 放过我愚蠢的else-if吧——射命丸
-            if (parent != null) {
-                modelMap.get(parent).addChild(model);
-            }else if(name.equals("head")||name.equals("bipedHead")){
-            	this.bipedHead.addChild(model);
-            }else if(name.equals("body")||name.equals("bipedBody")){
-            	this.bipedBody.addChild(model);
-            }else if(name.equals("armRight")||name.equals("bipedRightArm")){
-            	this.bipedRightArm.addChild(model);
-            }else if(name.equals("armLeft")||name.equals("bipedLeftArm")){
-            	this.bipedLeftArm.addChild(model);
-            }else if(name.equals("legRight")||name.equals("bipedRightLeg")){
-            	this.bipedRightLeg.addChild(model);
-            }else if(name.equals("legLeft")||name.equals("bipedLeftLeg")){
-            	this.bipedLeftLeg.addChild(model);
-            } else {
-                // 没有父骨骼的模型才进行渲染
-                getShouldRender().add(model);
-            }
-
+            // 四肢的旋转点清空并跟随父模型坐标。
+            setParentModelRender(model, name, parent);
+            
             // 我的天，Cubes 还能为空……
             if (bones.getCubes() == null) {
                 continue;
@@ -135,63 +104,42 @@ public class ModelBipedJson extends ModelBiped {
 
             // 塞入 Cube List
             for (CubesItem cubes : bones.getCubes()) {
-                uv = cubes.getUv();
-                size = cubes.getSize();
-                mirror = cubes.isMirror();
-                inflate = cubes.getInflate();
-
-                model.cubeList.add(new ModelBoxFloat(model, uv.get(0), uv.get(1),
-                        convertOrigin(bones, cubes, 0), convertOrigin(bones, cubes, 1), convertOrigin(bones, cubes, 2),
-                        size.get(0), size.get(1), size.get(2), inflate, mirror));
+            	List<Float> uv = cubes.getUv();
+                List<Float> size = cubes.getSize();
+                boolean mirror = cubes.isMirror();
+                float inflate = cubes.getInflate();
+                model.texOffs(uv.get(0).intValue(), uv.get(1).intValue()).addBox(convertOrigin(bones, cubes, 0), convertOrigin(bones, cubes, 1), convertOrigin(bones, cubes, 2),
+                        size.get(0), size.get(1), size.get(2), inflate, mirror);
             }
         }
     }
-
-    @Override
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-        for (ModelRenderer model : getShouldRender()) {
-            model.render(scale);
+    
+    protected void setParentModelRender(ModelRenderer model,String name, String parent) {
+        if (parent != null) {
+            modelMap.get(parent).addChild(model);
+        }else if(name.equals("head")||name.equals("bipedHead")){
+        	this.head.addChild(model);
+        }else if(name.equals("body")||name.equals("bipedBody")){
+        	this.body.addChild(model);
+        }else if(name.equals("armRight")||name.equals("bipedRightArm")){
+        	model.setPos(0, 0, 0);
+        	this.rightArm.addChild(model);
+        }else if(name.equals("armLeft")||name.equals("bipedLeftArm")){
+        	model.setPos(0, 0, 0);
+        	this.leftArm.addChild(model);
+        }else if(name.equals("legRight")||name.equals("bipedRightLeg")){
+        	model.setPos(0, 0, 0);
+        	this.rightLeg.addChild(model);
+        }else if(name.equals("legLeft")||name.equals("bipedLeftLeg")){
+        	model.setPos(0, 0, 0);
+        	this.leftLeg.addChild(model);
         }
     }
-
-    private void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
-    }
-
-    public boolean hasBackpackPositioningModel() {
-        return modelMap.get("backpackPositioningBone") != null;
-    }
-
-    public ModelRenderer getBackpackPositioningModel() {
-        return modelMap.get("backpackPositioningBone");
-    }
-
-    public boolean hasArmPositioningModel(EnumHandSide side) {
-        ModelRenderer arm = (side == EnumHandSide.LEFT ? modelMap.get("armLeftPositioningBone") : modelMap.get("armRightPositioningBone"));
-        return arm != null;
-    }
-
-    public void postRenderArmPositioningModel(float scale, EnumHandSide side) {
-        ModelRenderer arm = (side == EnumHandSide.LEFT ? modelMap.get("armLeftPositioningBone") : modelMap.get("armRightPositioningBone"));
-        if (arm != null) {
-            arm.postRender(scale);
-        }
-    }
-
-    public void postRenderArm(float scale, EnumHandSide side) {
-        ModelRenderer arm = (side == EnumHandSide.LEFT ? modelMap.get("armLeft") : modelMap.get("armRight"));
-        if (arm != null) {
-            arm.postRender(scale);
-        }
-    }
-
-    public void postRenderCustomHead(float scale) {
-        ModelRenderer customHead = modelMap.get("head");
-        if (customHead != null) {
-            customHead.postRender(scale);
-        }
+    
+    public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+        modelRenderer.xRot = x;
+        modelRenderer.yRot = y;
+        modelRenderer.zRot = z;
     }
 
     /**
@@ -243,7 +191,4 @@ public class ModelBipedJson extends ModelBiped {
         return (float) (degree * Math.PI / 180);
     }
 
-	public List<ModelRenderer> getShouldRender() {
-		return shouldRender;
-	}
 }

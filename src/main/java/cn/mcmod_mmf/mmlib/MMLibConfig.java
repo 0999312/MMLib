@@ -1,13 +1,17 @@
 package cn.mcmod_mmf.mmlib;
 
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.common.ForgeConfigSpec;
 
-@Config(modid="mm_lib")
-@EventBusSubscriber(modid="mm_lib")
 public class MMLibConfig {
-    @Config.LangKey("mm_lib.config.welcome_info")
-    @Config.RequiresMcRestart
-    @Config.Comment("Whether to enable Welcome Info.")
-    public static boolean info=true;
+    public static ForgeConfigSpec COMMON_CONFIG;
+    public static ForgeConfigSpec.BooleanValue INFO;
+
+    static {
+        ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
+        COMMON_BUILDER.comment("General settings").push("general");
+//        VALUE = COMMON_BUILDER.comment("Test config value").defineInRange("value", 10, 0, Integer.MAX_VALUE);
+        INFO = COMMON_BUILDER.comment("Whether to enable Welcome Info.").define("welcome_info", true);
+        COMMON_BUILDER.pop();
+        COMMON_CONFIG = COMMON_BUILDER.build();
+    }
 }

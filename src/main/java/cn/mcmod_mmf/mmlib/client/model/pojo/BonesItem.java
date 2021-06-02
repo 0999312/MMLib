@@ -5,46 +5,60 @@ import com.google.gson.annotations.SerializedName;
 import javax.annotation.Nullable;
 import java.util.List;
 
+
 public class BonesItem {
-	@SerializedName("cubes")
-	private List<CubesItem> cubes;
+    @SerializedName("cubes")
+    private List<CubesItem> cubes;
 
-	@SerializedName("name")
-	private String name;
+    @SerializedName("name")
+    private String name;
 
-	@SerializedName("pivot")
-	private List<Float> pivot;
+    @SerializedName("pivot")
+    private List<Float> pivot;
 
-	@SerializedName("rotation")
-	private List<Float> rotation;
+    @SerializedName("rotation")
+    private List<Float> rotation;
 
-	@SerializedName("parent")
-	private String parent;
+    @SerializedName("parent")
+    private String parent;
 
-	@Nullable
-	public List<CubesItem> getCubes() {
-		return cubes;
-	}
+    @SerializedName("mirror")
+    private boolean mirror = false;
 
-	public String getName() {
-		return name;
-	}
+    @Nullable
+    public List<CubesItem> getCubes() {
+        return cubes;
+    }
 
-	public List<Float> getPivot() {
-		return pivot;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public List<Float> getRotation() {
-		return rotation;
-	}
+    public List<Float> getPivot() {
+        return pivot;
+    }
 
-	public String getParent() {
-		return parent;
-	}
+    public List<Float> getRotation() {
+        return rotation;
+    }
 
-	@Override
-	public String toString() {
-		return "BonesItem{" + "cubes = '" + cubes + '\'' + ",name = '" + name + '\'' + ",pivot = '" + pivot + '\''
-				+ ",rotation = '" + rotation + '\'' + ",parent = '" + parent + '\'' + "}";
-	}
+    public String getParent() {
+        return parent;
+    }
+
+    public boolean isMirror() {
+        return mirror;
+    }
+
+    @Override
+    public String toString() {
+        return
+                "BonesItem{" +
+                        "cubes = '" + cubes + '\'' +
+                        ",name = '" + name + '\'' +
+                        ",pivot = '" + pivot + '\'' +
+                        ",rotation = '" + rotation + '\'' +
+                        ",parent = '" + parent + '\'' +
+                        "}";
+    }
 }
