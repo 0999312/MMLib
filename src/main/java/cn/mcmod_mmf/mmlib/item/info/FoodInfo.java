@@ -1,12 +1,20 @@
 package cn.mcmod_mmf.mmlib.item.info;
 
+import java.util.List;
+import java.util.function.Supplier;
+
+import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
+
+import net.minecraft.potion.EffectInstance;
+
 public class FoodInfo {
 	private final String name;
 	private final int amount;
 	private final float calories;
 	private final boolean isWolfFood;
 	private final boolean isAlwaysEat;
-	private final boolean isFastEat;
+	private final int eatTime;
 	//TFC-TNG FoodHandler parameters
 	private final float water;
 	private final float grain;
@@ -19,26 +27,28 @@ public class FoodInfo {
 	private final boolean heatable;
 	private final float heatCapacity;
 	private final float cookingTemp;
-
+	
+	private final List<Pair<Supplier<EffectInstance>, Float>> effects = Lists.newArrayList();
+	
 	public FoodInfo(String name,int amount,float calories,boolean iswolffood) {
 		this(name,amount, calories, iswolffood, 1f, 1f,0f,0f,0f,0f,1f,0f,0f);
 	}
 	
-	public FoodInfo(String name,int amount,float calories,boolean iswolffood,boolean isalways,boolean isfast) {
-		this(name,amount, calories, iswolffood, isalways, isfast, 1f, 1f,0f,0f,0f,0f,1f,0f,0f);
+	public FoodInfo(String name,int amount,float calories,boolean iswolffood,boolean isalways,int eatTime) {
+		this(name,amount, calories, iswolffood, isalways, eatTime, 1f, 1f,0f,0f,0f,0f,1f,0f,0f);
 	}
 	
 	public FoodInfo(String name,int amount,float calories,boolean iswolffood, float water, float grain, float fruit, float veg, float meat, float dairy, float decayModifier, float heatCapacity, float cookingTemp) {
-		this(name,amount, calories, iswolffood, false, false, water, grain, fruit, veg, meat, dairy, decayModifier, heatCapacity, cookingTemp);
+		this(name,amount, calories, iswolffood, false, 32, water, grain, fruit, veg, meat, dairy, decayModifier, heatCapacity, cookingTemp);
 	}
 	
-	public FoodInfo(String name,int amount,float calories,boolean iswolffood,boolean isalways,boolean isfast, float water, float grain, float fruit, float veg, float meat, float dairy, float decayModifier, float heatCapacity, float cookingTemp) {
+	public FoodInfo(String name,int amount,float calories,boolean iswolffood,boolean isalways,int time, float water, float grain, float fruit, float veg, float meat, float dairy, float decayModifier, float heatCapacity, float cookingTemp) {
 		this.name = name;
 		this.amount = amount;
 		this.calories = calories;
 		this.isWolfFood = iswolffood;
 		this.isAlwaysEat = isalways;
-		this.isFastEat = isfast;
+		this.eatTime = time;
 		
 		//TFC-TNG FoodHandler parameters
 		this.water = water;
@@ -101,9 +111,19 @@ public class FoodInfo {
 	public boolean isAlwaysEat() {
 		return isAlwaysEat;
 	}
-
-	public boolean isFastEat() {
-		return isFastEat;
+	
+	public int getEatTime() {
+		return eatTime;
 	}
+	
+	public FoodInfo addEffect(Supplier<EffectInstance> effectIn, float probability) {
+		this.effects.add(Pair.of(effectIn, probability));
+		return this;
+	}
+	
+	public List<Pair<Supplier<EffectInstance>, Float>> getEffects() {
+		return effects;
+	}
+
 
 }
