@@ -13,9 +13,10 @@ import com.google.common.collect.Maps;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 
+import cn.mcmod_mmf.mmlib.client.model.pojo.BedrockModelPOJO;
 import cn.mcmod_mmf.mmlib.client.model.pojo.BonesItem;
 import cn.mcmod_mmf.mmlib.client.model.pojo.CubesItem;
-import cn.mcmod_mmf.mmlib.client.model.pojo.CustomModelPOJO;
+import cn.mcmod_mmf.mmlib.client.model.pojo.Description;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.List;
  **/
 @OnlyIn(Dist.CLIENT)
 public class ModelBaseJson extends Model {
-    public final AxisAlignedBB renderBoundingBox;
+    public AxisAlignedBB renderBoundingBox;
     /**
      * 存储 ModelRender 子模型的 HashMap
      */
@@ -42,22 +43,34 @@ public class ModelBaseJson extends Model {
      */
     private final List<ModelRenderer> shouldRender = Lists.newLinkedList();
 
-    public ModelBaseJson(CustomModelPOJO pojo) {
+    public ModelBaseJson(BedrockModelPOJO pojo) {
     	super(RenderType::entityCutoutNoCull);
-        // 材质的长度、宽度
-        texWidth = pojo.getGeometryModel().getTexturewidth();
-        texHeight = pojo.getGeometryModel().getTextureheight();
+    	
+        if (pojo.getFormatVersion().equals("1.10.0")) {
+            loadLegacyModel(pojo);
+        }else if (pojo.getFormatVersion().equals("1.12.0")) {
+            loadNewModel(pojo);
+        }
+    }
+    
+    private void loadNewModel(BedrockModelPOJO pojo) {
+        assert pojo.getGeometryModelNew() != null;
 
-        List<Float> offset = pojo.getGeometryModel().getVisibleBoundsOffset();
+        Description description = pojo.getGeometryModelNew().getDescription();
+        // 材质的长度、宽度
+        texWidth = description.getTextureWidth();
+        texHeight = description.getTextureHeight();
+
+        List<Float> offset = description.getVisibleBoundsOffset();
         float offsetX = offset.get(0);
         float offsetY = offset.get(1);
         float offsetZ = offset.get(2);
-        float width = pojo.getGeometryModel().getVisibleBoundsWidth() / 2.0f;
-        float height = pojo.getGeometryModel().getVisibleBoundsHeight() / 2.0f;
+        float width = description.getVisibleBoundsWidth() / 2.0f;
+        float height = description.getVisibleBoundsHeight() / 2.0f;
         renderBoundingBox = new AxisAlignedBB(offsetX - width, offsetY - height, offsetZ - width, offsetX + width, offsetY + height, offsetZ + width);
 
         // 往 indexBones 里面注入数据，为后续坐标转换做参考
-        for (BonesItem bones : pojo.getGeometryModel().getBones()) {
+        for (BonesItem bones : pojo.getGeometryModelNew().getBones()) {
             // 塞索引，这是给后面坐标转换用的
             indexBones.put(bones.getName(), bones);
             // 塞入新建的空 ModelRenderer 实例
@@ -66,7 +79,7 @@ public class ModelBaseJson extends Model {
         }
 
         // 开始往 ModelRenderer 实例里面塞数据
-        for (BonesItem bones : pojo.getGeometryModel().getBones()) {
+        for (BonesItem bones : pojo.getGeometryModelNew().getBones()) {
             // 骨骼名称，注意因为后面动画的需要，头部、手部、腿部等骨骼命名必须是固定死的
             String name = bones.getName();
             // 旋转点，可能为空
@@ -101,15 +114,111 @@ public class ModelBaseJson extends Model {
             }
 
             // 塞入 Cube List
-            for (CubesItem cubes : bones.getCubes()) {
-                List<Float> size = cubes.getSize();
-                boolean mirror = cubes.isMirror();
-                float inflate = cubes.getInflate();
-                model.addBox(convertOrigin(bones, cubes, 0), convertOrigin(bones, cubes, 1), convertOrigin(bones, cubes, 2),
-                        size.get(0), size.get(1), size.get(2), inflate, mirror);
+            for (CubesItem cube : bones.getCubes()) {
+                List<Float> uv = cube.getUv();
+                List<Float> size = cube.getSize();
+                @Nullable List<Float> cubeRotation = cube.getRotation();
+                boolean mirror = cube.isMirror();
+                float inflate = cube.getInflate();
+
+                // 当做普通 cube 存入
+                if (cubeRotation == null) {
+                    model.cubes.add(new ModelFloatBox(uv.get(0), uv.get(1),
+                            convertOrigin(bones, cube, 0), convertOrigin(bones, cube, 1), convertOrigin(bones, cube, 2),
+                            size.get(0), size.get(1), size.get(2), inflate, inflate, inflate, mirror,
+                            texWidth, texHeight));
+                }
+                // 创建 Cube ModelRender
+                else {
+                    ModelRenderer cubeRenderer = new ModelRenderer(this);
+                    cubeRenderer.setPos(convertPivot(bones, cube, 0), convertPivot(bones, cube, 1), convertPivot(bones, cube, 2));
+                    setRotationAngle(cubeRenderer, convertRotation(cubeRotation.get(0)), convertRotation(cubeRotation.get(1)), convertRotation(cubeRotation.get(2)));
+                    cubeRenderer.cubes.add(new ModelFloatBox(uv.get(0), uv.get(1),
+                            convertOrigin(cube, 0), convertOrigin(cube, 1), convertOrigin(cube, 2),
+                            size.get(0), size.get(1), size.get(2), inflate, inflate, inflate, mirror,
+                            texWidth, texHeight));
+
+                    // 添加进父骨骼中
+                    model.addChild(cubeRenderer);
+                }
             }
         }
     }
+
+    private void loadLegacyModel(BedrockModelPOJO pojo) {
+        assert pojo.getGeometryModelLegacy() != null;
+
+        // 材质的长度、宽度
+        texWidth = pojo.getGeometryModelLegacy().getTextureWidth();
+        texHeight = pojo.getGeometryModelLegacy().getTextureHeight();
+
+        List<Float> offset = pojo.getGeometryModelLegacy().getVisibleBoundsOffset();
+        float offsetX = offset.get(0);
+        float offsetY = offset.get(1);
+        float offsetZ = offset.get(2);
+        float width = pojo.getGeometryModelLegacy().getVisibleBoundsWidth() / 2.0f;
+        float height = pojo.getGeometryModelLegacy().getVisibleBoundsHeight() / 2.0f;
+        renderBoundingBox = new AxisAlignedBB(offsetX - width, offsetY - height, offsetZ - width, offsetX + width, offsetY + height, offsetZ + width);
+
+        // 往 indexBones 里面注入数据，为后续坐标转换做参考
+        for (BonesItem bones : pojo.getGeometryModelLegacy().getBones()) {
+            // 塞索引，这是给后面坐标转换用的
+            indexBones.put(bones.getName(), bones);
+            // 塞入新建的空 ModelRenderer 实例
+            // 因为后面添加 parent 需要，所以先塞空对象，然后二次遍历再进行数据存储
+            modelMap.put(bones.getName(), new ModelRenderer(this));
+        }
+
+        // 开始往 ModelRenderer 实例里面塞数据
+        for (BonesItem bones : pojo.getGeometryModelLegacy().getBones()) {
+            // 骨骼名称，注意因为后面动画的需要，头部、手部、腿部等骨骼命名必须是固定死的
+            String name = bones.getName();
+            // 旋转点，可能为空
+            @Nullable List<Float> rotation = bones.getRotation();
+            // 父骨骼的名称，可能为空
+            @Nullable String parent = bones.getParent();
+            // 塞进 HashMap 里面的模型对象
+            ModelRenderer model = modelMap.get(name);
+
+            // 镜像参数
+            model.mirror = bones.isMirror();
+
+            // 旋转点
+            model.setPos(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
+
+            // Nullable 检查，设置旋转角度
+            if (rotation != null) {
+                setRotationAngle(model, convertRotation(rotation.get(0)), convertRotation(rotation.get(1)), convertRotation(rotation.get(2)));
+            }
+
+            // Null 检查，进行父骨骼绑定
+            if (parent != null) {
+                modelMap.get(parent).addChild(model);
+            } else {
+                // 没有父骨骼的模型才进行渲染
+                shouldRender.add(model);
+            }
+
+            // 我的天，Cubes 还能为空……
+            if (bones.getCubes() == null) {
+                continue;
+            }
+
+            // 塞入 Cube List
+            for (CubesItem cube : bones.getCubes()) {
+                List<Float> uv = cube.getUv();
+                List<Float> size = cube.getSize();
+                boolean mirror = cube.isMirror();
+                float inflate = cube.getInflate();
+
+                model.cubes.add(new ModelFloatBox(uv.get(0), uv.get(1),
+                        convertOrigin(bones, cube, 0), convertOrigin(bones, cube, 1), convertOrigin(bones, cube, 2),
+                        size.get(0), size.get(1), size.get(2), inflate, inflate, inflate, mirror,
+                        texWidth, texHeight));
+            }
+        }
+    }
+
 
 	@Override
 	public void renderToBuffer(MatrixStack p_225598_1_, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_,
@@ -142,13 +251,25 @@ public class ModelBaseJson extends Model {
         if (bones.getParent() != null) {
             if (index == 1) {
                 return indexBones.get(bones.getParent()).getPivot().get(index) - bones.getPivot().get(index);
+            } else {
+                return bones.getPivot().get(index) - indexBones.get(bones.getParent()).getPivot().get(index);
             }
-			return bones.getPivot().get(index) - indexBones.get(bones.getParent()).getPivot().get(index);
+        } else {
+            if (index == 1) {
+                return 24 - bones.getPivot().get(index);
+            } else {
+                return bones.getPivot().get(index);
+            }
         }
-		if (index == 1) {
-		    return 24 - bones.getPivot().get(index);
-		}
-		return bones.getPivot().get(index);
+    }
+
+    private float convertPivot(BonesItem parent, CubesItem cube, int index) {
+        assert cube.getPivot() != null;
+        if (index == 1) {
+            return parent.getPivot().get(index) - cube.getPivot().get(index);
+        } else {
+            return cube.getPivot().get(index) - parent.getPivot().get(index);
+        }
     }
 
     /**
@@ -160,11 +281,21 @@ public class ModelBaseJson extends Model {
      *
      * @param index 是 xyz 的哪一个，x 是 0，y 是 1，z 是 2
      */
-    private float convertOrigin(BonesItem bones, CubesItem cubes, int index) {
+    private float convertOrigin(BonesItem bone, CubesItem cube, int index) {
         if (index == 1) {
-            return bones.getPivot().get(index) - cubes.getOrigin().get(index) - cubes.getSize().get(index);
+            return bone.getPivot().get(index) - cube.getOrigin().get(index) - cube.getSize().get(index);
+        } else {
+            return cube.getOrigin().get(index) - bone.getPivot().get(index);
         }
-		return cubes.getOrigin().get(index) - bones.getPivot().get(index);
+    }
+
+    private float convertOrigin(CubesItem cube, int index) {
+        assert cube.getPivot() != null;
+        if (index == 1) {
+            return cube.getPivot().get(index) - cube.getOrigin().get(index) - cube.getSize().get(index);
+        } else {
+            return cube.getOrigin().get(index) - cube.getPivot().get(index);
+        }
     }
 
     /**
@@ -173,6 +304,7 @@ public class ModelBaseJson extends Model {
     private float convertRotation(float degree) {
         return (float) (degree * Math.PI / 180);
     }
+
 
 
 }

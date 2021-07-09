@@ -3,7 +3,7 @@ package cn.mcmod_mmf.mmlib.client.model;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 
-import cn.mcmod_mmf.mmlib.client.model.pojo.CustomModelPOJO;
+import cn.mcmod_mmf.mmlib.client.model.pojo.BedrockModelPOJO;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ArmorStandEntity;
@@ -13,7 +13,7 @@ public class ModelArmorJson extends ModelBipedJson {
 	protected final EquipmentSlotType slot;
 	public ModelRenderer bootRight;
 	public ModelRenderer bootLeft;
-	public ModelArmorJson(CustomModelPOJO pojo,EquipmentSlotType slot) {
+	public ModelArmorJson(BedrockModelPOJO pojo,EquipmentSlotType slot) {
 		super(pojo);
 		this.slot = slot;
 		this.bootRight = new ModelRenderer(this);

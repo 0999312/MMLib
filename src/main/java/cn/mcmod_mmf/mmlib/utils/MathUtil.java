@@ -18,5 +18,13 @@ public class MathUtil {
 	public static double lerp(double pct, double start, double end) {
 		return start + pct * (end - start);
 	}
+	
+	public static double sinValueIn(double a, double x) {
+		return a * Math.sin(Math.toRadians(x));
+	}
+	
+	public static double cosValueIn(double a, double x) {
+		return a * Math.cos(Math.toRadians(x));
+	}
 
 }
