@@ -14,12 +14,10 @@ import com.google.common.collect.Maps;
 
 import cn.mcmod_mmf.mmlib.Main;
 import cn.mcmod_mmf.mmlib.client.model.ModelArmorJson;
-import cn.mcmod_mmf.mmlib.client.model.ModelBaseJson;
 import cn.mcmod_mmf.mmlib.client.model.ModelBipedJson;
 import cn.mcmod_mmf.mmlib.client.model.pojo.BedrockModelPOJO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.model.Model;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.resources.IResourceManager;
@@ -83,12 +81,6 @@ public class ClientUtil {
 		if(MODEL_MAP.containsKey(modelLocation))
 			return MODEL_MAP.get(modelLocation);
 		return null;
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	public static Model getModelBaseFromJSON(ResourceLocation modelLocation) {
-		Model model = new ModelBaseJson(getModelPOJO(modelLocation));
-		return model;
 	}
 
 	@OnlyIn(Dist.CLIENT)

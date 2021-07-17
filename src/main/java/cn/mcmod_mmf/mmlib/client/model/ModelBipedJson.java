@@ -15,6 +15,7 @@ import cn.mcmod_mmf.mmlib.client.model.pojo.BonesItem;
 import cn.mcmod_mmf.mmlib.client.model.pojo.CubesItem;
 import cn.mcmod_mmf.mmlib.client.model.pojo.Description;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,6 +32,11 @@ public class ModelBipedJson extends BipedModel<LivingEntity> {
      * 存储 ModelRender 子模型的 HashMap
      */
     protected final HashMap<String, ModelRenderer> modelMap = Maps.newHashMap();
+    
+    public HashMap<String, ModelRenderer> getModelMap() {
+		return (HashMap<String, ModelRenderer>) Collections.unmodifiableMap(modelMap);
+	}
+    
     /**
      * 存储 Bones 的 HashMap，主要是给后面寻找父骨骼进行坐标转换用的
      */

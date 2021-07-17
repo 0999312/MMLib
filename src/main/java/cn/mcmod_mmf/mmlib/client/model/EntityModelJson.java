@@ -1,8 +1,9 @@
 package cn.mcmod_mmf.mmlib.client.model;
 
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.Model;
+import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -18,6 +19,7 @@ import cn.mcmod_mmf.mmlib.client.model.pojo.BonesItem;
 import cn.mcmod_mmf.mmlib.client.model.pojo.CubesItem;
 import cn.mcmod_mmf.mmlib.client.model.pojo.Description;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,13 +30,18 @@ import java.util.List;
  * @date 2019/7/9 14:18
  **/
 @OnlyIn(Dist.CLIENT)
-public class ModelBaseJson extends Model {
+public class EntityModelJson<T extends Entity> extends EntityModel<T> {
     public AxisAlignedBB renderBoundingBox;
     /**
      * 存储 ModelRender 子模型的 HashMap
      */
     private final HashMap<String, ModelRenderer> modelMap = Maps.newHashMap();
-    /**
+
+    public HashMap<String, ModelRenderer> getModelMap() {
+		return (HashMap<String, ModelRenderer>) Collections.unmodifiableMap(modelMap);
+	}
+
+	/**
      * 存储 Bones 的 HashMap，主要是给后面寻找父骨骼进行坐标转换用的
      */
     private final HashMap<String, BonesItem> indexBones = Maps.newHashMap();
@@ -43,7 +50,7 @@ public class ModelBaseJson extends Model {
      */
     private final List<ModelRenderer> shouldRender = Lists.newLinkedList();
 
-    public ModelBaseJson(BedrockModelPOJO pojo) {
+    public EntityModelJson(BedrockModelPOJO pojo) {
     	super(RenderType::entityCutoutNoCull);
     	
         if (pojo.getFormatVersion().equals("1.10.0")) {
@@ -304,6 +311,13 @@ public class ModelBaseJson extends Model {
     private float convertRotation(float degree) {
         return (float) (degree * Math.PI / 180);
     }
+
+	@Override
+	public void setupAnim(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_,
+			float p_225597_6_) {
+		// TODO Auto-generated method stub
+		
+	}
 
 
 
