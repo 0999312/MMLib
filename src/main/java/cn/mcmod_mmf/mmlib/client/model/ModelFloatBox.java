@@ -4,8 +4,10 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.Direction;
 
 public class ModelFloatBox extends ModelRenderer.ModelBox {
-    public ModelFloatBox(float texOffX, float texOffY, float x, float y, float z, float width, float height, float depth, float deltaX, float deltaY, float deltaZ, boolean mirorIn, float texWidth, float texHeight) {
-        super((int) texOffX, (int) texOffY, x, y, z, width, height, depth, deltaX, deltaY, deltaZ, mirorIn, texWidth, texHeight);
+    public ModelFloatBox(float texOffX, float texOffY, float x, float y, float z, float width, float height,
+            float depth, float deltaX, float deltaY, float deltaZ, boolean mirorIn, float texWidth, float texHeight) {
+        super((int) texOffX, (int) texOffY, x, y, z, width, height, depth, deltaX, deltaY, deltaZ, mirorIn, texWidth,
+                texHeight);
 
         this.minX = x;
         this.minY = y;
@@ -52,11 +54,23 @@ public class ModelFloatBox extends ModelRenderer.ModelBox {
         float f11 = texOffY + dz;
         float f12 = texOffY + dz + dy;
 
-        this.polygons[2] = new ModelRenderer.TexturedQuad(new ModelRenderer.PositionTextureVertex[]{vertex6, vertex5, vertex1, vertex2}, f5, texOffY, f6, f11, texWidth, texHeight, mirorIn, Direction.DOWN);
-        this.polygons[3] = new ModelRenderer.TexturedQuad(new ModelRenderer.PositionTextureVertex[]{vertex3, vertex4, vertex8, vertex7}, f6, f11, f7, texOffY, texWidth, texHeight, mirorIn, Direction.UP);
-        this.polygons[1] = new ModelRenderer.TexturedQuad(new ModelRenderer.PositionTextureVertex[]{vertex1, vertex5, vertex8, vertex4}, texOffX, f11, f5, f12, texWidth, texHeight, mirorIn, Direction.WEST);
-        this.polygons[4] = new ModelRenderer.TexturedQuad(new ModelRenderer.PositionTextureVertex[]{vertex2, vertex1, vertex4, vertex3}, f5, f11, f6, f12, texWidth, texHeight, mirorIn, Direction.NORTH);
-        this.polygons[0] = new ModelRenderer.TexturedQuad(new ModelRenderer.PositionTextureVertex[]{vertex6, vertex2, vertex3, vertex7}, f6, f11, f8, f12, texWidth, texHeight, mirorIn, Direction.EAST);
-        this.polygons[5] = new ModelRenderer.TexturedQuad(new ModelRenderer.PositionTextureVertex[]{vertex5, vertex6, vertex7, vertex8}, f8, f11, f9, f12, texWidth, texHeight, mirorIn, Direction.SOUTH);
+        this.polygons[2] = new ModelRenderer.TexturedQuad(
+                new ModelRenderer.PositionTextureVertex[] { vertex6, vertex5, vertex1, vertex2 }, f5, texOffY, f6, f11,
+                texWidth, texHeight, mirorIn, Direction.DOWN);
+        this.polygons[3] = new ModelRenderer.TexturedQuad(
+                new ModelRenderer.PositionTextureVertex[] { vertex3, vertex4, vertex8, vertex7 }, f6, f11, f7, texOffY,
+                texWidth, texHeight, mirorIn, Direction.UP);
+        this.polygons[1] = new ModelRenderer.TexturedQuad(
+                new ModelRenderer.PositionTextureVertex[] { vertex1, vertex5, vertex8, vertex4 }, texOffX, f11, f5, f12,
+                texWidth, texHeight, mirorIn, Direction.WEST);
+        this.polygons[4] = new ModelRenderer.TexturedQuad(
+                new ModelRenderer.PositionTextureVertex[] { vertex2, vertex1, vertex4, vertex3 }, f5, f11, f6, f12,
+                texWidth, texHeight, mirorIn, Direction.NORTH);
+        this.polygons[0] = new ModelRenderer.TexturedQuad(
+                new ModelRenderer.PositionTextureVertex[] { vertex6, vertex2, vertex3, vertex7 }, f6, f11, f8, f12,
+                texWidth, texHeight, mirorIn, Direction.EAST);
+        this.polygons[5] = new ModelRenderer.TexturedQuad(
+                new ModelRenderer.PositionTextureVertex[] { vertex5, vertex6, vertex7, vertex8 }, f8, f11, f9, f12,
+                texWidth, texHeight, mirorIn, Direction.SOUTH);
     }
 }

@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import javax.annotation.Nullable;
 import java.util.List;
 
-
 public class BonesItem {
     @SerializedName("cubes")
     private List<CubesItem> cubes;
@@ -52,13 +51,7 @@ public class BonesItem {
 
     @Override
     public String toString() {
-        return
-                "BonesItem{" +
-                        "cubes = '" + cubes + '\'' +
-                        ",name = '" + name + '\'' +
-                        ",pivot = '" + pivot + '\'' +
-                        ",rotation = '" + rotation + '\'' +
-                        ",parent = '" + parent + '\'' +
-                        "}";
+        return "BonesItem{" + "cubes = '" + cubes + '\'' + ",name = '" + name + '\'' + ",pivot = '" + pivot + '\''
+                + ",rotation = '" + rotation + '\'' + ",parent = '" + parent + '\'' + "}";
     }
 }

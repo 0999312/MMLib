@@ -38,10 +38,10 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
     private final HashMap<String, ModelRenderer> modelMap = Maps.newHashMap();
 
     public HashMap<String, ModelRenderer> getModelMap() {
-		return (HashMap<String, ModelRenderer>) Collections.unmodifiableMap(modelMap);
-	}
+        return (HashMap<String, ModelRenderer>) Collections.unmodifiableMap(modelMap);
+    }
 
-	/**
+    /**
      * 存储 Bones 的 HashMap，主要是给后面寻找父骨骼进行坐标转换用的
      */
     private final HashMap<String, BonesItem> indexBones = Maps.newHashMap();
@@ -51,15 +51,15 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
     private final List<ModelRenderer> shouldRender = Lists.newLinkedList();
 
     public EntityModelJson(BedrockModelPOJO pojo) {
-    	super(RenderType::entityCutoutNoCull);
-    	
+        super(RenderType::entityCutoutNoCull);
+
         if (pojo.getFormatVersion().equals("1.10.0")) {
             loadLegacyModel(pojo);
-        }else if (pojo.getFormatVersion().equals("1.12.0")) {
+        } else if (pojo.getFormatVersion().equals("1.12.0")) {
             loadNewModel(pojo);
         }
     }
-    
+
     private void loadNewModel(BedrockModelPOJO pojo) {
         assert pojo.getGeometryModelNew() != null;
 
@@ -74,7 +74,8 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
         float offsetZ = offset.get(2);
         float width = description.getVisibleBoundsWidth() / 2.0f;
         float height = description.getVisibleBoundsHeight() / 2.0f;
-        renderBoundingBox = new AxisAlignedBB(offsetX - width, offsetY - height, offsetZ - width, offsetX + width, offsetY + height, offsetZ + width);
+        renderBoundingBox = new AxisAlignedBB(offsetX - width, offsetY - height, offsetZ - width, offsetX + width,
+                offsetY + height, offsetZ + width);
 
         // 往 indexBones 里面注入数据，为后续坐标转换做参考
         for (BonesItem bones : pojo.getGeometryModelNew().getBones()) {
@@ -90,9 +91,11 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
             // 骨骼名称，注意因为后面动画的需要，头部、手部、腿部等骨骼命名必须是固定死的
             String name = bones.getName();
             // 旋转点，可能为空
-            @Nullable List<Float> rotation = bones.getRotation();
+            @Nullable
+            List<Float> rotation = bones.getRotation();
             // 父骨骼的名称，可能为空
-            @Nullable String parent = bones.getParent();
+            @Nullable
+            String parent = bones.getParent();
             // 塞进 HashMap 里面的模型对象
             ModelRenderer model = modelMap.get(name);
 
@@ -104,7 +107,8 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
 
             // Nullable 检查，设置旋转角度
             if (rotation != null) {
-                setRotationAngle(model, convertRotation(rotation.get(0)), convertRotation(rotation.get(1)), convertRotation(rotation.get(2)));
+                setRotationAngle(model, convertRotation(rotation.get(0)), convertRotation(rotation.get(1)),
+                        convertRotation(rotation.get(2)));
             }
 
             // Null 检查，进行父骨骼绑定
@@ -124,26 +128,27 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
             for (CubesItem cube : bones.getCubes()) {
                 List<Float> uv = cube.getUv();
                 List<Float> size = cube.getSize();
-                @Nullable List<Float> cubeRotation = cube.getRotation();
+                @Nullable
+                List<Float> cubeRotation = cube.getRotation();
                 boolean mirror = cube.isMirror();
                 float inflate = cube.getInflate();
 
                 // 当做普通 cube 存入
                 if (cubeRotation == null) {
-                    model.cubes.add(new ModelFloatBox(uv.get(0), uv.get(1),
-                            convertOrigin(bones, cube, 0), convertOrigin(bones, cube, 1), convertOrigin(bones, cube, 2),
-                            size.get(0), size.get(1), size.get(2), inflate, inflate, inflate, mirror,
-                            texWidth, texHeight));
+                    model.cubes.add(new ModelFloatBox(uv.get(0), uv.get(1), convertOrigin(bones, cube, 0),
+                            convertOrigin(bones, cube, 1), convertOrigin(bones, cube, 2), size.get(0), size.get(1),
+                            size.get(2), inflate, inflate, inflate, mirror, texWidth, texHeight));
                 }
                 // 创建 Cube ModelRender
                 else {
                     ModelRenderer cubeRenderer = new ModelRenderer(this);
-                    cubeRenderer.setPos(convertPivot(bones, cube, 0), convertPivot(bones, cube, 1), convertPivot(bones, cube, 2));
-                    setRotationAngle(cubeRenderer, convertRotation(cubeRotation.get(0)), convertRotation(cubeRotation.get(1)), convertRotation(cubeRotation.get(2)));
-                    cubeRenderer.cubes.add(new ModelFloatBox(uv.get(0), uv.get(1),
-                            convertOrigin(cube, 0), convertOrigin(cube, 1), convertOrigin(cube, 2),
-                            size.get(0), size.get(1), size.get(2), inflate, inflate, inflate, mirror,
-                            texWidth, texHeight));
+                    cubeRenderer.setPos(convertPivot(bones, cube, 0), convertPivot(bones, cube, 1),
+                            convertPivot(bones, cube, 2));
+                    setRotationAngle(cubeRenderer, convertRotation(cubeRotation.get(0)),
+                            convertRotation(cubeRotation.get(1)), convertRotation(cubeRotation.get(2)));
+                    cubeRenderer.cubes.add(new ModelFloatBox(uv.get(0), uv.get(1), convertOrigin(cube, 0),
+                            convertOrigin(cube, 1), convertOrigin(cube, 2), size.get(0), size.get(1), size.get(2),
+                            inflate, inflate, inflate, mirror, texWidth, texHeight));
 
                     // 添加进父骨骼中
                     model.addChild(cubeRenderer);
@@ -165,7 +170,8 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
         float offsetZ = offset.get(2);
         float width = pojo.getGeometryModelLegacy().getVisibleBoundsWidth() / 2.0f;
         float height = pojo.getGeometryModelLegacy().getVisibleBoundsHeight() / 2.0f;
-        renderBoundingBox = new AxisAlignedBB(offsetX - width, offsetY - height, offsetZ - width, offsetX + width, offsetY + height, offsetZ + width);
+        renderBoundingBox = new AxisAlignedBB(offsetX - width, offsetY - height, offsetZ - width, offsetX + width,
+                offsetY + height, offsetZ + width);
 
         // 往 indexBones 里面注入数据，为后续坐标转换做参考
         for (BonesItem bones : pojo.getGeometryModelLegacy().getBones()) {
@@ -181,9 +187,11 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
             // 骨骼名称，注意因为后面动画的需要，头部、手部、腿部等骨骼命名必须是固定死的
             String name = bones.getName();
             // 旋转点，可能为空
-            @Nullable List<Float> rotation = bones.getRotation();
+            @Nullable
+            List<Float> rotation = bones.getRotation();
             // 父骨骼的名称，可能为空
-            @Nullable String parent = bones.getParent();
+            @Nullable
+            String parent = bones.getParent();
             // 塞进 HashMap 里面的模型对象
             ModelRenderer model = modelMap.get(name);
 
@@ -195,7 +203,8 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
 
             // Nullable 检查，设置旋转角度
             if (rotation != null) {
-                setRotationAngle(model, convertRotation(rotation.get(0)), convertRotation(rotation.get(1)), convertRotation(rotation.get(2)));
+                setRotationAngle(model, convertRotation(rotation.get(0)), convertRotation(rotation.get(1)),
+                        convertRotation(rotation.get(2)));
             }
 
             // Null 检查，进行父骨骼绑定
@@ -218,23 +227,22 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
                 boolean mirror = cube.isMirror();
                 float inflate = cube.getInflate();
 
-                model.cubes.add(new ModelFloatBox(uv.get(0), uv.get(1),
-                        convertOrigin(bones, cube, 0), convertOrigin(bones, cube, 1), convertOrigin(bones, cube, 2),
-                        size.get(0), size.get(1), size.get(2), inflate, inflate, inflate, mirror,
-                        texWidth, texHeight));
+                model.cubes.add(new ModelFloatBox(uv.get(0), uv.get(1), convertOrigin(bones, cube, 0),
+                        convertOrigin(bones, cube, 1), convertOrigin(bones, cube, 2), size.get(0), size.get(1),
+                        size.get(2), inflate, inflate, inflate, mirror, texWidth, texHeight));
             }
         }
     }
 
-
-	@Override
-	public void renderToBuffer(MatrixStack p_225598_1_, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_,
-			float p_225598_5_, float p_225598_6_, float p_225598_7_, float p_225598_8_) {
+    @Override
+    public void renderToBuffer(MatrixStack p_225598_1_, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_,
+            float p_225598_5_, float p_225598_6_, float p_225598_7_, float p_225598_8_) {
         for (ModelRenderer model : shouldRender) {
-            model.render(p_225598_1_, p_225598_2_, p_225598_3_, p_225598_4_, p_225598_5_, p_225598_6_, p_225598_7_, p_225598_8_);
+            model.render(p_225598_1_, p_225598_2_, p_225598_3_, p_225598_4_, p_225598_5_, p_225598_6_, p_225598_7_,
+                    p_225598_8_);
         }
-	}
-    
+    }
+
     private void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
         modelRenderer.xRot = x;
         modelRenderer.yRot = y;
@@ -280,8 +288,7 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
     }
 
     /**
-     * 基岩版和 Java 版本的方块起始坐标也不一致，Java 是相对坐标，而且 y 值方向不一致。
-     * 基岩版是绝对坐标，而且 y 方向朝上。
+     * 基岩版和 Java 版本的方块起始坐标也不一致，Java 是相对坐标，而且 y 值方向不一致。 基岩版是绝对坐标，而且 y 方向朝上。
      * 其实两者规律很简单，但是我找了一下午，才明白咋回事。
      * <li>如果是 x，z 轴，那么只需要方块起始坐标减去旋转点坐标
      * <li>如果是 y 轴，旋转点坐标减去方块起始坐标，再减去方块的 y 长度
@@ -312,13 +319,11 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
         return (float) (degree * Math.PI / 180);
     }
 
-	@Override
-	public void setupAnim(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_,
-			float p_225597_6_) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void setupAnim(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_,
+            float p_225597_6_) {
+        // TODO Auto-generated method stub
 
-
+    }
 
 }

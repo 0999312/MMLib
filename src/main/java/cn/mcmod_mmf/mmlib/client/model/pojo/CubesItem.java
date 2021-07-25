@@ -49,7 +49,7 @@ public class CubesItem {
     public List<Float> getOrigin() {
         return origin;
     }
-
+    
     @Nullable
     public List<Float> getRotation() {
         return rotation;
