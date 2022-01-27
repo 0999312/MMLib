@@ -1,23 +1,23 @@
 package cn.mcmod_mmf.mmlib;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.play.server.SPlaySoundPacket;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -57,12 +57,13 @@ public class Main {
             april_first = true;
         if (MMLibConfig.INFO.get()) {
             String key = april_first ? "mm_lib.info.welcome_foolish" : "mm_lib.info.welcome";
-            ITextComponent component = new TranslationTextComponent(key, event.getPlayer().getName().getString());
+            Component component = new TranslatableComponent(key, event.getPlayer().getName().getString());
             event.getPlayer().sendMessage(component, event.getPlayer().getUUID());
             if (april_first) {
-                if (event.getPlayer() instanceof ServerPlayerEntity) {
-                    ((ServerPlayerEntity) event.getPlayer()).connection.send(new SPlaySoundPacket(
-                            presented_by_zaia.getId(), SoundCategory.PLAYERS, event.getPlayer().position(), 1F, 1F));
+                if (event.getPlayer() instanceof ServerPlayer) {
+                    ((ServerPlayer) event.getPlayer()).connection.send(new ClientboundSoundPacket(
+                            presented_by_zaia.get(), SoundSource.PLAYERS, event.getPlayer().getX(),
+                            event.getPlayer().getY(), event.getPlayer().getZ(), 1F, 1F));
                 }
             }
         }

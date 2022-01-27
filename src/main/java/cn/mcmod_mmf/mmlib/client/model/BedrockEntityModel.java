@@ -1,89 +1,78 @@
 package cn.mcmod_mmf.mmlib.client.model;
 
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import java.util.HashMap;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import cn.mcmod_mmf.mmlib.client.model.pojo.BedrockModelPOJO;
 import cn.mcmod_mmf.mmlib.client.model.pojo.BonesItem;
 import cn.mcmod_mmf.mmlib.client.model.pojo.CubesItem;
 import cn.mcmod_mmf.mmlib.client.model.pojo.Description;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.world.entity.Entity;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+public class BedrockEntityModel<T extends Entity> extends EntityModel<T> {
+    private final ModelPart root;
 
-/**
- * 通过解析基岩版 JSON 实体模型得到的 POJO，将其转换为 ModelBase 类
- *
- * @author TartaricAcid
- * @date 2019/7/9 14:18
- **/
-@OnlyIn(Dist.CLIENT)
-public class EntityModelJson<T extends Entity> extends EntityModel<T> {
-    public AxisAlignedBB renderBoundingBox;
-    /**
-     * 存储 ModelRender 子模型的 HashMap
-     */
-    private final HashMap<String, ModelRenderer> modelMap = Maps.newHashMap();
-
-    public HashMap<String, ModelRenderer> getModelMap() {
-        return (HashMap<String, ModelRenderer>) Collections.unmodifiableMap(modelMap);
+    public BedrockEntityModel(ModelPart root) {
+        this.root = root;
     }
 
     /**
      * 存储 Bones 的 HashMap，主要是给后面寻找父骨骼进行坐标转换用的
      */
     private final HashMap<String, BonesItem> indexBones = Maps.newHashMap();
+
     /**
      * 哪些模型需要渲染。加载进父骨骼的子骨骼是不需要渲染的
      */
-    private final List<ModelRenderer> shouldRender = Lists.newLinkedList();
+    private final List<String> shouldRender = Lists.newLinkedList();
 
-    public EntityModelJson(BedrockModelPOJO pojo) {
-        super(RenderType::entityCutoutNoCull);
-
-        if (pojo.getFormatVersion().equals("1.10.0")) {
-            loadLegacyModel(pojo);
-        } else if (pojo.getFormatVersion().equals("1.12.0")) {
-            loadNewModel(pojo);
-        }
+    public ModelPart getRootPart() {
+        return root;
     }
 
-    private void loadNewModel(BedrockModelPOJO pojo) {
+    public LayerDefinition createLayer(BedrockModelPOJO pojo) {
+        if (pojo.getFormatVersion().equals("1.10.0")) {
+            return loadLegacyModel(pojo);
+        } else if (pojo.getFormatVersion().equals("1.12.0")) {
+            return loadNewModel(pojo);
+        }
+        return null;
+    }
+
+    private LayerDefinition loadNewModel(BedrockModelPOJO pojo) {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+        // 存储 PartDefinition 子模型的 HashMap
+        HashMap<String, PartDefinition> modelMap = Maps.newHashMap();
         assert pojo.getGeometryModelNew() != null;
 
         Description description = pojo.getGeometryModelNew().getDescription();
         // 材质的长度、宽度
-        texWidth = description.getTextureWidth();
-        texHeight = description.getTextureHeight();
-
-        List<Float> offset = description.getVisibleBoundsOffset();
-        float offsetX = offset.get(0);
-        float offsetY = offset.get(1);
-        float offsetZ = offset.get(2);
-        float width = description.getVisibleBoundsWidth() / 2.0f;
-        float height = description.getVisibleBoundsHeight() / 2.0f;
-        renderBoundingBox = new AxisAlignedBB(offsetX - width, offsetY - height, offsetZ - width, offsetX + width,
-                offsetY + height, offsetZ + width);
+        int texWidth = description.getTextureWidth();
+        int texHeight = description.getTextureHeight();
 
         // 往 indexBones 里面注入数据，为后续坐标转换做参考
         for (BonesItem bones : pojo.getGeometryModelNew().getBones()) {
             // 塞索引，这是给后面坐标转换用的
             indexBones.put(bones.getName(), bones);
-            // 塞入新建的空 ModelRenderer 实例
+            // 塞入新建的空 PartDefinition 实例
             // 因为后面添加 parent 需要，所以先塞空对象，然后二次遍历再进行数据存储
-            modelMap.put(bones.getName(), new ModelRenderer(this));
+            modelMap.put(bones.getName(), partdefinition.getChild(bones.getName()));
         }
 
         // 开始往 ModelRenderer 实例里面塞数据
@@ -97,26 +86,25 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
             @Nullable
             String parent = bones.getParent();
             // 塞进 HashMap 里面的模型对象
-            ModelRenderer model = modelMap.get(name);
-
-            // 镜像参数
-            model.mirror = bones.isMirror();
-
-            // 旋转点
-            model.setPos(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
-
-            // Nullable 检查，设置旋转角度
+            PartDefinition model = modelMap.get(name);
+            PartPose pose = null;
+            // Nullable 检查，设置旋转参数
             if (rotation != null) {
-                setRotationAngle(model, convertRotation(rotation.get(0)), convertRotation(rotation.get(1)),
+                pose = PartPose.offsetAndRotation(convertPivot(bones, 0), convertPivot(bones, 1),
+                        convertPivot(bones, 2), convertRotation(rotation.get(0)), convertRotation(rotation.get(1)),
                         convertRotation(rotation.get(2)));
+            } else {
+                pose = PartPose.offset(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
             }
+
+            CubeListBuilder cubeBuilder = CubeListBuilder.create();
 
             // Null 检查，进行父骨骼绑定
             if (parent != null) {
-                modelMap.get(parent).addChild(model);
+                modelMap.get(parent).addOrReplaceChild(name, cubeBuilder, pose);
             } else {
                 // 没有父骨骼的模型才进行渲染
-                shouldRender.add(model);
+                shouldRender.add(name);
             }
 
             // 我的天，Cubes 还能为空……
@@ -135,51 +123,55 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
 
                 // 当做普通 cube 存入
                 if (cubeRotation == null) {
-                    model.cubes.add(new ModelFloatBox(uv.get(0), uv.get(1), convertOrigin(bones, cube, 0),
-                            convertOrigin(bones, cube, 1), convertOrigin(bones, cube, 2), size.get(0), size.get(1),
-                            size.get(2), inflate, inflate, inflate, mirror, texWidth, texHeight));
+                    cubeBuilder.texOffs(uv.get(0).intValue(), uv.get(1).intValue()).mirror(mirror).addBox(
+                            convertOrigin(bones, cube, 0), convertOrigin(bones, cube, 1), convertOrigin(bones, cube, 2),
+                            size.get(0), size.get(1), size.get(2), new CubeDeformation(inflate, inflate, inflate));
                 }
                 // 创建 Cube ModelRender
                 else {
-                    ModelRenderer cubeRenderer = new ModelRenderer(this);
-                    cubeRenderer.setPos(convertPivot(bones, cube, 0), convertPivot(bones, cube, 1),
-                            convertPivot(bones, cube, 2));
-                    setRotationAngle(cubeRenderer, convertRotation(cubeRotation.get(0)),
-                            convertRotation(cubeRotation.get(1)), convertRotation(cubeRotation.get(2)));
-                    cubeRenderer.cubes.add(new ModelFloatBox(uv.get(0), uv.get(1), convertOrigin(cube, 0),
-                            convertOrigin(cube, 1), convertOrigin(cube, 2), size.get(0), size.get(1), size.get(2),
-                            inflate, inflate, inflate, mirror, texWidth, texHeight));
+                    String cubeName = name + "_cube_" + convertPivot(bones, cube, 0) + '_'
+                            + convertPivot(bones, cube, 1) + '_' + convertPivot(bones, cube, 2) + '_'
+                            + convertRotation(cubeRotation.get(0)) + '_' + convertRotation(cubeRotation.get(1)) + '_'
+                            + convertRotation(cubeRotation.get(2)) + '_' + convertOrigin(bones, cube, 0) + '_'
+                            + convertOrigin(bones, cube, 1) + '_' + convertOrigin(bones, cube, 2) + '_' + size.get(0)
+                            + '_' + size.get(1) + '_' + size.get(2) + '_' + inflate;
+
+                    PartPose cubePose = PartPose.offsetAndRotation(convertPivot(bones, cube, 0),
+                            convertPivot(bones, cube, 1), convertPivot(bones, cube, 2),
+                            convertRotation(cubeRotation.get(0)), convertRotation(cubeRotation.get(1)),
+                            convertRotation(cubeRotation.get(2)));
 
                     // 添加进父骨骼中
-                    model.addChild(cubeRenderer);
+                    model.addOrReplaceChild(cubeName,
+                            CubeListBuilder.create().texOffs(uv.get(0).intValue(), uv.get(1).intValue()).mirror(mirror)
+                                    .addBox(convertOrigin(cube, 0), convertOrigin(cube, 1), convertOrigin(cube, 2),
+                                            size.get(0), size.get(1), size.get(2),
+                                            new CubeDeformation(inflate, inflate, inflate)),
+                            cubePose);
                 }
             }
         }
+        return LayerDefinition.create(meshdefinition, texWidth, texHeight);
     }
 
-    private void loadLegacyModel(BedrockModelPOJO pojo) {
+    private LayerDefinition loadLegacyModel(BedrockModelPOJO pojo) {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+        // 存储 PartDefinition 子模型的 HashMap
+        HashMap<String, PartDefinition> modelMap = Maps.newHashMap();
         assert pojo.getGeometryModelLegacy() != null;
 
         // 材质的长度、宽度
-        texWidth = pojo.getGeometryModelLegacy().getTextureWidth();
-        texHeight = pojo.getGeometryModelLegacy().getTextureHeight();
-
-        List<Float> offset = pojo.getGeometryModelLegacy().getVisibleBoundsOffset();
-        float offsetX = offset.get(0);
-        float offsetY = offset.get(1);
-        float offsetZ = offset.get(2);
-        float width = pojo.getGeometryModelLegacy().getVisibleBoundsWidth() / 2.0f;
-        float height = pojo.getGeometryModelLegacy().getVisibleBoundsHeight() / 2.0f;
-        renderBoundingBox = new AxisAlignedBB(offsetX - width, offsetY - height, offsetZ - width, offsetX + width,
-                offsetY + height, offsetZ + width);
+        int texWidth = pojo.getGeometryModelLegacy().getTextureWidth();
+        int texHeight = pojo.getGeometryModelLegacy().getTextureHeight();
 
         // 往 indexBones 里面注入数据，为后续坐标转换做参考
         for (BonesItem bones : pojo.getGeometryModelLegacy().getBones()) {
             // 塞索引，这是给后面坐标转换用的
             indexBones.put(bones.getName(), bones);
-            // 塞入新建的空 ModelRenderer 实例
+            // 塞入新建的空 PartDefinition 实例
             // 因为后面添加 parent 需要，所以先塞空对象，然后二次遍历再进行数据存储
-            modelMap.put(bones.getName(), new ModelRenderer(this));
+            modelMap.put(bones.getName(), partdefinition.getChild(bones.getName()));
         }
 
         // 开始往 ModelRenderer 实例里面塞数据
@@ -192,27 +184,25 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
             // 父骨骼的名称，可能为空
             @Nullable
             String parent = bones.getParent();
-            // 塞进 HashMap 里面的模型对象
-            ModelRenderer model = modelMap.get(name);
 
-            // 镜像参数
-            model.mirror = bones.isMirror();
-
-            // 旋转点
-            model.setPos(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
-
-            // Nullable 检查，设置旋转角度
+            PartPose pose = null;
+            // Nullable 检查，设置旋转参数
             if (rotation != null) {
-                setRotationAngle(model, convertRotation(rotation.get(0)), convertRotation(rotation.get(1)),
+                pose = PartPose.offsetAndRotation(convertPivot(bones, 0), convertPivot(bones, 1),
+                        convertPivot(bones, 2), convertRotation(rotation.get(0)), convertRotation(rotation.get(1)),
                         convertRotation(rotation.get(2)));
+            } else {
+                pose = PartPose.offset(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
             }
+
+            CubeListBuilder cubeBuilder = CubeListBuilder.create();
 
             // Null 检查，进行父骨骼绑定
             if (parent != null) {
-                modelMap.get(parent).addChild(model);
+                modelMap.get(parent).addOrReplaceChild(name, cubeBuilder, pose);
             } else {
                 // 没有父骨骼的模型才进行渲染
-                shouldRender.add(model);
+                shouldRender.add(name);
             }
 
             // 我的天，Cubes 还能为空……
@@ -226,27 +216,25 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
                 List<Float> size = cube.getSize();
                 boolean mirror = cube.isMirror();
                 float inflate = cube.getInflate();
-
-                model.cubes.add(new ModelFloatBox(uv.get(0), uv.get(1), convertOrigin(bones, cube, 0),
-                        convertOrigin(bones, cube, 1), convertOrigin(bones, cube, 2), size.get(0), size.get(1),
-                        size.get(2), inflate, inflate, inflate, mirror, texWidth, texHeight));
+                cubeBuilder.texOffs(uv.get(0).intValue(), uv.get(1).intValue()).mirror(mirror).addBox(
+                        convertOrigin(bones, cube, 0), convertOrigin(bones, cube, 1), convertOrigin(bones, cube, 2),
+                        size.get(0), size.get(1), size.get(2), new CubeDeformation(inflate, inflate, inflate));
             }
         }
+        return LayerDefinition.create(meshdefinition, texWidth, texHeight);
     }
 
     @Override
-    public void renderToBuffer(MatrixStack p_225598_1_, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_,
-            float p_225598_5_, float p_225598_6_, float p_225598_7_, float p_225598_8_) {
-        for (ModelRenderer model : shouldRender) {
-            model.render(p_225598_1_, p_225598_2_, p_225598_3_, p_225598_4_, p_225598_5_, p_225598_6_, p_225598_7_,
-                    p_225598_8_);
-        }
+    public void setupAnim(T p_102618_, float p_102619_, float p_102620_, float p_102621_, float p_102622_,
+            float p_102623_) {
+
     }
 
-    private void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.xRot = x;
-        modelRenderer.yRot = y;
-        modelRenderer.zRot = z;
+    @Override
+    public void renderToBuffer(PoseStack p_103111_, VertexConsumer p_103112_, int p_103113_, int p_103114_,
+            float p_103115_, float p_103116_, float p_103117_, float p_103118_) {
+        shouldRender.forEach(name -> getRootPart().getChild(name).render(p_103111_, p_103112_, p_103113_, p_103114_,
+                p_103115_, p_103116_, p_103117_, p_103118_));
     }
 
     /**
@@ -317,13 +305,6 @@ public class EntityModelJson<T extends Entity> extends EntityModel<T> {
      */
     private float convertRotation(float degree) {
         return (float) (degree * Math.PI / 180);
-    }
-
-    @Override
-    public void setupAnim(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_,
-            float p_225597_6_) {
-        // TODO Auto-generated method stub
-
     }
 
 }

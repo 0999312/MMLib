@@ -1,49 +1,49 @@
 package cn.mcmod_mmf.mmlib.entity;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.DamagingProjectileEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.IndirectEntityDamageSource;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.IndirectEntityDamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.NetworkHooks;
 
-public abstract class EntityBullet extends DamagingProjectileEntity {
+public abstract class EntityBullet extends AbstractHurtingProjectile {
     protected double damage = 1;
     protected boolean ignoreInvulnerability = false;
     protected int maxTick = 100;
     protected double knockbackStrength = 0;
     protected int ticksSinceFired;
 
-    public EntityBullet(EntityType<? extends EntityBullet> p_i50160_1_, World p_i50160_2_) {
+    public EntityBullet(EntityType<? extends EntityBullet> p_i50160_1_, Level p_i50160_2_) {
         super(p_i50160_1_, p_i50160_2_);
     }
 
-    public EntityBullet(EntityType<? extends EntityBullet> p_i50160_1_, World worldIn, LivingEntity shooter) {
+    public EntityBullet(EntityType<? extends EntityBullet> p_i50160_1_, Level worldIn, LivingEntity shooter) {
         this(p_i50160_1_, worldIn, shooter, 0, 0, 0);
         setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
     }
 
-    public EntityBullet(EntityType<? extends EntityBullet> p_i50160_1_, World worldIn, LivingEntity shooter,
+    public EntityBullet(EntityType<? extends EntityBullet> p_i50160_1_, Level worldIn, LivingEntity shooter,
             double accelX, double accelY, double accelZ) {
         super(p_i50160_1_, shooter, accelX, accelY, accelZ, worldIn);
     }
 
-    public EntityBullet(EntityType<? extends EntityBullet> p_i50160_1_, World worldIn, double x, double y, double z,
+    public EntityBullet(EntityType<? extends EntityBullet> p_i50160_1_, Level worldIn, double x, double y, double z,
             double accelX, double accelY, double accelZ) {
         super(p_i50160_1_, x, y, z, accelX, accelY, accelZ, worldIn);
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("tsf", ticksSinceFired);
         compound.putDouble("damage", damage);
@@ -54,7 +54,7 @@ public abstract class EntityBullet extends DamagingProjectileEntity {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         ticksSinceFired = compound.getInt("tsf");
         damage = compound.getDouble("damage");
@@ -68,21 +68,21 @@ public abstract class EntityBullet extends DamagingProjectileEntity {
         // Using a thing I save so that bullets don't get clogged up on chunk borders
         ticksSinceFired++;
         if (ticksSinceFired > getMaxTick() || getDeltaMovement().lengthSqr() < 0.01) {
-            remove();
+            remove(RemovalReason.KILLED);
         }
         super.tick();
     }
 
     @Override
-    protected void onHit(RayTraceResult result) {
+    protected void onHit(HitResult result) {
         super.onHit(result);
         // Don't disappear on blocks if we're set to noclipping
-        if (!level.isClientSide && (!this.noPhysics || result.getType() != RayTraceResult.Type.BLOCK))
-            remove();
+        if (!level.isClientSide && (!this.noPhysics || result.getType() != HitResult.Type.BLOCK))
+            remove(RemovalReason.KILLED);
     }
 
     @Override
-    protected void onHitEntity(EntityRayTraceResult raytrace) {
+    protected void onHitEntity(EntityHitResult raytrace) {
         super.onHitEntity(raytrace);
         if (!level.isClientSide) {
             Entity target = raytrace.getEntity();
@@ -98,7 +98,7 @@ public abstract class EntityBullet extends DamagingProjectileEntity {
                 if (knockbackStrength > 0) {
                     double actualKnockback = knockbackStrength;
 
-                    Vector3d vec = getDeltaMovement().multiply(1, 0, 1).normalize().scale(actualKnockback);
+                    Vec3 vec = getDeltaMovement().multiply(1, 0, 1).normalize().scale(actualKnockback);
                     if (vec.lengthSqr() > 0)
                         livingTarget.moveTo(vec.x, 0.1, vec.z);
                 }
@@ -113,7 +113,7 @@ public abstract class EntityBullet extends DamagingProjectileEntity {
     }
 
     public abstract void onLivingEntityHit(EntityBullet entityBullet, LivingEntity livingTarget, Entity shooter,
-            World level);
+            Level level);
 
     @Override
     public boolean canBeCollidedWith() {
@@ -126,12 +126,12 @@ public abstract class EntityBullet extends DamagingProjectileEntity {
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public IParticleData getTrailParticle() {
+    public ParticleOptions getTrailParticle() {
         return ParticleTypes.SMOKE;
     }
 

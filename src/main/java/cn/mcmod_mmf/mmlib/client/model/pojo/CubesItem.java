@@ -39,9 +39,6 @@ public class CubesItem {
         return inflate;
     }
 
-    /**
-     * 基岩版这货居然可以为浮点数，服了
-     */
     public List<Float> getSize() {
         return size;
     }
@@ -49,7 +46,7 @@ public class CubesItem {
     public List<Float> getOrigin() {
         return origin;
     }
-    
+
     @Nullable
     public List<Float> getRotation() {
         return rotation;

@@ -1,49 +1,64 @@
 package cn.mcmod_mmf.mmlib.item;
 
 import cn.mcmod_mmf.mmlib.item.info.FoodInfo;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Food;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
-public class ItemFoodBase extends Item {
+public class ItemFoodBase extends Item implements IFoodLike{
     private final FoodInfo info;
 
     public ItemFoodBase(Item.Properties prop, FoodInfo info) {
-        super(prop.food(new Food.Builder().nutrition(info.getAmount()).saturationMod(info.getCalories()).build()));
+        super(prop);
         this.info = info;
+    }
+    
+    @Override
+    public boolean isEdible() {
+        return this.info != null;
     }
 
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundNBT nbt) {
+    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag nbt) {
         return super.initCapabilities(stack, nbt);
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack p_77654_1_, World p_77654_2_, LivingEntity p_77654_3_) {
-
-        ItemStack itemstack = super.finishUsingItem(p_77654_1_, p_77654_2_, p_77654_3_);
-        if (p_77654_1_.getCount() > 0) {
-            if (p_77654_3_ instanceof PlayerEntity) {
-                PlayerEntity entityplayer = (PlayerEntity) p_77654_3_;
-                if (entityplayer.abilities.instabuild)
+    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+        ItemStack itemstack = super.finishUsingItem(stack, level, entity);
+        if (stack.getCount() > 0) {
+            if (entity instanceof Player) {
+                Player entityplayer = (Player) entity;
+                if (entityplayer.getAbilities().instabuild)
                     return itemstack;
-                if (!entityplayer.addItem(this.getContainerItem(p_77654_1_)))
-                    entityplayer.drop(this.getContainerItem(p_77654_1_), true);
+                if (!entityplayer.addItem(this.getContainerItem(stack)))
+                    entityplayer.drop(this.getContainerItem(stack), true);
             }
             return itemstack;
         }
-        return p_77654_3_ instanceof PlayerEntity && ((PlayerEntity) p_77654_3_).abilities.instabuild ? itemstack
-                : this.getContainerItem(p_77654_1_);
+        return entity instanceof Player && ((Player) entity).getAbilities().instabuild ? itemstack
+                : this.getContainerItem(stack);
     }
 
     @Override
-    public Food getFoodProperties() {
-        Food.Builder food = new Food.Builder().nutrition(getFoodInfo().getAmount())
+    public SoundEvent getDrinkingSound() {
+        return super.getDrinkingSound();
+    }
+
+    @Override
+    public SoundEvent getEatingSound() {
+        return super.getEatingSound();
+    }
+
+    @Override
+    public FoodProperties getFoodProperties() {
+        FoodProperties.Builder food = new FoodProperties.Builder().nutrition(getFoodInfo().getAmount())
                 .saturationMod(getFoodInfo().getCalories());
         if (getFoodInfo().isAlwaysEat())
             food.alwaysEat();
@@ -61,6 +76,7 @@ public class ItemFoodBase extends Item {
         return super.getUseDuration(p_77626_1_);
     }
 
+    @Override
     public FoodInfo getFoodInfo() {
         return info;
     }
