@@ -303,6 +303,7 @@ public class ModelBipedJson extends BipedModel<LivingEntity> {
      *
      * @param index 是 xyz 的哪一个，x 是 0，y 是 1，z 是 2
      */
+    
     private float convertOrigin(BonesItem bone, CubesItem cube, int index) {
         if (index == 1) {
             return bone.getPivot().get(index) - cube.getOrigin().get(index) - cube.getSize().get(index);

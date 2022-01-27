@@ -61,8 +61,7 @@ public class Main {
             event.getPlayer().sendMessage(component, event.getPlayer().getUUID());
             if (april_first) {
                 if (event.getPlayer() instanceof ServerPlayerEntity) {
-                    ((ServerPlayerEntity) event.getPlayer()).connection.send(new SPlaySoundPacket(
-                            presented_by_zaia.getId(), SoundCategory.PLAYERS, event.getPlayer().position(), 1F, 1F));
+                    ((ServerPlayerEntity) event.getPlayer()).connection.send(new SPlaySoundPacket(presented_by_zaia.getId(), SoundCategory.PLAYERS, event.getPlayer().position(), 1F, 1F));
                 }
             }
         }

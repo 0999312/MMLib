@@ -8,8 +8,6 @@ import java.util.HashMap;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.io.IOUtils;
-
 import com.google.common.collect.Maps;
 
 import cn.mcmod_mmf.mmlib.Main;
@@ -34,11 +32,8 @@ public class ClientUtil {
     @Nullable
     @OnlyIn(Dist.CLIENT)
     public static void loadModel(ResourceLocation modelLocation) {
-        InputStream input = null;
-        try {
-            input = manager.getResource(modelLocation).getInputStream();
-            BedrockModelPOJO pojo = JsonCreator.gson.fromJson(new InputStreamReader(input, StandardCharsets.UTF_8),
-                    BedrockModelPOJO.class);
+        try (InputStream input = manager.getResource(modelLocation).getInputStream();){
+            BedrockModelPOJO pojo = DataGenUtil.gson.fromJson(new InputStreamReader(input, StandardCharsets.UTF_8), BedrockModelPOJO.class);
             // 先判断是不是 1.10.0 版本基岩版模型文件
             if (pojo.getFormatVersion().equals("1.10.0")) {
                 // 如果 model 字段不为空
@@ -65,15 +60,12 @@ public class ClientUtil {
                 }
             }
 
-            Main.getLogger().warn("{} model version is not 1.10.0 or 1.12.0", modelLocation);
+            Main.getLogger().error("{} model version is not 1.10.0 or 1.12.0", modelLocation);
 
         } catch (IOException ioe) {
             // 可能用来判定错误，打印下
-            Main.getLogger().warn("Failed to load model: {}", modelLocation);
+            Main.getLogger().error("Failed to load model: {}", modelLocation);
             ioe.printStackTrace();
-        } finally {
-            // 关闭输入流
-            IOUtils.closeQuietly(input);
         }
     }
 

@@ -17,6 +17,7 @@ public abstract class TrailParticle extends SpriteTexturedParticle {
         this.lifetime = (int) (4.0D / (Math.random() * 0.8D + 0.2D));
     }
 
+    @Override
     public void tick() {
         this.xo = this.x;
         this.yo = this.y;
@@ -32,6 +33,7 @@ public abstract class TrailParticle extends SpriteTexturedParticle {
         }
     }
 
+    @Override
     public IParticleRenderType getRenderType() {
         return IParticleRenderType.PARTICLE_SHEET_OPAQUE;
     }

@@ -7,6 +7,7 @@ import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
@@ -14,7 +15,7 @@ public class ItemFoodBase extends Item {
     private final FoodInfo info;
 
     public ItemFoodBase(Item.Properties prop, FoodInfo info) {
-        super(prop.food(new Food.Builder().nutrition(info.getAmount()).saturationMod(info.getCalories()).build()));
+        super(prop);
         this.info = info;
     }
 
@@ -24,23 +25,31 @@ public class ItemFoodBase extends Item {
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack p_77654_1_, World p_77654_2_, LivingEntity p_77654_3_) {
-
-        ItemStack itemstack = super.finishUsingItem(p_77654_1_, p_77654_2_, p_77654_3_);
-        if (p_77654_1_.getCount() > 0) {
-            if (p_77654_3_ instanceof PlayerEntity) {
-                PlayerEntity entityplayer = (PlayerEntity) p_77654_3_;
+    public ItemStack finishUsingItem(ItemStack stack, World level, LivingEntity entity) {
+        ItemStack itemstack = super.finishUsingItem(stack, level, entity);
+        if (stack.getCount() > 0) {
+            if (entity instanceof PlayerEntity) {
+                PlayerEntity entityplayer = (PlayerEntity) entity;
                 if (entityplayer.abilities.instabuild)
                     return itemstack;
-                if (!entityplayer.addItem(this.getContainerItem(p_77654_1_)))
-                    entityplayer.drop(this.getContainerItem(p_77654_1_), true);
+                if (!entityplayer.addItem(this.getContainerItem(stack)))
+                    entityplayer.drop(this.getContainerItem(stack), true);
             }
             return itemstack;
         }
-        return p_77654_3_ instanceof PlayerEntity && ((PlayerEntity) p_77654_3_).abilities.instabuild ? itemstack
-                : this.getContainerItem(p_77654_1_);
+        return entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild ? itemstack : this.getContainerItem(stack);
     }
 
+    @Override
+    public SoundEvent getDrinkingSound() {
+        return super.getDrinkingSound();
+    }
+    
+    @Override
+    public SoundEvent getEatingSound() {
+        return super.getEatingSound();
+    }
+    
     @Override
     public Food getFoodProperties() {
         Food.Builder food = new Food.Builder().nutrition(getFoodInfo().getAmount())

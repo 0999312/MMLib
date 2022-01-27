@@ -5,10 +5,37 @@ public class HeatInfo {
     private final float meltTemp;
     private final boolean isForgeable;
 
-    public HeatInfo(float heat, float temp, boolean forgeable) {
-        heatCapacity = heat;
-        meltTemp = temp;
-        isForgeable = forgeable;
+    private HeatInfo(HeatInfo.Builder builder) {
+        heatCapacity = builder.heatCapacity;
+        meltTemp = builder.meltTemp;
+        isForgeable = builder.isForgeable;
+    }
+    
+    public static HeatInfo.Builder builder() {
+        return new HeatInfo.Builder();
+    }
+    
+    public static class Builder {
+        private float heatCapacity;
+        private float meltTemp;
+        private boolean isForgeable;
+        
+        public Builder heatCapacity(float heatCapacity) {
+            this.heatCapacity = heatCapacity;
+            return this;
+        }
+        public Builder meltTemp(float meltTemp) {
+            this.meltTemp = meltTemp;
+            return this;
+        }
+        public Builder forgeable() {
+            this.isForgeable = true;
+            return this;
+        }
+        
+        public HeatInfo build() {
+            return new HeatInfo(this);
+        }
     }
 
     public boolean isForgeable() {
