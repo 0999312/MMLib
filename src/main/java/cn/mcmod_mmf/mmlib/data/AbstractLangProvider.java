@@ -8,10 +8,12 @@ import net.minecraftforge.common.data.LanguageProvider;
 
 public abstract class AbstractLangProvider extends LanguageProvider {
     private final String mod_id;
+    private final String loc_code;
 
     public AbstractLangProvider(DataGenerator gen, String modid, String locale) {
         super(gen, modid, locale);
         this.mod_id = modid;
+        this.loc_code = locale;
     }
 
     public void addItemGroup(CreativeModeTab group, String name) {
@@ -44,6 +46,10 @@ public abstract class AbstractLangProvider extends LanguageProvider {
 
     public String getModid() {
         return mod_id;
+    }
+
+    public String getLocale() {
+        return loc_code;
     }
 
 }

@@ -92,7 +92,7 @@ public abstract class AbstractBlockStateProvider extends BlockStateProvider {
         getVariantBuilder(block.get()).forAllStatesExcept(state -> {
             int ageSuffix = state.getValue(ageProperty);
             String stageName = name(block) + "_stage" + ageSuffix;
-            return ConfiguredModel.builder().modelFile(models().cross(stageName, texture(stageName))).build();
+            return ConfiguredModel.builder().modelFile(models().crop(stageName, texture(stageName))).build();
         }, ignored);
     }
 }
