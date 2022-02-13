@@ -25,14 +25,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("mmlib")
+@Mod(Main.MODID)
 public class Main {
+    public static final String MODID = "mmlib";
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS,
-            "mmlib");
+            MODID);
     public static final RegistryObject<SoundEvent> presented_by_zaia = SOUNDS.register("presented_by_zaia",
-            () -> new SoundEvent(new ResourceLocation("mmlib", "presented_by_zaia")));
+            () -> new SoundEvent(new ResourceLocation(MODID, "presented_by_zaia")));
 
     public Main() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
