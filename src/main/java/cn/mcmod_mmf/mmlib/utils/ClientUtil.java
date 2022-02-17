@@ -28,7 +28,7 @@ public class ClientUtil {
     @OnlyIn(Dist.CLIENT)
     public static void loadModel(ResourceLocation modelLocation) {
         try (InputStream input = manager.getResource(modelLocation).getInputStream();) {
-            BedrockModelPOJO pojo = DataGenUtil.gson.fromJson(new InputStreamReader(input, StandardCharsets.UTF_8),
+            BedrockModelPOJO pojo = DataGenUtil.GSON.fromJson(new InputStreamReader(input, StandardCharsets.UTF_8),
                     BedrockModelPOJO.class);
             // 先判断是不是 1.10.0 版本基岩版模型文件
             if (pojo.getFormatVersion().equals("1.10.0")) {
