@@ -1,5 +1,7 @@
 package cn.mcmod_mmf.mmlib.block.entity;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -9,11 +11,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-import javax.annotation.Nullable;
-
 /**
- * Copy from Farmer's Delight.
- * Simple BlockEntity with networking boilerplate.
+ * Copy from Farmer's Delight. Simple BlockEntity with networking boilerplate.
  */
 public class SyncedBlockEntity extends BlockEntity {
     public SyncedBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
@@ -38,7 +37,8 @@ public class SyncedBlockEntity extends BlockEntity {
 
     protected void inventoryChanged() {
         super.setChanged();
-        if (level != null)
+        if (level != null) {
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+        }
     }
 }
