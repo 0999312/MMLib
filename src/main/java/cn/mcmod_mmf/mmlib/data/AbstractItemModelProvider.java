@@ -25,7 +25,7 @@ public abstract class AbstractItemModelProvider extends ItemModelProvider {
     }
 
     protected ResourceLocation itemTexture(String name) {
-        return modLoc("block/" + name);
+        return modLoc("item/" + name);
     }
 
     public ItemModelBuilder itemFence(Supplier<? extends Block> block, String name) {
@@ -49,6 +49,11 @@ public abstract class AbstractItemModelProvider extends ItemModelProvider {
     public ItemModelBuilder normalItem(Supplier<? extends Item> item) {
         return withExistingParent(item.get().getRegistryName().getPath(), mcLoc("item/generated")).texture("layer0",
                 modLoc("item/" + item.get().getRegistryName().getPath()));
+    }
+    
+    public ItemModelBuilder bushItem(Supplier<? extends Item> item) {
+        return withExistingParent(item.get().getRegistryName().getPath(), mcLoc("item/generated")).texture("layer0",
+                modLoc("block/" + item.get().getRegistryName().getPath()));
     }
 
     public ItemModelBuilder torchItem(Supplier<? extends Item> item) {

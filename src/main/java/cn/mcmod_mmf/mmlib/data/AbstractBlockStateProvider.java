@@ -2,6 +2,7 @@ package cn.mcmod_mmf.mmlib.data;
 
 import java.util.function.Supplier;
 
+import cn.mcmod_mmf.mmlib.Main;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -14,6 +15,7 @@ import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
@@ -94,5 +96,33 @@ public abstract class AbstractBlockStateProvider extends BlockStateProvider {
             String stageName = name(block) + "_stage" + ageSuffix;
             return ConfiguredModel.builder().modelFile(models().crop(stageName, texture(stageName))).build();
         }, ignored);
+    }
+    
+    public void facingSlabBlock(Supplier<? extends SlabBlock> block, ResourceLocation side, ResourceLocation bottom, ResourceLocation top) {
+        facingSlabBlock(block, 
+                models().withExistingParent(name(block), new ResourceLocation(Main.MODID, "block/facing_slab"))
+                .texture("side", side)
+                .texture("bottom", bottom)
+                .texture("top", top), 
+                models().withExistingParent(name(block) + "_top", new ResourceLocation(Main.MODID, "block/facing_slab_top"))
+                .texture("side", side)
+                .texture("bottom", bottom)
+                .texture("top", top),
+                models().withExistingParent(name(block) + "_double", new ResourceLocation(Main.MODID, "block/facing_block"))
+                .texture("side", side)
+                .texture("bottom", bottom)
+                .texture("top", top)
+        );
+    }
+
+    public void facingSlabBlock(Supplier<? extends SlabBlock> block, ModelFile bottom, ModelFile top, ModelFile doubleslab) {
+        getVariantBuilder(block.get())
+            .forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(
+                        state.getValue(SlabBlock.TYPE) == SlabType.DOUBLE ? doubleslab : 
+                            state.getValue(SlabBlock.TYPE) == SlabType.BOTTOM ? bottom : top)
+                .rotationY(((int) state.getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot() + 180) % 360)
+                .build()
+            );
     }
 }
