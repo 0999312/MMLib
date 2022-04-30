@@ -1,12 +1,13 @@
 package cn.mcmod_mmf.mmlib.client.model;
 
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 
-public class BedrockArmorModel extends BedrockHumanoidModel {
+public class StandardArmorModel extends HumanoidModel<LivingEntity> {
 
-    public BedrockArmorModel(ModelPart root) {
+    public StandardArmorModel(ModelPart root) {
         super(root);
     }
 

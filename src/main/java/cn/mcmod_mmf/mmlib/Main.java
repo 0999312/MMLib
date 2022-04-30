@@ -21,15 +21,19 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+
+import com.mojang.logging.LogUtils;
+
+import cn.mcmod_mmf.mmlib.data.loot.modifier.GLMRegistry;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(Main.MODID)
 public class Main {
     public static final String MODID = "mmlib";
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS,
             MODID);
@@ -40,6 +44,7 @@ public class Main {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         MinecraftForge.EVENT_BUS.register(this);
         SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        GLMRegistry.GLM.register(FMLJavaModLoadingContext.get().getModEventBus());
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MMLibConfig.COMMON_CONFIG);
     }
 

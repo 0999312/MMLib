@@ -2,7 +2,7 @@ package cn.mcmod_mmf.mmlib.block.entity;
 
 import cn.mcmod_mmf.mmlib.CommonTags;
 import net.minecraft.core.BlockPos;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,15 +19,15 @@ public interface HeatableBlockEntity {
     default boolean isHeated(Level level, BlockPos pos) {
         BlockState stateBelow = level.getBlockState(pos.below());
 
-        if (this.heatSourceTag().contains(stateBelow.getBlock())) {
+        if (stateBelow.is(this.heatSourceTag())) {
             if (stateBelow.hasProperty(BlockStateProperties.LIT))
                 return stateBelow.getValue(BlockStateProperties.LIT);
             return true;
         }
 
-        if (!this.requiresDirectHeat() && this.heatConductorTag().contains(stateBelow.getBlock())) {
+        if (!this.requiresDirectHeat() && stateBelow.is(this.heatConductorTag())) {
             BlockState stateFurtherBelow = level.getBlockState(pos.below(2));
-            if (this.heatSourceTag().contains(stateFurtherBelow.getBlock())) {
+            if (stateBelow.is(this.heatSourceTag())) {
                 if (stateFurtherBelow.hasProperty(BlockStateProperties.LIT))
                     return stateFurtherBelow.getValue(BlockStateProperties.LIT);
                 return true;
@@ -37,11 +37,11 @@ public interface HeatableBlockEntity {
         return false;
     }
     
-    default Tag.Named<Block> heatSourceTag(){
+    default TagKey<Block> heatSourceTag(){
         return CommonTags.HEAT_SOURCES;
     }
     
-    default Tag.Named<Block> heatConductorTag(){
+    default TagKey<Block> heatConductorTag(){
         return CommonTags.HEAT_CONDUCTORS;
     }
     

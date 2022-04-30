@@ -9,7 +9,7 @@ import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
 import net.minecraft.data.recipes.SingleItemRecipeBuilder;
 import net.minecraft.data.recipes.UpgradeRecipeBuilder;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -31,7 +31,7 @@ public abstract class AbstractRecipeProvider extends RecipeProvider implements I
 
     }
 
-    public ShapelessRecipeBuilder makePlanks(Supplier<? extends Block> plankOut, Tag<Item> logIn) {
+    public ShapelessRecipeBuilder makePlanks(Supplier<? extends Block> plankOut, TagKey<Item> logIn) {
         return ShapelessRecipeBuilder.shapeless(plankOut.get(), 4).requires(logIn).unlockedBy("has_log", has(logIn));
     }
 
@@ -232,11 +232,11 @@ public abstract class AbstractRecipeProvider extends RecipeProvider implements I
                 .unlockedBy("has_" + ingredient.asItem().getRegistryName(), has(ingredient));
     }
 
-    public SimpleCookingRecipeBuilder smeltingRecipeTag(ItemLike result, Tag<Item> ingredient, float exp) {
+    public SimpleCookingRecipeBuilder smeltingRecipeTag(ItemLike result, TagKey<Item> ingredient, float exp) {
         return smeltingRecipeTag(result, ingredient, exp, 1);
     }
 
-    public SimpleCookingRecipeBuilder smeltingRecipeTag(ItemLike result, Tag<Item> ingredient, float exp, int count) {
+    public SimpleCookingRecipeBuilder smeltingRecipeTag(ItemLike result, TagKey<Item> ingredient, float exp, int count) {
         return SimpleCookingRecipeBuilder.smelting(Ingredient.of(ingredient), result, exp, 200)
                 .unlockedBy("has_" + ingredient, has(ingredient));
     }
@@ -250,11 +250,11 @@ public abstract class AbstractRecipeProvider extends RecipeProvider implements I
                 .unlockedBy("has_" + ingredient.asItem().getRegistryName(), has(ingredient));
     }
 
-    public SimpleCookingRecipeBuilder blastingRecipeTag(ItemLike result, Tag<Item> ingredient, float exp) {
+    public SimpleCookingRecipeBuilder blastingRecipeTag(ItemLike result, TagKey<Item> ingredient, float exp) {
         return blastingRecipeTag(result, ingredient, exp, 1);
     }
 
-    public SimpleCookingRecipeBuilder blastingRecipeTag(ItemLike result, Tag<Item> ingredient, float exp, int count) {
+    public SimpleCookingRecipeBuilder blastingRecipeTag(ItemLike result, TagKey<Item> ingredient, float exp, int count) {
         return SimpleCookingRecipeBuilder.blasting(Ingredient.of(ingredient), result, exp, 100)
                 .unlockedBy("has_ingredient", has(ingredient));
     }
