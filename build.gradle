@@ -15,7 +15,7 @@ plugins {
 }
 apply plugin: 'net.minecraftforge.gradle'
 
-version = '1.0.1-1.18.2'
+version = '1.2.1-1.18.2'
 group = 'cn.mcmod_mmf.mmlib'
 archivesBaseName = 'mmlib'
 
@@ -31,6 +31,8 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+            properties 'mixin.env.disableRefMap': 'true'
+            property 'forge.enabledGameTestNamespaces', 'mmlib'
             mods {
                 mmlib {
                     source sourceSets.main
@@ -42,6 +44,23 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+            properties 'mixin.env.disableRefMap': 'true'
+            property 'forge.enabledGameTestNamespaces', 'mmlib'
+            mods {
+                mmlib {
+                    source sourceSets.main
+                }
+            }
+        }
+        
+        gameTestServer {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            properties 'mixin.env.disableRefMap': 'true'
+            property 'forge.enabledGameTestNamespaces', 'mmlib'
+
             mods {
                 mmlib {
                     source sourceSets.main
@@ -53,6 +72,8 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+            properties 'mixin.env.disableRefMap': 'true'
+            property 'forge.enabledGameTestNamespaces', 'mmlib'
 			args '--mod', 'mmlib', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
@@ -67,18 +88,32 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    // Put repositories for dependencies here
-    // ForgeGradle automatically adds the Forge maven and Maven Central for you
-
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    // flatDir {
-    //     dir 'libs'
-    // }
+    // JEI, Tinker's Construct, Mantle, Iron Chests, Natura, etc.
+    maven { url = "https://dvs1.progwml6.com/files/maven" }
+    // Patchouli
+    maven { url = 'https://maven.blamejared.com' }
+    // Curse Forge
+    maven {
+        url = "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.2-40.0.44'
+    minecraft 'net.minecraftforge:forge:1.18.2-40.1.73'
+
+    implementation fg.deobf("curse.maven:terrafirmacraft-302973:3970479")
+    
+    compileOnly fg.deobf("vazkii.patchouli:Patchouli:1.18.2-70")
+    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.18.2-70")
+    
+    compileOnly fg.deobf("mezz.jei:jei-1.18.2-forge:10.0.0.191")
+    runtimeOnly fg.deobf("mezz.jei:jei-1.18.2-forge:10.0.0.191")
 }
+
 
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
@@ -105,7 +140,7 @@ publishing {
     }
     repositories {
         maven {
-            url "file://${project.projectDir}/mcmodsrepo"
+            url "file://${maven_loc}"
         }
     }
 }

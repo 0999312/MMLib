@@ -47,7 +47,6 @@ public class Main {
         GLMRegistry.GLM.register(FMLJavaModLoadingContext.get().getModEventBus());
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MMLibConfig.COMMON_CONFIG);
     }
-
     private void setup(final FMLCommonSetupEvent event) {
         LOGGER.info("Presented by Zaia");
     }

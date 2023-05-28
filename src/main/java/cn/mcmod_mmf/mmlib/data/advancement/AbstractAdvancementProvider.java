@@ -5,11 +5,10 @@ import java.nio.file.Path;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-
+import cn.mcmod_mmf.mmlib.utils.DataGenUtil;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -29,8 +28,6 @@ public abstract class AbstractAdvancementProvider extends AdvancementProvider {
 
     public abstract Logger getLogger();
 
-    public abstract Gson getGSONInstance();
-
     public abstract Consumer<Consumer<Advancement>>[] getAdvancementTabs();
 
     @Override
@@ -44,7 +41,7 @@ public abstract class AbstractAdvancementProvider extends AdvancementProvider {
                 Path path1 = createNewPath(path, advancement);
 
                 try {
-                    DataProvider.save(this.getGSONInstance(), cache, advancement.deconstruct().serializeToJson(),
+                    DataProvider.save(DataGenUtil.DATA_GSON, cache, advancement.deconstruct().serializeToJson(),
                             path1);
                 } catch (IOException ioexception) {
                     this.getLogger().error("Couldn't save advancement {}", path1, ioexception);

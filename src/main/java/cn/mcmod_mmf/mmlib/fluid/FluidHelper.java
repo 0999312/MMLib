@@ -37,7 +37,7 @@ public class FluidHelper {
 
         try {
             JsonElement element = json.get("nbt");
-            stack.setTag(TagParser.parseTag(element.isJsonObject() ? DataGenUtil.GSON.toJson(element) : GsonHelper.convertToString(element, "nbt")));
+            stack.setTag(TagParser.parseTag(element.isJsonObject() ? DataGenUtil.DATA_GSON.toJson(element) : GsonHelper.convertToString(element, "nbt")));
         } catch (CommandSyntaxException e) {
             e.printStackTrace();
         }
