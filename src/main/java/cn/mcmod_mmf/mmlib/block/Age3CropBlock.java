@@ -1,10 +1,10 @@
 package cn.mcmod_mmf.mmlib.block;
 
-import java.util.Random;
 import java.util.function.Supplier;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
@@ -41,7 +41,7 @@ public class Age3CropBlock extends BaseCropBlock {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand) {
+    public void randomTick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
         if (rand.nextInt(3) != 0) {
             super.randomTick(state, worldIn, pos, rand);
         }

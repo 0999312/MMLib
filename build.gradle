@@ -1,38 +1,28 @@
-buildscript {
-    repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-        maven { url = 'https://maven.minecraftforge.net' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-    }
-}
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 plugins {
     id 'eclipse'
     id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '5.1.+'
 }
-apply plugin: 'net.minecraftforge.gradle'
 
-version = '1.0.1-1.18.2'
-group = 'cn.mcmod_mmf.mmlib'
-archivesBaseName = 'mmlib'
+version = '1.2.7-1.20'
+group = 'cn.mcmod_mmf.mysterious_mountain_lib'
+archivesBaseName = 'mysterious_mountain_lib'
 
-// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'official', version: '1.18.2'
-    
+    mappings channel: 'official', version: '1.20'
+
     runs {
         client {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+            properties 'mixin.env.disableRefMap': 'true'
+            property 'forge.enabledGameTestNamespaces', 'mysterious_mountain_lib'
             mods {
-                mmlib {
+                mysterious_mountain_lib {
                     source sourceSets.main
                 }
             }
@@ -42,8 +32,25 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+            properties 'mixin.env.disableRefMap': 'true'
+            property 'forge.enabledGameTestNamespaces', 'mysterious_mountain_lib'
             mods {
-                mmlib {
+                mysterious_mountain_lib {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        gameTestServer {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            properties 'mixin.env.disableRefMap': 'true'
+            property 'forge.enabledGameTestNamespaces', 'mysterious_mountain_lib'
+
+            mods {
+                mysterious_mountain_lib {
                     source sourceSets.main
                 }
             }
@@ -53,10 +60,12 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-			args '--mod', 'mmlib', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            properties 'mixin.env.disableRefMap': 'true'
+            property 'forge.enabledGameTestNamespaces', 'mysterious_mountain_lib'
+			args '--mod', 'mysterious_mountain_lib', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                mmlib {
+                mysterious_mountain_lib {
                     source sourceSets.main
                 }
             }
@@ -67,24 +76,31 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    // Put repositories for dependencies here
-    // ForgeGradle automatically adds the Forge maven and Maven Central for you
+    // JEI, Tinker's Construct, Mantle, Iron Chests, Natura, etc.
+    maven { url = "https://dvs1.progwml6.com/files/maven" }
+    // Patchouli
+    maven { url = 'https://maven.blamejared.com' }
+    // Curse Forge
+    maven {
+        url = "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    // flatDir {
-    //     dir 'libs'
-    // }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.2-40.0.44'
+    minecraft 'net.minecraftforge:forge:1.20-46.0.14'
+
 }
+
 
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
     manifest {
         attributes([
-            "Specification-Title": "mmlib",
+            "Specification-Title": "mysterious_mountain_lib",
             "Specification-Vendor": "mcmod.cn",
             "Specification-Version": "1",
             "Implementation-Title": project.name,
@@ -97,15 +113,25 @@ jar {
 
 jar.finalizedBy('reobfJar')
 
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allJava
+}
+
+artifacts {
+    archives sourcesJar
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
             artifact jar
+            artifact sourcesJar
         }
     }
     repositories {
         maven {
-            url "file://${project.projectDir}/mcmodsrepo"
+            url "file://${maven_loc}"
         }
     }
 }

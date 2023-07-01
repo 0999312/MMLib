@@ -2,22 +2,23 @@ package cn.mcmod_mmf.mmlib.data;
 
 import java.util.function.Supplier;
 
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public abstract class AbstractItemModelProvider extends ItemModelProvider {
 
-    public AbstractItemModelProvider(DataGenerator generator, String modid, ExistingFileHelper existingFileHelper) {
+    public AbstractItemModelProvider(PackOutput generator, String modid, ExistingFileHelper existingFileHelper) {
         super(generator, modid, existingFileHelper);
     }
 
     public String blockName(Supplier<? extends Block> block) {
-        return block.get().getRegistryName().getPath();
+        return ForgeRegistries.BLOCKS.getKey(block.get()).getPath();
     }
 
     protected ResourceLocation blockTexture(String name) {
@@ -47,26 +48,26 @@ public abstract class AbstractItemModelProvider extends ItemModelProvider {
     }
 
     public ItemModelBuilder normalItem(Supplier<? extends Item> item) {
-        return withExistingParent(item.get().getRegistryName().getPath(), mcLoc("item/generated")).texture("layer0",
-                modLoc("item/" + item.get().getRegistryName().getPath()));
+        return withExistingParent(ForgeRegistries.ITEMS.getKey(item.get()).getPath(), mcLoc("item/generated")).texture("layer0",
+                modLoc("item/" + ForgeRegistries.ITEMS.getKey(item.get()).getPath()));
     }
     
     public ItemModelBuilder bushItem(Supplier<? extends Item> item) {
-        return withExistingParent(item.get().getRegistryName().getPath(), mcLoc("item/generated")).texture("layer0",
-                modLoc("block/" + item.get().getRegistryName().getPath()));
+        return withExistingParent(ForgeRegistries.ITEMS.getKey(item.get()).getPath(), mcLoc("item/generated")).texture("layer0",
+                modLoc("block/" + ForgeRegistries.ITEMS.getKey(item.get()).getPath()));
     }
 
     public ItemModelBuilder torchItem(Supplier<? extends Item> item) {
-        return withExistingParent(item.get().getRegistryName().getPath(), mcLoc("item/generated")).texture("layer0",
-                modLoc("block/" + item.get().getRegistryName().getPath()));
+        return withExistingParent(ForgeRegistries.ITEMS.getKey(item.get()).getPath(), mcLoc("item/generated")).texture("layer0",
+                modLoc("block/" + ForgeRegistries.ITEMS.getKey(item.get()).getPath()));
     }
 
     public ItemModelBuilder toolItem(Supplier<? extends Item> item) {
-        return withExistingParent(item.get().getRegistryName().getPath(), mcLoc("item/handheld")).texture("layer0",
-                modLoc("item/" + item.get().getRegistryName().getPath()));
+        return withExistingParent(ForgeRegistries.ITEMS.getKey(item.get()).getPath(), mcLoc("item/handheld")).texture("layer0",
+                modLoc("item/" + ForgeRegistries.ITEMS.getKey(item.get()).getPath()));
     }
 
     public ItemModelBuilder egg(Supplier<? extends Item> item) {
-        return withExistingParent(item.get().getRegistryName().getPath(), mcLoc("item/template_spawn_egg"));
+        return withExistingParent(ForgeRegistries.ITEMS.getKey(item.get()).getPath(), mcLoc("item/template_spawn_egg"));
     }
 }

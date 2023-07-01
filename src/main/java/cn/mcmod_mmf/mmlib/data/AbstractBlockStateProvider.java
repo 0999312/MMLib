@@ -3,7 +3,7 @@ package cn.mcmod_mmf.mmlib.data;
 import java.util.function.Supplier;
 
 import cn.mcmod_mmf.mmlib.Main;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
@@ -20,10 +20,11 @@ import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public abstract class AbstractBlockStateProvider extends BlockStateProvider {
 
-    public AbstractBlockStateProvider(DataGenerator gen, String modid, ExistingFileHelper exFileHelper) {
+    public AbstractBlockStateProvider(PackOutput gen, String modid, ExistingFileHelper exFileHelper) {
         super(gen, modid, exFileHelper);
     }
 
@@ -32,7 +33,7 @@ public abstract class AbstractBlockStateProvider extends BlockStateProvider {
     }
 
     public String name(Supplier<? extends Block> block) {
-        return block.get().getRegistryName().getPath();
+        return ForgeRegistries.BLOCKS.getKey(block.get()).getPath();
     }
 
     public void block(Supplier<? extends Block> block) {
@@ -77,7 +78,7 @@ public abstract class AbstractBlockStateProvider extends BlockStateProvider {
     }
 
     private void fenceColumn(Supplier<? extends FenceBlock> block, String side) {
-        String baseName = block.get().getRegistryName().toString();
+        String baseName = ForgeRegistries.BLOCKS.getKey(block.get()).toString();
         fourWayBlock(block.get(), models().fencePost(baseName + "_post", texture(side)),
                 models().fenceSide(baseName + "_side", texture(side)));
     }

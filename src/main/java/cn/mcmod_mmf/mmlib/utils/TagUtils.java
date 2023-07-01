@@ -1,6 +1,6 @@
 package cn.mcmod_mmf.mmlib.utils;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
@@ -21,7 +21,7 @@ public class TagUtils {
     }
     
     public static TagKey<EntityType<?>> modEntityTag(String modid, String path) {
-        return TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(modid, path));
+        return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(modid, path));
     }
 
     public static TagKey<Fluid> modFluidTag(String modid, String path) {
@@ -37,7 +37,7 @@ public class TagUtils {
     }
     
     public static TagKey<EntityType<?>> forgeEntityTag(String path) {
-        return TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation("forge", path));
+        return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("forge", path));
     }
 
     public static TagKey<Fluid> forgeFluidTag(String path) {

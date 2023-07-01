@@ -1,10 +1,10 @@
 package cn.mcmod_mmf.mmlib.block;
 
-import java.util.Random;
 import java.util.function.Supplier;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
@@ -71,7 +71,7 @@ public class HighCropBlock extends BaseCropBlock {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand) {
+    public void randomTick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
         if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
         float f = getGrowthSpeed(this, worldIn, pos);
         int age = this.getAge(state);
@@ -95,7 +95,7 @@ public class HighCropBlock extends BaseCropBlock {
         }
     }
     @Override
-    public boolean isValidBonemealTarget(BlockGetter worldIn, BlockPos pos, BlockState state, boolean isClient) {
+    public boolean isValidBonemealTarget(LevelReader worldIn, BlockPos pos, BlockState state, boolean isClient) {
         BlockState upperState = worldIn.getBlockState(pos.above());
         if (upperState.is(this)) {
             return !(this.isMaxAge(upperState));
@@ -107,12 +107,12 @@ public class HighCropBlock extends BaseCropBlock {
     }
 
     @Override
-    public boolean isBonemealSuccess(Level worldIn, Random rand, BlockPos pos, BlockState state) {
+    public boolean isBonemealSuccess(Level worldIn, RandomSource rand, BlockPos pos, BlockState state) {
         return true;
     }
 
     @Override
-    public void performBonemeal(ServerLevel worldIn, Random rand, BlockPos pos, BlockState state) {
+    public void performBonemeal(ServerLevel worldIn, RandomSource rand, BlockPos pos, BlockState state) {
         int ageGrowth = Math.min(this.getAge(state) + this.getBonemealAgeIncrease(worldIn), 15);
         if (ageGrowth <= this.getMaxAge()) {
             worldIn.setBlockAndUpdate(pos, state.setValue(AGE, ageGrowth));

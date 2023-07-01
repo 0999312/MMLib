@@ -1,4 +1,5 @@
 {
    "mm_lib.info.welcome" : "%s, welcome to Mysterious Mountain Lib, a library for Syameimaru Zheng's most of mods.",
-   "mm_lib.info.welcome_foolish" : "%s, welcome to Zaia Enterprise Lib, a library for Zaia Enterprise's most of produce. Persented by Zaia."
+   "mm_lib.info.welcome_foolish" : "%s, welcome to Zaia Enterprise Lib, a library for Zaia Enterprise's most of produce. Persented by Zaia.",
+   "mm_lib.jei.chance" : "%1$s%% chance"
 }

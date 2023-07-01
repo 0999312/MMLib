@@ -18,8 +18,8 @@ public class ItemDrinkBase extends ItemFoodBase {
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack p_77661_1_) {
-        return p_77661_1_.getItem().isEdible() ? UseAnim.DRINK : UseAnim.NONE;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.DRINK;
     }
     
     @Override

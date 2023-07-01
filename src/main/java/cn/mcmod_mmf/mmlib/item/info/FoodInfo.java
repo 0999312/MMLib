@@ -15,6 +15,7 @@ public class FoodInfo {
     private final boolean isWolfFood;
     private final boolean isAlwaysEat;
     private final int eatTime;
+    private final float compostChance;
     // TFC-TNG FoodHandler parameters
     private final float water;
     private final float grain;
@@ -42,6 +43,7 @@ public class FoodInfo {
         this.isAlwaysEat = builder.isAlwaysEat;
         this.eatTime = builder.eatTime;
         this.effects = builder.effects;
+        this.compostChance = builder.compostChance;
         // TFC-TNG FoodHandler parameters
         this.water = builder.water;
         this.grain = builder.grain;
@@ -64,6 +66,8 @@ public class FoodInfo {
         private boolean isWolfFood = false;
         private boolean isAlwaysEat = false;
         private int eatTime = 32;
+        private float compostChance = 0;
+
         // TFC-TNG FoodHandler parameters
         private float water;
         private float grain;
@@ -144,12 +148,12 @@ public class FoodInfo {
         }
 
         public Builder nutrients(float all) {
-            this.grain(all).fruit(all).vegatable(all).grain(all).grain(all);
+            this.grain(all).fruit(all).vegatable(all).meat(all).dairy(all);
             return this;
         }
 
         public Builder nutrients(float grain, float fruit, float veg, float meat, float dairy) {
-            this.grain(grain).fruit(fruit).vegatable(veg).grain(meat).grain(dairy);
+            this.grain(grain).fruit(fruit).vegatable(veg).meat(meat).dairy(dairy);
             return this;
         }
 
@@ -173,6 +177,11 @@ public class FoodInfo {
             return this;
         }
 
+        public Builder compostChance(float compostChance) {
+            this.compostChance = compostChance;
+            return this;
+        }
+
         public FoodInfo build() {
             return new FoodInfo(this);
         }
@@ -189,6 +198,10 @@ public class FoodInfo {
 
     public float getCalories() {
         return calories;
+    }
+    
+    public float getCompostChance() {
+        return compostChance;
     }
 
     public float getDecayModifier() {

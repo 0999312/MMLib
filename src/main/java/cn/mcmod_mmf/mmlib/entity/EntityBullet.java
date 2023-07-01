@@ -4,8 +4,8 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -77,22 +77,20 @@ public abstract class EntityBullet extends AbstractHurtingProjectile {
     protected void onHit(HitResult result) {
         super.onHit(result);
         // Don't disappear on blocks if we're set to noclipping
-        if (!level.isClientSide && (!this.noPhysics || result.getType() != HitResult.Type.BLOCK))
+        if (!this.level().isClientSide() && (!this.noPhysics || result.getType() != HitResult.Type.BLOCK))
             remove(RemovalReason.KILLED);
     }
 
     @Override
     protected void onHitEntity(EntityHitResult raytrace) {
         super.onHitEntity(raytrace);
-        if (!level.isClientSide) {
+        if (!this.level().isClientSide()) {
             Entity target = raytrace.getEntity();
             Entity shooter = this.getOwner();
             int lastHurtResistant = target.invulnerableTime;
             if (ignoreInvulnerability)
                 target.invulnerableTime = 0;
-            boolean damaged = target.hurt((new IndirectEntityDamageSource("arrow", this, shooter)).setProjectile(),
-                    (float) damage);
-
+            boolean damaged = target.hurt(this.damageSources().thrown(this, shooter),(float) damage);
             if (damaged && target instanceof LivingEntity) {
                 LivingEntity livingTarget = (LivingEntity) target;
                 if (knockbackStrength > 0) {
@@ -106,7 +104,7 @@ public abstract class EntityBullet extends AbstractHurtingProjectile {
                 if (shooter instanceof LivingEntity)
                     doEnchantDamageEffects((LivingEntity) shooter, target);
 
-                onLivingEntityHit(this, livingTarget, shooter, level);
+                onLivingEntityHit(this, livingTarget, shooter, level());
             } else if (!damaged && ignoreInvulnerability)
                 target.invulnerableTime = lastHurtResistant;
         }
@@ -126,7 +124,7 @@ public abstract class EntityBullet extends AbstractHurtingProjectile {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

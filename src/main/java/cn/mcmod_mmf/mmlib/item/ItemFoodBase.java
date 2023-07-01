@@ -11,14 +11,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
-public class ItemFoodBase extends Item implements IFoodLike{
+public class ItemFoodBase extends Item implements IFoodLike {
     private final FoodInfo info;
 
     public ItemFoodBase(Item.Properties prop, FoodInfo info) {
         super(prop);
         this.info = info;
     }
-    
+
     @Override
     public boolean isEdible() {
         return this.info != null;
@@ -37,13 +37,13 @@ public class ItemFoodBase extends Item implements IFoodLike{
                 Player entityplayer = (Player) entity;
                 if (entityplayer.getAbilities().instabuild)
                     return itemstack;
-                if (!entityplayer.addItem(this.getContainerItem(stack)))
-                    entityplayer.drop(this.getContainerItem(stack), true);
+                if (!entityplayer.addItem(this.getCraftingRemainingItem(stack)))
+                    entityplayer.drop(this.getCraftingRemainingItem(stack), true);
             }
             return itemstack;
         }
         return entity instanceof Player && ((Player) entity).getAbilities().instabuild ? itemstack
-                : this.getContainerItem(stack);
+                : this.getCraftingRemainingItem(stack);
     }
 
     @Override
@@ -70,10 +70,10 @@ public class ItemFoodBase extends Item implements IFoodLike{
     }
 
     @Override
-    public int getUseDuration(ItemStack p_77626_1_) {
+    public int getUseDuration(ItemStack stack) {
         if (this.getFoodInfo() != null)
             return this.getFoodInfo().getEatTime();
-        return super.getUseDuration(p_77626_1_);
+        return super.getUseDuration(stack);
     }
 
     @Override

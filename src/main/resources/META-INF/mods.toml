@@ -1,8 +1,8 @@
 modLoader="javafml"
-loaderVersion="[40,)"
+loaderVersion="[46,)"
 license="MIT License"
 [[mods]] #mandatory
-modId="mmlib" 
+modId="mysterious_mountain_lib" 
 version="${file.jarVersion}"
 displayName="Mysterious Mountain Lib" 
 credits="MCMOD.cn"
@@ -11,15 +11,15 @@ description='''
 This is the library for Syameimaru Zheng's most of mods.
 The most convenient library you will ever use.
 '''
-[[dependencies.mmlib]]
+[[dependencies.mysterious_mountain_lib]]
     modId="forge"
     mandatory=true
-    versionRange="[40,)"
+    versionRange="[46,)"
     ordering="NONE"
     side="BOTH"
-[[dependencies.mmlib]]
+[[dependencies.mysterious_mountain_lib]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.18.2,1.19)"
+    versionRange="[1.20,1.21)"
     ordering="NONE"
     side="BOTH"

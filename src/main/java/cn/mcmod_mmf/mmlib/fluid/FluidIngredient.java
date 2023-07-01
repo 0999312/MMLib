@@ -1,6 +1,5 @@
 package cn.mcmod_mmf.mmlib.fluid;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -15,19 +14,19 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public abstract class FluidIngredient implements Predicate<FluidStack> {
 
-	public static final FluidIngredient EMPTY = new FluidStackIngredient();
+	public static final FluidIngredient EMPTY = NullFluidIngredient.EMPTY;
 
 	public List<FluidStack> matchingFluidStacks;
 
@@ -60,10 +59,6 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 
 	protected abstract boolean testInternal(FluidStack t);
 
-	protected abstract void readInternal(FriendlyByteBuf buffer);
-
-	protected abstract void writeInternal(FriendlyByteBuf buffer);
-
 	protected abstract void readInternal(JsonObject json);
 
 	protected abstract void writeInternal(JsonObject json);
@@ -87,24 +82,11 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 		return testInternal(t);
 	}
 
-	public void write(FriendlyByteBuf buffer) {
-		buffer.writeBoolean(this instanceof FluidTagIngredient);
-		buffer.writeVarInt(amountRequired);
-		writeInternal(buffer);
-	}
-
-	public static FluidIngredient read(FriendlyByteBuf buffer) {
-		boolean isTagIngredient = buffer.readBoolean();
-		FluidIngredient ingredient = isTagIngredient ? new FluidTagIngredient() : new FluidStackIngredient();
-		ingredient.amountRequired = buffer.readVarInt();
-		ingredient.readInternal(buffer);
-		return ingredient;
-	}
-
 	public JsonObject serialize() {
 		JsonObject json = new JsonObject();
 		writeInternal(json);
-		json.addProperty("amount", amountRequired);
+		if(amountRequired!=0)
+		    json.addProperty("amount", amountRequired);
 		return json;
 	}
 
@@ -114,7 +96,9 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 		if (!je.isJsonObject())
 			return false;
 		JsonObject json = je.getAsJsonObject();
-		if (json.has("fluidTag"))
+		if(json.has("null_fluid"))
+		    return true;
+		else if (json.has("fluidTag"))
 			return true;
 		else if (json.has("fluid"))
 			return true;
@@ -126,6 +110,11 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 			throw new JsonSyntaxException("Invalid fluid ingredient: " + Objects.toString(je));
 
 		JsonObject json = je.getAsJsonObject();
+		if(json.has("null_fluid")) {
+		    if(!json.get("null_fluid").getAsBoolean()) 
+		        throw new JsonSyntaxException("'null_fluid' can NOT be false, delete it: " + Objects.toString(je));
+		    return FluidIngredient.EMPTY;
+		}
 		FluidIngredient ingredient = json.has("fluidTag") ? new FluidTagIngredient() : new FluidStackIngredient();
 		ingredient.readInternal(json);
 
@@ -133,6 +122,33 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 			throw new JsonSyntaxException("Fluid ingredient has to define an amount");
 		ingredient.amountRequired = GsonHelper.getAsInt(json, "amount");
 		return ingredient;
+	}
+	
+	private static class NullFluidIngredient extends FluidIngredient{
+	    private static final NullFluidIngredient EMPTY = new NullFluidIngredient();
+	    
+	    private NullFluidIngredient() {
+	    }
+	    
+        @Override
+        protected boolean testInternal(FluidStack t) {
+            return true;
+        }
+
+        @Override
+        protected void readInternal(JsonObject json) {
+        }
+
+        @Override
+        protected void writeInternal(JsonObject json) {     
+            json.addProperty("null_fluid", true);
+        }
+
+        @Override
+        protected List<FluidStack> determineMatchingFluidStacks() {
+            return ImmutableList.of(new FluidStack(Fluids.EMPTY, 0));
+        }
+	    
 	}
 
 	public static class FluidStackIngredient extends FluidIngredient {
@@ -163,18 +179,6 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 		}
 
 		@Override
-		protected void readInternal(FriendlyByteBuf buffer) {
-			fluid = buffer.readRegistryId();
-			tagToMatch = buffer.readNbt();
-		}
-
-		@Override
-		protected void writeInternal(FriendlyByteBuf buffer) {
-			buffer.writeRegistryId(fluid);
-			buffer.writeNbt(tagToMatch);
-		}
-
-		@Override
 		protected void readInternal(JsonObject json) {
 			FluidStack stack = FluidHelper.deserializeFluidStack(json);
 			fluid = stack.getFluid();
@@ -183,7 +187,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 
 		@Override
 		protected void writeInternal(JsonObject json) {
-			json.addProperty("fluid", fluid.getRegistryName()
+			json.addProperty("fluid", ForgeRegistries.FLUIDS.getKey(fluid)
 				.toString());
 			json.add("nbt", JsonParser.parseString(tagToMatch.toString()));
 		}
@@ -200,32 +204,13 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 
 		protected TagKey<Fluid> tag;
 
-		@SuppressWarnings("deprecation")
 		@Override
 		protected boolean testInternal(FluidStack t) {
 			if (tag == null)
 				for (FluidStack accepted : getMatchingFluidStacks())
-					if (accepted.getFluid()
-						.isSame(t.getFluid()))
+					if (accepted.getFluid().isSame(t.getFluid()))
 						return true;
-			return t.getFluid().is(tag);
-		}
-
-		@Override
-		protected void readInternal(FriendlyByteBuf buffer) {
-			int size = buffer.readVarInt();
-			matchingFluidStacks = new ArrayList<>(size);
-			for (int i = 0; i < size; i++)
-				matchingFluidStacks.add(buffer.readFluidStack());
-		}
-
-		@Override
-		protected void writeInternal(FriendlyByteBuf buffer) {
-			// Tag has to be resolved on the server before sending
-			List<FluidStack> matchingFluidStacks = getMatchingFluidStacks();
-			buffer.writeVarInt(matchingFluidStacks.size());
-			matchingFluidStacks.stream()
-				.forEach(buffer::writeFluidStack);
+			return ForgeRegistries.FLUIDS.tags().getReverseTag(t.getFluid()).get().containsTag(tag);
 		}
 
 		@Override
@@ -236,8 +221,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 
 		@Override
 		protected void writeInternal(JsonObject json) {
-			json.addProperty("fluidTag", tag.location()
-				.toString());
+			json.addProperty("fluidTag", tag.location().toString());
 		}
 
 		@Override

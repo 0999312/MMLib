@@ -1,6 +1,6 @@
 package cn.mcmod_mmf.mmlib.data;
 
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.biome.Biome;
@@ -10,7 +10,7 @@ public abstract class AbstractLangProvider extends LanguageProvider {
     private final String mod_id;
     private final String loc_code;
 
-    public AbstractLangProvider(DataGenerator gen, String modid, String locale) {
+    public AbstractLangProvider(PackOutput gen, String modid, String locale) {
         super(gen, modid, locale);
         this.mod_id = modid;
         this.loc_code = locale;

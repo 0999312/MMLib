@@ -17,7 +17,7 @@ public class FluidHelper {
 
     public static JsonElement serializeFluidStack(FluidStack stack) {
         JsonObject json = new JsonObject();
-        json.addProperty("fluid", stack.getFluid().getRegistryName().toString());
+        json.addProperty("fluid", ForgeRegistries.FLUIDS.getKey(stack.getFluid()).toString());
         json.addProperty("amount", stack.getAmount());
         if (stack.hasTag())
             json.addProperty("nbt", stack.getTag().toString());
@@ -37,7 +37,7 @@ public class FluidHelper {
 
         try {
             JsonElement element = json.get("nbt");
-            stack.setTag(TagParser.parseTag(element.isJsonObject() ? DataGenUtil.GSON.toJson(element) : GsonHelper.convertToString(element, "nbt")));
+            stack.setTag(TagParser.parseTag(element.isJsonObject() ? DataGenUtil.DATA_GSON.toJson(element) : GsonHelper.convertToString(element, "nbt")));
         } catch (CommandSyntaxException e) {
             e.printStackTrace();
         }
