@@ -27,4 +27,7 @@ public class MathUtil {
         return a * Math.cos(Math.toRadians(x));
     }
 
+    public static boolean compareFloat(double a, double b) {
+        return Math.abs(a - b) < 1e-9;
+    }
 }

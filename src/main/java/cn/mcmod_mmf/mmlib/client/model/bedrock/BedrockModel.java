@@ -14,11 +14,31 @@ import cn.mcmod_mmf.mmlib.utils.ClientUtil;
 import net.minecraft.world.phys.AABB;
 
 public interface BedrockModel {
+    public BedrockModelPOJO getBedrockModelPOJO();
+    public void setBedrockModelPOJO(BedrockModelPOJO pojo);
     public HashMap<String, BedrockPart> getModelMap();
     public HashMap<String, BonesItem> getIndexBones();
     public List<BedrockPart> getShouldRender();
     public AABB getRenderBoundingBox();
     public void setRenderBoundingBox(AABB aabb);
+    
+    public default boolean needRefresh(BedrockModelPOJO pojo) {
+        // if not same object, refresh it.
+        return this.getBedrockModelPOJO() != pojo;
+    }
+    
+    public default void loadModel(BedrockModelPOJO pojo) {
+        this.getModelMap().clear();
+        this.getIndexBones().clear();
+        this.getShouldRender().clear();
+        String formatVersion = pojo.getFormatVersion();
+        if (formatVersion.equals(BedrockVersion.LEGACY.getVersion())) {
+            loadLegacyModel(pojo);
+        } else if (formatVersion.equals(BedrockVersion.NEW.getVersion())) {
+            loadNewModel(pojo);
+        }
+        this.setBedrockModelPOJO(pojo);
+    }
     
     public default void loadNewModel(BedrockModelPOJO pojo) {
         assert pojo.getGeometryModelNew() != null;
@@ -166,13 +186,11 @@ public interface BedrockModel {
             }
         }
     }
-
     
     public default void setRotationAngle(BedrockPart modelRenderer, float x, float y, float z) {
         modelRenderer.xRot = x;
         modelRenderer.yRot = y;
         modelRenderer.zRot = z;
-        modelRenderer.setInitRotationAngle(x, y, z);
     }
 
     public default float convertPivot(BonesItem bones, int index) {
@@ -216,8 +234,6 @@ public interface BedrockModel {
             return cube.getOrigin().get(index) - cube.getPivot().get(index);
         }
     }
-    
-    
     
     public default BedrockPart getChild(String partName) {
         return this.getModelMap().get(partName);

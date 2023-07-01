@@ -1,14 +1,13 @@
 package cn.mcmod_mmf.mmlib.client.model;
 
-import cn.mcmod_mmf.mmlib.client.model.bedrock.BedrockVersion;
 import cn.mcmod_mmf.mmlib.client.model.pojo.BedrockModelPOJO;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 
 public class BedrockArmorModel extends BedrockHumanoidModel<LivingEntity> {
 
-    public BedrockArmorModel(BedrockModelPOJO pojo, BedrockVersion version) {
-        super(pojo, version);
+    public BedrockArmorModel(BedrockModelPOJO pojo) {
+        super(pojo);
     }
 
     @Override

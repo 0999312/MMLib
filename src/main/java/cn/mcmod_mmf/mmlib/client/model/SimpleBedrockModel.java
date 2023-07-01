@@ -1,11 +1,12 @@
 package cn.mcmod_mmf.mmlib.client.model;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import cn.mcmod_mmf.mmlib.client.model.bedrock.BedrockModel;
 import cn.mcmod_mmf.mmlib.client.model.bedrock.BedrockPart;
-import cn.mcmod_mmf.mmlib.client.model.bedrock.BedrockVersion;
 import cn.mcmod_mmf.mmlib.client.model.pojo.BedrockModelPOJO;
 import cn.mcmod_mmf.mmlib.client.model.pojo.BonesItem;
 import net.minecraft.client.model.Model;
@@ -16,33 +17,29 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class SimpleBedrockModel extends Model implements BedrockModel {
 
-    protected final HashMap<String, BedrockPart> modelMap = new HashMap<>();
-
-    private final HashMap<String, BonesItem> indexBones = new HashMap<>();
-
-    private final List<BedrockPart> shouldRender = new LinkedList<>();
-
+    protected final HashMap<String, BedrockPart> modelMap;
+    private final HashMap<String, BonesItem> indexBones;
+    private final List<BedrockPart> shouldRender;
+    private BedrockModelPOJO modelPOJO;
     private AABB renderBoundingBox;
 
     public SimpleBedrockModel() {
         super(RenderType::entityTranslucent);
+        modelMap = Maps.newHashMap();
+        indexBones = Maps.newHashMap();
+        shouldRender = Lists.newLinkedList();
+        modelPOJO = null;
         renderBoundingBox = new AABB(-1, 0, -1, 1, 2, 1);
     }
 
-    public SimpleBedrockModel(BedrockModelPOJO pojo, BedrockVersion version) {
-        super(RenderType::entityTranslucent);
-        if (version == BedrockVersion.LEGACY) {
-            loadLegacyModel(pojo);
-        }
-        if (version == BedrockVersion.NEW) {
-            loadNewModel(pojo);
-        }
+    public SimpleBedrockModel(BedrockModelPOJO pojo) {
+        this();
+        loadModel(pojo);
     }
 
     @Override
@@ -76,6 +73,16 @@ public class SimpleBedrockModel extends Model implements BedrockModel {
     @Override
     public void setRenderBoundingBox(AABB aabb) {
         this.renderBoundingBox = aabb;
+    }
+
+    @Override
+    public BedrockModelPOJO getBedrockModelPOJO() {
+        return this.modelPOJO;
+    }
+
+    @Override
+    public void setBedrockModelPOJO(BedrockModelPOJO pojo) {
+        this.modelPOJO = pojo;
     }
 
 }

@@ -1,17 +1,17 @@
 package cn.mcmod_mmf.mmlib.client.model;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import cn.mcmod_mmf.mmlib.client.model.bedrock.BedrockModel;
 import cn.mcmod_mmf.mmlib.client.model.bedrock.BedrockPart;
-import cn.mcmod_mmf.mmlib.client.model.bedrock.BedrockVersion;
 import cn.mcmod_mmf.mmlib.client.model.pojo.BedrockModelPOJO;
 import cn.mcmod_mmf.mmlib.client.model.pojo.BonesItem;
 import net.minecraft.client.model.EntityModel;
@@ -23,29 +23,24 @@ import net.minecraft.world.phys.AABB;
  */
 public class BedrockEntityModel<T extends Entity> extends EntityModel<T> implements BedrockModel {
 
-    protected final HashMap<String, BedrockPart> modelMap = new HashMap<>();
-
-    private final HashMap<String, BonesItem> indexBones = new HashMap<>();
-
-    private final List<BedrockPart> shouldRender = new LinkedList<>();
-
+    protected final HashMap<String, BedrockPart> modelMap;
+    private final HashMap<String, BonesItem> indexBones;
+    private final List<BedrockPart> shouldRender;
+    private BedrockModelPOJO modelPOJO;
     private AABB renderBoundingBox;
 
     public BedrockEntityModel() {
-        super(RenderType::entityTranslucentCull);
+        super(RenderType::entityTranslucent);
+        modelMap = Maps.newHashMap();
+        indexBones = Maps.newHashMap();
+        shouldRender = Lists.newLinkedList();
         renderBoundingBox = new AABB(-1, 0, -1, 1, 2, 1);
     }
 
-    public BedrockEntityModel(BedrockModelPOJO pojo, BedrockVersion version) {
-        super(RenderType::entityTranslucent);
-        if (version == BedrockVersion.LEGACY) {
-            loadLegacyModel(pojo);
-        }
-        if (version == BedrockVersion.NEW) {
-            loadNewModel(pojo);
-        }
+    public BedrockEntityModel(BedrockModelPOJO pojo) {
+        this();
+        loadModel(pojo);
     }
-
 
     @Override
     @ParametersAreNonnullByDefault
@@ -81,10 +76,18 @@ public class BedrockEntityModel<T extends Entity> extends EntityModel<T> impleme
     }
 
     @Override
-    public void setupAnim(T p_102618_, float p_102619_, float p_102620_, float p_102621_, float p_102622_,
-            float p_102623_) {
-        // TODO Auto-generated method stub
+    public void setupAnim(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks,
+            float netHeadYaw, float headPitch) {
         
     }
+    
+    @Override
+    public BedrockModelPOJO getBedrockModelPOJO() {
+        return this.modelPOJO;
+    }
 
+    @Override
+    public void setBedrockModelPOJO(BedrockModelPOJO pojo) {
+        this.modelPOJO = pojo;
+    }
 }

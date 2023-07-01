@@ -130,12 +130,23 @@ jar {
     }
 }
 
+
 jar.finalizedBy('reobfJar')
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allJava
+}
+
+artifacts {
+    archives sourcesJar
+}
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             artifact jar
+            artifact sourcesJar
         }
     }
     repositories {

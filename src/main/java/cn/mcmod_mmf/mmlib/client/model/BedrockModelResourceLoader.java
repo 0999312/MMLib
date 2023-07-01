@@ -24,11 +24,10 @@ public class BedrockModelResourceLoader extends SimpleJsonResourceReloadListener
         ClientUtil.MODEL_MAP.clear();
         Main.getLogger().info("Started Loading Bedrock Model from : {}", resource_path);
         if(map.isEmpty())
-            Main.getLogger().error("Wait, {} is an empty folder!", resource_path);
+            Main.getLogger().error("{} is an empty folder!", resource_path);
         for(var entry : map.entrySet()) {
             Main.getLogger().info("Loading Bedrock Model Loading : {}", entry.getKey().toString());
             ClientUtil.loadModel(entry.getKey(), entry.getValue());
         }
     }
-
 }

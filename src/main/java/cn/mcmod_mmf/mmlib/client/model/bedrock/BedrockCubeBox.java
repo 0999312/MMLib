@@ -6,6 +6,7 @@ import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
+
 import net.minecraft.core.Direction;
 
 public class BedrockCubeBox implements BedrockCube {
@@ -15,7 +16,9 @@ public class BedrockCubeBox implements BedrockCube {
     public final float maxX;
     public final float maxY;
     public final float maxZ;
+    
     private final BedrockPolygon[] polygons;
+    private final Vector3f[] vectors;
 
     public BedrockCubeBox(float texOffX, float texOffY, float x, float y, float z, float width, float height, float depth, float delta, boolean mirror, float texWidth, float texHeight) {
         this.minX = x;
@@ -25,7 +28,8 @@ public class BedrockCubeBox implements BedrockCube {
         this.maxY = y + height;
         this.maxZ = z + depth;
         this.polygons = new BedrockPolygon[6];
-
+        this.vectors = new Vector3f[8];
+        
         float xEnd = x + width;
         float yEnd = y + height;
         float zEnd = z + depth;
@@ -41,27 +45,39 @@ public class BedrockCubeBox implements BedrockCube {
             xEnd = x;
             x = tmp;
         }
+        
+        x /= 16.0F;
+        y /= 16.0F;
+        z /= 16.0F;
+        xEnd /= 16.0F;
+        yEnd /= 16.0F;
+        zEnd /= 16.0F;
 
-        BedrockVertex vertex1 = new BedrockVertex(x, y, z, 0.0F, 0.0F);
-        BedrockVertex vertex2 = new BedrockVertex(xEnd, y, z, 0.0F, 8.0F);
-        BedrockVertex vertex3 = new BedrockVertex(xEnd, yEnd, z, 8.0F, 8.0F);
-        BedrockVertex vertex4 = new BedrockVertex(x, yEnd, z, 8.0F, 0.0F);
-        BedrockVertex vertex5 = new BedrockVertex(x, y, zEnd, 0.0F, 0.0F);
-        BedrockVertex vertex6 = new BedrockVertex(xEnd, y, zEnd, 0.0F, 8.0F);
-        BedrockVertex vertex7 = new BedrockVertex(xEnd, yEnd, zEnd, 8.0F, 8.0F);
-        BedrockVertex vertex8 = new BedrockVertex(x, yEnd, zEnd, 8.0F, 0.0F);
+        this.vectors[0] = new Vector3f(x, y, z);
+        this.vectors[1] = new Vector3f(xEnd, y, z);
+        this.vectors[2] = new Vector3f(xEnd, yEnd, z);
+        this.vectors[3] = new Vector3f(x, yEnd, z);
+        this.vectors[4] = new Vector3f(x, y, zEnd);
+        this.vectors[5] = new Vector3f(xEnd, y, zEnd);
+        this.vectors[6] = new Vector3f(xEnd, yEnd, zEnd);
+        this.vectors[7] = new Vector3f(x, yEnd, zEnd);
 
-        int dx = (int) width;
-        int dy = (int) height;
-        int dz = (int) depth;
+        BedrockVertex vertex1 = new BedrockVertex(0, 0.0F, 0.0F);
+        BedrockVertex vertex2 = new BedrockVertex(1, 0.0F, 8.0F);
+        BedrockVertex vertex3 = new BedrockVertex(2, 8.0F, 8.0F);
+        BedrockVertex vertex4 = new BedrockVertex(3, 8.0F, 0.0F);
+        BedrockVertex vertex5 = new BedrockVertex(4, 0.0F, 0.0F);
+        BedrockVertex vertex6 = new BedrockVertex(5, 0.0F, 8.0F);
+        BedrockVertex vertex7 = new BedrockVertex(6, 8.0F, 8.0F);
+        BedrockVertex vertex8 = new BedrockVertex(7, 8.0F, 0.0F);
 
-        float p1 = texOffX + dz;
-        float p2 = texOffX + dz + dx;
-        float p3 = texOffX + dz + dx + dx;
-        float p4 = texOffX + dz + dx + dz;
-        float p5 = texOffX + dz + dx + dz + dx;
-        float p6 = texOffY + dz;
-        float p7 = texOffY + dz + dy;
+        float p1 = texOffX + depth;
+        float p2 = texOffX + depth + width;
+        float p3 = texOffX + depth + width + width;
+        float p4 = texOffX + depth + width + depth;
+        float p5 = texOffX + depth + width + depth + width;
+        float p6 = texOffY + depth;
+        float p7 = texOffY + depth + height;
         float p8 = texOffY;
         float p9 = texOffX;
 
@@ -86,10 +102,7 @@ public class BedrockCubeBox implements BedrockCube {
             float nz = vector3f.z();
 
             for (BedrockVertex vertex : polygon.vertices) {
-                float x = vertex.pos.x() / 16.0F;
-                float y = vertex.pos.y() / 16.0F;
-                float z = vertex.pos.z() / 16.0F;
-                Vector4f vector4f = new Vector4f(x, y, z, 1.0F);
+                Vector4f vector4f = new Vector4f(this.vectors[vertex.posIndex]);
                 vector4f.transform(matrix4f);
                 consumer.vertex(vector4f.x(), vector4f.y(), vector4f.z(), red, green, blue, alpha, vertex.u, vertex.v, texV, texU, nx, ny, nz);
             }

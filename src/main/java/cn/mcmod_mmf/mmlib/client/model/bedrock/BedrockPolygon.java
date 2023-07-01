@@ -1,6 +1,7 @@
 package cn.mcmod_mmf.mmlib.client.model.bedrock;
 
 import com.mojang.math.Vector3f;
+
 import net.minecraft.core.Direction;
 
 public class BedrockPolygon {
@@ -26,4 +27,5 @@ public class BedrockPolygon {
             this.normal.mul(-1.0F, 1.0F, 1.0F);
         }
     }
+
 }
