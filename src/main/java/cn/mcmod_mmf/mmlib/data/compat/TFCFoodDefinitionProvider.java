@@ -28,37 +28,37 @@ public class TFCFoodDefinitionProvider implements DataProvider {
     protected final ExistingFileHelper existingFileHelper;
     private final ExistingFileHelper.IResourceType resourceType;
     protected final Map<ResourceLocation, FoodInfo> datas = Maps.newLinkedHashMap();
-    
+
     public TFCFoodDefinitionProvider(PackOutput output, ExistingFileHelper existingFileHelper, String modId) {
         this.output = output;
         this.modId = modId;
         this.existingFileHelper = existingFileHelper;
         this.resourceType = new ExistingFileHelper.ResourceType(PackType.SERVER_DATA, ".json", "tfc/food_items");
     }
-    
+
     public void addData(Item item) {
-        if(item instanceof IFoodLike food) 
+        if(item instanceof IFoodLike food)
             this.addData(item, food.getFoodInfo());
     }
-    
+
     public void addData(Item item, FoodInfo data) {
         this.datas.computeIfAbsent(ForgeRegistries.ITEMS.getKey(item), loc->{
             existingFileHelper.trackGenerated(loc, resourceType);
             return data;
         });
     }
-    
+
     @Override
     public CompletableFuture<?> run(CachedOutput cache){
         this.datas.clear();
         this.addDatas();
         final Path outputFolder = output.getOutputFolder();
         List<CompletableFuture<?>> futureList = Lists.newArrayList();
-        
+
         this.datas.forEach( (loc, data) -> {
             String pathString = String.join("/", PackType.SERVER_DATA.getDirectory(), this.modId, "tfc", "food_items", loc.getPath()+".json");
             Path path = outputFolder.resolve(pathString);
-            
+
             JsonObject jsonObj = new JsonObject();
             jsonObj.add("ingredient", Ingredient.of(ForgeRegistries.ITEMS.getValue(loc)).toJson());
             jsonObj.addProperty("hunger", data.getAmount());
@@ -70,11 +70,11 @@ public class TFCFoodDefinitionProvider implements DataProvider {
             jsonObj.addProperty("vegetables", data.getNutrients()[2]);
             jsonObj.addProperty("protein", data.getNutrients()[3]);
             jsonObj.addProperty("dairy", data.getNutrients()[4]);
-            
+
             futureList.add(DataProvider.saveStable(cache, jsonObj, path));
         });
         return CompletableFuture.allOf(futureList.stream().toArray(CompletableFuture<?>[]::new));
-        
+
     }
 
     public void addDatas() {

@@ -31,7 +31,7 @@ public class AbstractRecipeSerializer<T extends AbstractRecipe> implements Recip
     public void toNetwork(FriendlyByteBuf buffer, T recipe) {
         buffer.writeUtf(DataGenUtil.NETWORK_GSON.toJson(recipe));
     }
-    
+
     public JsonObject toJson(T recipe) {
         return DataGenUtil.NETWORK_GSON.toJsonTree(recipe).getAsJsonObject();
     }

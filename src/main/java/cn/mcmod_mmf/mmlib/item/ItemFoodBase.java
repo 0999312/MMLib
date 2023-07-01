@@ -1,15 +1,19 @@
 package cn.mcmod_mmf.mmlib.item;
 
 import cn.mcmod_mmf.mmlib.item.info.FoodInfo;
+import net.dries007.tfc.common.capabilities.food.FoodCapability;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.fml.ModList;
 
 public class ItemFoodBase extends Item implements IFoodLike {
     private final FoodInfo info;

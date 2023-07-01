@@ -26,14 +26,14 @@ public class BetterCombatWeaponAttributesProvider implements DataProvider {
     protected final ExistingFileHelper existingFileHelper;
     private final ExistingFileHelper.IResourceType resourceType;
     protected final Map<ResourceLocation, String> datas = Maps.newLinkedHashMap();
-    
+
     public BetterCombatWeaponAttributesProvider(PackOutput output, ExistingFileHelper existingFileHelper, String modId) {
         this.output = output;
         this.modId = modId;
         this.existingFileHelper = existingFileHelper;
         this.resourceType = new ExistingFileHelper.ResourceType(PackType.SERVER_DATA, ".json", "weapon_attributes");
     }
-    
+
     public void addData(Item item, String attribute) {
         this.datas.computeIfAbsent(ForgeRegistries.ITEMS.getKey(item), loc->{
             existingFileHelper.trackGenerated(loc, resourceType);
@@ -42,7 +42,7 @@ public class BetterCombatWeaponAttributesProvider implements DataProvider {
     }
 
     private void addDatas() {
-        
+
     }
 
     @Override
@@ -56,14 +56,14 @@ public class BetterCombatWeaponAttributesProvider implements DataProvider {
         this.addDatas();
         final Path outputFolder = output.getOutputFolder();
         List<CompletableFuture<?>> futureList = Lists.newArrayList();
-        
+
         this.datas.forEach( (loc, data) -> {
             String pathString = String.join("/", PackType.SERVER_DATA.getDirectory(), loc.getNamespace(), "weapon_attributes", loc.getPath()+".json");
             Path path = outputFolder.resolve(pathString);
-            
+
             JsonObject jsonObj = new JsonObject();
             jsonObj.addProperty("parent", data);
-            
+
             futureList.add(DataProvider.saveStable(cache, jsonObj, path));
         });
         return CompletableFuture.allOf(futureList.stream().toArray(CompletableFuture<?>[]::new));

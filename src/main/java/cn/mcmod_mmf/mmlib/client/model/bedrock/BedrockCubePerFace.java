@@ -23,7 +23,7 @@ public class BedrockCubePerFace implements BedrockCube {
     public final float maxX;
     public final float maxY;
     public final float maxZ;
-    
+
     private final List<BedrockPolygon> polygons;
     private final Vector3f[] vectors;
 
@@ -71,25 +71,25 @@ public class BedrockCubePerFace implements BedrockCube {
         BedrockVertex vertex6 = new BedrockVertex(5, 0.0F, 8.0F);
         BedrockVertex vertex7 = new BedrockVertex(6, 8.0F, 8.0F);
         BedrockVertex vertex8 = new BedrockVertex(7, 8.0F, 0.0F);
-        
+
         BedrockPolygon downQuad = getTexturedQuad(new BedrockVertex[]{vertex6, vertex5, vertex1, vertex2}, texWidth, texHeight, Direction.DOWN, faces);
         if(downQuad != null)
-            this.polygons.add(downQuad); 
+            this.polygons.add(downQuad);
         BedrockPolygon upQuad = getTexturedQuad(new BedrockVertex[]{vertex3, vertex4, vertex8, vertex7}, texWidth, texHeight, Direction.UP, faces);
         if(upQuad != null)
-            this.polygons.add(upQuad); 
+            this.polygons.add(upQuad);
         BedrockPolygon westQuad = getTexturedQuad(new BedrockVertex[]{vertex1, vertex5, vertex8, vertex4}, texWidth, texHeight, Direction.WEST, faces);
         if(westQuad != null)
-            this.polygons.add(westQuad); 
+            this.polygons.add(westQuad);
         BedrockPolygon northQuad = getTexturedQuad(new BedrockVertex[]{vertex2, vertex1, vertex4, vertex3}, texWidth, texHeight, Direction.NORTH, faces);
         if(northQuad != null)
-            this.polygons.add(northQuad); 
+            this.polygons.add(northQuad);
         BedrockPolygon eastQuad = getTexturedQuad(new BedrockVertex[]{vertex6, vertex2, vertex3, vertex7}, texWidth, texHeight, Direction.EAST, faces);
         if(eastQuad != null)
-            this.polygons.add(eastQuad); 
+            this.polygons.add(eastQuad);
         BedrockPolygon southQuad = getTexturedQuad(new BedrockVertex[]{vertex5, vertex6, vertex7, vertex8}, texWidth, texHeight, Direction.SOUTH, faces);
         if(southQuad != null)
-            this.polygons.add(southQuad);     
+            this.polygons.add(southQuad);
     }
 
     private BedrockPolygon getTexturedQuad(BedrockVertex[] positionsIn, float texWidth, float texHeight, Direction direction, FaceUVsItem faces) {

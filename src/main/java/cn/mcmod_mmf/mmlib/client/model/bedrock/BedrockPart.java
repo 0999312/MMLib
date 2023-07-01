@@ -19,7 +19,7 @@ import org.joml.Quaternionf;
 public final class BedrockPart {
     public final ObjectList<BedrockCube> cubes;
     private final List<BedrockPart> children;
-    
+
     public float x;
     public float y;
     public float z;
@@ -29,7 +29,7 @@ public final class BedrockPart {
 
     public boolean visible;
     public boolean mirror;
-    
+
     public BedrockPart() {
         cubes = new ObjectArrayList<>();
         children = Lists.newArrayList();
@@ -53,7 +53,7 @@ public final class BedrockPart {
                 poseStack.pushPose();
                 this.translateAndRotate(poseStack);
                 this.compile(poseStack.last(), consumer, texU, texV, red, green, blue, alpha);
-                
+
                 for (BedrockPart part : this.children) {
                     part.render(poseStack, consumer, texU, texV, red, green, blue, alpha);
                 }
@@ -110,7 +110,7 @@ public final class BedrockPart {
     public void addChild(BedrockPart model) {
         this.children.add(model);
     }
-    
+
     public List<BedrockPart> getChildren() {
         return children;
     }

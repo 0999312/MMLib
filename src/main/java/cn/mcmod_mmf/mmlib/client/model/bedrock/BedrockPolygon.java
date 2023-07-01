@@ -27,7 +27,7 @@ public class BedrockPolygon {
             this.normal.mul(-1.0F, 1.0F, 1.0F);
         }
     }
-    
+
     public Vector3f getNormalCopy() {
         return new Vector3f(normal);
     }

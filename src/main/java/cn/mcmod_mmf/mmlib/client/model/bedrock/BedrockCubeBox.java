@@ -16,7 +16,7 @@ public class BedrockCubeBox implements BedrockCube {
     public final float maxX;
     public final float maxY;
     public final float maxZ;
-    
+
     private final BedrockPolygon[] polygons;
     private final Vector3f[] vectors;
 
@@ -29,7 +29,7 @@ public class BedrockCubeBox implements BedrockCube {
         this.maxZ = z + depth;
         this.polygons = new BedrockPolygon[6];
         this.vectors = new Vector3f[8];
-        
+
         float xEnd = x + width;
         float yEnd = y + height;
         float zEnd = z + depth;
@@ -45,7 +45,7 @@ public class BedrockCubeBox implements BedrockCube {
             xEnd = x;
             x = tmp;
         }
-        
+
         x /= 16.0F;
         y /= 16.0F;
         z /= 16.0F;

@@ -78,9 +78,9 @@ public class BedrockEntityModel<T extends Entity> extends EntityModel<T> impleme
     @Override
     public void setupAnim(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks,
             float netHeadYaw, float headPitch) {
-        
+
     }
-    
+
     @Override
     public BedrockModelPOJO getBedrockModelPOJO() {
         return this.modelPOJO;

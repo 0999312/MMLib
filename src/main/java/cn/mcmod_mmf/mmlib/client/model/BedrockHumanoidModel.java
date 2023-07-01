@@ -32,13 +32,13 @@ public class BedrockHumanoidModel<T extends LivingEntity> extends BedrockEntityM
         this.leftArmPose = HumanoidModel.ArmPose.EMPTY;
         this.rightArmPose = HumanoidModel.ArmPose.EMPTY;
     }
-    
+
     public BedrockHumanoidModel(BedrockModelPOJO pojo) {
         super(pojo);
         this.leftArmPose = HumanoidModel.ArmPose.EMPTY;
         this.rightArmPose = HumanoidModel.ArmPose.EMPTY;
     }
-    
+
     @Override
     public void loadModel(BedrockModelPOJO pojo) {
         super.loadModel(pojo);

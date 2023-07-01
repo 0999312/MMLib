@@ -21,12 +21,12 @@ public interface BedrockModel {
     public List<BedrockPart> getShouldRender();
     public AABB getRenderBoundingBox();
     public void setRenderBoundingBox(AABB aabb);
-    
+
     public default boolean needRefresh(BedrockModelPOJO pojo) {
         // if not same object, refresh it.
         return this.getBedrockModelPOJO() != pojo;
     }
-    
+
     public default void loadModel(BedrockModelPOJO pojo) {
         this.getModelMap().clear();
         this.getIndexBones().clear();
@@ -39,7 +39,7 @@ public interface BedrockModel {
         }
         this.setBedrockModelPOJO(pojo);
     }
-    
+
     public default void loadNewModel(BedrockModelPOJO pojo) {
         assert pojo.getGeometryModelNew() != null;
         pojo.getGeometryModelNew().deco();
@@ -186,7 +186,7 @@ public interface BedrockModel {
             }
         }
     }
-    
+
     public default void setRotationAngle(BedrockPart modelRenderer, float x, float y, float z) {
         modelRenderer.xRot = x;
         modelRenderer.yRot = y;
@@ -234,7 +234,7 @@ public interface BedrockModel {
             return cube.getOrigin().get(index) - cube.getPivot().get(index);
         }
     }
-    
+
     public default BedrockPart getChild(String partName) {
         return this.getModelMap().get(partName);
     }
