@@ -4,15 +4,9 @@ plugins {
     id 'net.minecraftforge.gradle' version '5.1.+'
 }
 
-<<<<<<< HEAD
 version = '1.2.7-1.20'
 group = 'cn.mcmod_mmf.mysterious_mountain_lib'
 archivesBaseName = 'mysterious_mountain_lib'
-=======
-version = '1.2.1-1.18.2'
-group = 'cn.mcmod_mmf.mmlib'
-archivesBaseName = 'mmlib'
->>>>>>> 35cb0068acff9d72e865ab87b47ceca433f326b8
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
