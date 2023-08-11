@@ -71,6 +71,10 @@ public class BedrockCubeBox implements BedrockCube {
         BedrockVertex vertex7 = new BedrockVertex(6, 8.0F, 8.0F);
         BedrockVertex vertex8 = new BedrockVertex(7, 8.0F, 0.0F);
 
+        depth = (float)(depth < 1.0F && depth > 0.0F ? Math.ceil(depth) :Math.floor(depth));
+        width = (float)(width < 1.0F && depth > 0.0F ? Math.ceil(width) :Math.floor(width));
+        height = (float)(height < 1.0F && depth > 0.0F ? Math.ceil(height) :Math.floor(height));
+        
         float p1 = texOffX + depth;
         float p2 = texOffX + depth + width;
         float p3 = texOffX + depth + width + width;
