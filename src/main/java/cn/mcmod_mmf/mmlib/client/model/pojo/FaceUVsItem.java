@@ -1,22 +1,21 @@
 package cn.mcmod_mmf.mmlib.client.model.pojo;
 
 import com.google.gson.annotations.SerializedName;
-
 import net.minecraft.core.Direction;
 
 public class FaceUVsItem {
     @SerializedName("down")
-    private FaceItem down;
+    private FaceItem down = FaceItem.empty();
     @SerializedName("east")
-    private FaceItem east;
+    private FaceItem east = FaceItem.empty();
     @SerializedName("north")
-    private FaceItem north;
+    private FaceItem north = FaceItem.empty();
     @SerializedName("south")
-    private FaceItem south;
+    private FaceItem south = FaceItem.empty();
     @SerializedName("up")
-    private FaceItem up;
+    private FaceItem up = FaceItem.empty();
     @SerializedName("west")
-    private FaceItem west;
+    private FaceItem west = FaceItem.empty();
 
     public static FaceUVsItem singleSouthFace() {
         FaceUVsItem faces = new FaceUVsItem();
