@@ -45,9 +45,7 @@ public class SimpleBedrockModel extends Model implements BedrockModel {
     @Override
     @ParametersAreNonnullByDefault
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        for (BedrockPart model : this.getShouldRender()) {
-            model.render(poseStack, buffer, packedLight, packedOverlay);
-        }
+        this.renderBedrockModel(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
     @Override
