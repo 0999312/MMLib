@@ -27,6 +27,7 @@ public class SimpleBedrockModel extends Model implements BedrockModel {
     private final List<BedrockPart> shouldRender;
     private BedrockModelPOJO modelPOJO;
     private AABB renderBoundingBox;
+    private boolean emissive;
 
     public SimpleBedrockModel() {
         super(RenderType::entityTranslucent);
@@ -35,6 +36,7 @@ public class SimpleBedrockModel extends Model implements BedrockModel {
         shouldRender = Lists.newLinkedList();
         modelPOJO = null;
         renderBoundingBox = new AABB(-1, 0, -1, 1, 2, 1);
+        emissive = false;
     }
 
     public SimpleBedrockModel(BedrockModelPOJO pojo) {
@@ -81,6 +83,16 @@ public class SimpleBedrockModel extends Model implements BedrockModel {
     @Override
     public void setBedrockModelPOJO(BedrockModelPOJO pojo) {
         this.modelPOJO = pojo;
+    }
+
+    @Override
+    public boolean isEmissive() {
+        return this.emissive;
+    }
+
+    @Override
+    public void setEmissive(boolean emissive) {
+        this.emissive = emissive;
     }
 
 }

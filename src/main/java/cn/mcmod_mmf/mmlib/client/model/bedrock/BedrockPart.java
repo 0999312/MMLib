@@ -48,9 +48,8 @@ public final class BedrockPart {
 
     public void render(PoseStack poseStack, VertexConsumer consumer, int texU, int texV, float red, float green,
             float blue, float alpha) {
-        if (this.visible) {
+        if (this.visible) 
             renderCubes(false, poseStack, consumer, texU, texV, red, green, blue, alpha);
-        }
     }
     
     public void renderEmissive(PoseStack poseStack, VertexConsumer consumer, int texU, int texV) {
@@ -59,9 +58,8 @@ public final class BedrockPart {
 
     public void renderEmissive(PoseStack poseStack, VertexConsumer consumer, int texU, int texV, float red, float green,
             float blue, float alpha) {
-        if (this.visible) {
+        if (this.visible) 
             renderCubes(true, poseStack, consumer, texU, texV, red, green, blue, alpha);
-        }
     }
 
     public void renderCubes(boolean renderEmissive, PoseStack poseStack, VertexConsumer consumer, int texU, int texV, float red, float green,
@@ -125,22 +123,22 @@ public final class BedrockPart {
         return PartPose.offsetAndRotation(this.x, this.y, this.z, this.xRot, this.yRot, this.zRot);
     }
 
-    public void loadPose(PartPose p_171323_) {
-        this.x = p_171323_.x;
-        this.y = p_171323_.y;
-        this.z = p_171323_.z;
-        this.xRot = p_171323_.xRot;
-        this.yRot = p_171323_.yRot;
-        this.zRot = p_171323_.zRot;
+    public void loadPose(PartPose pose) {
+        this.x = pose.x;
+        this.y = pose.y;
+        this.z = pose.z;
+        this.xRot = pose.xRot;
+        this.yRot = pose.yRot;
+        this.zRot = pose.zRot;
     }
 
-    public void copyFrom(BedrockPart p_104316_) {
-        this.xRot = p_104316_.xRot;
-        this.yRot = p_104316_.yRot;
-        this.zRot = p_104316_.zRot;
-        this.x = p_104316_.x;
-        this.y = p_104316_.y;
-        this.z = p_104316_.z;
+    public void copyFrom(BedrockPart part) {
+        this.xRot = part.xRot;
+        this.yRot = part.yRot;
+        this.zRot = part.zRot;
+        this.x = part.x;
+        this.y = part.y;
+        this.z = part.z;
     }
 
     public void addChild(BedrockPart model) {

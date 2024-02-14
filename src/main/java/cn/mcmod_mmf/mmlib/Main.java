@@ -66,10 +66,10 @@ public class Main {
             Component component = new TranslatableComponent(key, event.getPlayer().getName().getString());
             event.getPlayer().sendMessage(component, event.getPlayer().getUUID());
             if (april_first) {
-                if (event.getPlayer() instanceof ServerPlayer) {
-                    ((ServerPlayer) event.getPlayer()).connection.send(new ClientboundSoundPacket(
-                            presented_by_zaia.get(), SoundSource.PLAYERS, event.getPlayer().getX(),
-                            event.getPlayer().getY(), event.getPlayer().getZ(), 1F, 1F));
+                if (event.getPlayer() instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.connection.send(new ClientboundSoundPacket(
+                            presented_by_zaia.get(), SoundSource.PLAYERS, serverPlayer.getX(),
+                            serverPlayer.getY(), serverPlayer.getZ(), 1F, 1F));
                 }
             }
         }

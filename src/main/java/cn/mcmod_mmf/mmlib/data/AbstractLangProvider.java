@@ -16,6 +16,7 @@ public abstract class AbstractLangProvider extends LanguageProvider {
         this.loc_code = locale;
     }
 
+    
     public void addItemGroup(CreativeModeTab group, String name) {
         add(group.getDisplayName().getString(), name);
     }

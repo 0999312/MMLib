@@ -22,15 +22,15 @@ public class AbstractAdvancements implements Consumer<Consumer<Advancement>>{
     
     public static Advancement.Builder getRoot(ItemStack display, ResourceLocation bg, FrameType frame, boolean showToast, boolean announceToChat, boolean hidden) {
         return Advancement.Builder.advancement().display(display,
-                new TranslatableComponent(display.getItem().getRegistryName().getNamespace()+".advancement.root"),
-                new TranslatableComponent(display.getItem().getRegistryName().getNamespace()+".advancement.root.desc"),
+                new TranslatableComponent("advancement."+display.getItem().getRegistryName().getNamespace()+".root.title"),
+                new TranslatableComponent("advancement."+display.getItem().getRegistryName().getNamespace()+".root.desc"),
                 bg, frame, showToast, announceToChat, hidden);
     }
     
     public static Advancement.Builder getAdvancement(Advancement parent, ItemStack display, String name, FrameType frame, boolean showToast, boolean announceToChat, boolean hidden) {
         return Advancement.Builder.advancement().parent(parent).display(display,
-                new TranslatableComponent(display.getItem().getRegistryName().getNamespace()+".advancement." + name),
-                new TranslatableComponent(display.getItem().getRegistryName().getNamespace()+".advancement." + name + ".desc"),
+                new TranslatableComponent("advancement."+display.getItem().getRegistryName().getNamespace()+'.'+name + ".title"),
+                new TranslatableComponent("advancement."+display.getItem().getRegistryName().getNamespace()+'.'+name + ".desc"),
                 null, frame, showToast, announceToChat, hidden);
     }
     

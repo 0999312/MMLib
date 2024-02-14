@@ -24,6 +24,8 @@ public interface BedrockModel {
     public List<BedrockPart> getShouldRender();
     public AABB getRenderBoundingBox();
     public void setRenderBoundingBox(AABB aabb);
+    public boolean isEmissive();
+    public void setEmissive(boolean emissive);
     
     public default boolean needRefresh(BedrockModelPOJO pojo) {
         // if not same object, refresh it.
@@ -71,7 +73,8 @@ public interface BedrockModel {
         float width = description.getVisibleBoundsWidth() / 2.0f;
         float height = description.getVisibleBoundsHeight() / 2.0f;
         this.setRenderBoundingBox(new AABB(offsetX - width, offsetY - height, offsetZ - width, offsetX + width, offsetY + height, offsetZ + width));
-
+        // Ensure default emissive setting is false, so we can change POJO safely.
+        this.setEmissive(false);
         for (BonesItem bones : pojo.getGeometryModelNew().getBones()) {
             this.getIndexBones().put(bones.getName(), bones);
             this.getModelMap().put(bones.getName(), new BedrockPart());
@@ -82,8 +85,10 @@ public interface BedrockModel {
             @Nullable List<Float> rotation = bones.getRotation();
             @Nullable String parent = bones.getParent();
             BedrockPart model = this.getModelMap().get(name);
-            if(name.startsWith("emissive"))
+            if(name.startsWith("emissive")) {
                 model.setEmissive();
+                this.setEmissive(true);
+            }
             model.mirror = bones.isMirror();
 
             model.setPos(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
@@ -161,7 +166,8 @@ public interface BedrockModel {
         float width = pojo.getGeometryModelLegacy().getVisibleBoundsWidth() / 2.0f;
         float height = pojo.getGeometryModelLegacy().getVisibleBoundsHeight() / 2.0f;
         this.setRenderBoundingBox(new AABB(offsetX - width, offsetY - height, offsetZ - width, offsetX + width, offsetY + height, offsetZ + width));
-
+        // Ensure default emissive setting is false, so we can change POJO safely.
+        this.setEmissive(false);
         for (BonesItem bones : pojo.getGeometryModelLegacy().getBones()) {
             this.getIndexBones().put(bones.getName(), bones);
             this.getModelMap().put(bones.getName(), new BedrockPart());
@@ -172,8 +178,10 @@ public interface BedrockModel {
             @Nullable List<Float> rotation = bones.getRotation();
             @Nullable String parent = bones.getParent();
             BedrockPart model = this.getModelMap().get(name);
-            if(name.startsWith("emissive"))
+            if(name.startsWith("emissive")) {
                 model.setEmissive();
+                this.setEmissive(true);
+            }
             model.mirror = bones.isMirror();
 
             model.setPos(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
