@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+
 import cn.mcmod_mmf.mmlib.client.model.pojo.BedrockModelPOJO;
 import cn.mcmod_mmf.mmlib.client.model.pojo.BonesItem;
 import cn.mcmod_mmf.mmlib.client.model.pojo.CubesItem;
@@ -21,12 +24,26 @@ public interface BedrockModel {
     public List<BedrockPart> getShouldRender();
     public AABB getRenderBoundingBox();
     public void setRenderBoundingBox(AABB aabb);
-
+    public boolean isEmissive();
+    public void setEmissive(boolean emissive);
+    
     public default boolean needRefresh(BedrockModelPOJO pojo) {
         // if not same object, refresh it.
         return this.getBedrockModelPOJO() != pojo;
     }
-
+    
+    public default void renderBedrockModel(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
+        for (BedrockPart model : this.getShouldRender()) {
+            model.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+        }
+    }
+    
+    public default void renderEmissiveParts(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
+        for (BedrockPart model : this.getShouldRender()) {
+            model.renderEmissive(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+        }
+    }
+    
     public default void loadModel(BedrockModelPOJO pojo) {
         this.getModelMap().clear();
         this.getIndexBones().clear();
@@ -39,7 +56,7 @@ public interface BedrockModel {
         }
         this.setBedrockModelPOJO(pojo);
     }
-
+    
     public default void loadNewModel(BedrockModelPOJO pojo) {
         assert pojo.getGeometryModelNew() != null;
         pojo.getGeometryModelNew().deco();
@@ -67,6 +84,10 @@ public interface BedrockModel {
             @Nullable List<Float> rotation = bones.getRotation();
             @Nullable String parent = bones.getParent();
             BedrockPart model = this.getModelMap().get(name);
+            if(name.startsWith("emissive")) {
+                model.setEmissive();
+                this.setEmissive(true);
+            }
             model.mirror = bones.isMirror();
 
             model.setPos(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
@@ -76,7 +97,8 @@ public interface BedrockModel {
             }
 
             if (parent != null) {
-                this.getModelMap().get(parent).addChild(model);
+                var parentPart = this.getModelMap().get(parent);
+                parentPart.addChild(model);
             } else {
                 this.getShouldRender().add(model);
             }
@@ -95,12 +117,12 @@ public interface BedrockModel {
 
                 if (cubeRotation == null) {
                     if (faceUv == null) {
-                        model.cubes.add(new BedrockCubeBox(uv.get(0), uv.get(1),
+                        model.cubes.add(new BedrockCube(uv.get(0), uv.get(1),
                                 convertOrigin(bones, cube, 0), convertOrigin(bones, cube, 1), convertOrigin(bones, cube, 2),
                                 size.get(0), size.get(1), size.get(2), inflate, mirror,
                                 texWidth, texHeight));
                     } else {
-                        model.cubes.add(new BedrockCubePerFace(
+                        model.cubes.add(new BedrockCube(
                                 convertOrigin(bones, cube, 0), convertOrigin(bones, cube, 1), convertOrigin(bones, cube, 2),
                                 size.get(0), size.get(1), size.get(2), inflate,
                                 texWidth, texHeight, faceUv));
@@ -112,12 +134,12 @@ public interface BedrockModel {
                     cubeRenderer.setPos(convertPivot(bones, cube, 0), convertPivot(bones, cube, 1), convertPivot(bones, cube, 2));
                     setRotationAngle(cubeRenderer, ClientUtil.convertRotation(cubeRotation.get(0)), ClientUtil.convertRotation(cubeRotation.get(1)), ClientUtil.convertRotation(cubeRotation.get(2)));
                     if (faceUv == null) {
-                        cubeRenderer.cubes.add(new BedrockCubeBox(uv.get(0), uv.get(1),
+                        cubeRenderer.cubes.add(new BedrockCube(uv.get(0), uv.get(1),
                                 convertOrigin(cube, 0), convertOrigin(cube, 1), convertOrigin(cube, 2),
                                 size.get(0), size.get(1), size.get(2), inflate, mirror,
                                 texWidth, texHeight));
                     } else {
-                        cubeRenderer.cubes.add(new BedrockCubePerFace(
+                        cubeRenderer.cubes.add(new BedrockCube(
                                 convertOrigin(cube, 0), convertOrigin(cube, 1), convertOrigin(cube, 2),
                                 size.get(0), size.get(1), size.get(2), inflate,
                                 texWidth, texHeight, faceUv));
@@ -154,7 +176,10 @@ public interface BedrockModel {
             @Nullable List<Float> rotation = bones.getRotation();
             @Nullable String parent = bones.getParent();
             BedrockPart model = this.getModelMap().get(name);
-
+            if(name.startsWith("emissive")) {
+                model.setEmissive();
+                this.setEmissive(true);
+            }
             model.mirror = bones.isMirror();
 
             model.setPos(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
@@ -179,14 +204,14 @@ public interface BedrockModel {
                 boolean mirror = cube.isMirror();
                 float inflate = cube.getInflate();
 
-                model.cubes.add(new BedrockCubeBox(uv.get(0), uv.get(1),
+                model.cubes.add(new BedrockCube(uv.get(0), uv.get(1),
                         convertOrigin(bones, cube, 0), convertOrigin(bones, cube, 1), convertOrigin(bones, cube, 2),
                         size.get(0), size.get(1), size.get(2), inflate, mirror,
                         texWidth, texHeight));
             }
         }
     }
-
+    
     public default void setRotationAngle(BedrockPart modelRenderer, float x, float y, float z) {
         modelRenderer.xRot = x;
         modelRenderer.yRot = y;
@@ -234,7 +259,7 @@ public interface BedrockModel {
             return cube.getOrigin().get(index) - cube.getPivot().get(index);
         }
     }
-
+    
     public default BedrockPart getChild(String partName) {
         return this.getModelMap().get(partName);
     }

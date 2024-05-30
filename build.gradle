@@ -4,21 +4,15 @@ plugins {
     id 'net.minecraftforge.gradle' version '5.1.+'
 }
 
-<<<<<<< HEAD
-version = '1.2.7-1.20'
+version = '1.4.6-1.20.1'
 group = 'cn.mcmod_mmf.mysterious_mountain_lib'
 archivesBaseName = 'mysterious_mountain_lib'
-=======
-version = '1.2.1-1.18.2'
-group = 'cn.mcmod_mmf.mmlib'
-archivesBaseName = 'mmlib'
->>>>>>> 35cb0068acff9d72e865ab87b47ceca433f326b8
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'official', version: '1.20'
+    mappings channel: 'official', version: '1.20.1'
 
     runs {
         client {
@@ -26,11 +20,7 @@ minecraft {
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
             properties 'mixin.env.disableRefMap': 'true'
-<<<<<<< HEAD
             property 'forge.enabledGameTestNamespaces', 'mysterious_mountain_lib'
-=======
-            property 'forge.enabledGameTestNamespaces', 'mmlib'
->>>>>>> 35cb0068acff9d72e865ab87b47ceca433f326b8
             mods {
                 mysterious_mountain_lib {
                     source sourceSets.main
@@ -43,35 +33,20 @@ minecraft {
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
             properties 'mixin.env.disableRefMap': 'true'
-<<<<<<< HEAD
             property 'forge.enabledGameTestNamespaces', 'mysterious_mountain_lib'
             mods {
                 mysterious_mountain_lib {
-=======
-            property 'forge.enabledGameTestNamespaces', 'mmlib'
-            mods {
-                mmlib {
->>>>>>> 35cb0068acff9d72e865ab87b47ceca433f326b8
                     source sourceSets.main
                 }
             }
         }
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> 35cb0068acff9d72e865ab87b47ceca433f326b8
         gameTestServer {
             workingDirectory project.file('run')
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
             properties 'mixin.env.disableRefMap': 'true'
-<<<<<<< HEAD
             property 'forge.enabledGameTestNamespaces', 'mysterious_mountain_lib'
-=======
-            property 'forge.enabledGameTestNamespaces', 'mmlib'
->>>>>>> 35cb0068acff9d72e865ab87b47ceca433f326b8
 
             mods {
                 mysterious_mountain_lib {
@@ -85,13 +60,8 @@ minecraft {
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
             properties 'mixin.env.disableRefMap': 'true'
-<<<<<<< HEAD
             property 'forge.enabledGameTestNamespaces', 'mysterious_mountain_lib'
 			args '--mod', 'mysterious_mountain_lib', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-=======
-            property 'forge.enabledGameTestNamespaces', 'mmlib'
-			args '--mod', 'mmlib', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
->>>>>>> 35cb0068acff9d72e865ab87b47ceca433f326b8
 
             mods {
                 mysterious_mountain_lib {
@@ -116,28 +86,10 @@ repositories {
             includeGroup "curse.maven"
         }
     }
-<<<<<<< HEAD
-
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20-46.0.14'
-
-=======
-    
-}
-
-dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.2-40.1.73'
-
-    implementation fg.deobf("curse.maven:terrafirmacraft-302973:3970479")
-    
-    compileOnly fg.deobf("vazkii.patchouli:Patchouli:1.18.2-70")
-    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.18.2-70")
-    
-    compileOnly fg.deobf("mezz.jei:jei-1.18.2-forge:10.0.0.191")
-    runtimeOnly fg.deobf("mezz.jei:jei-1.18.2-forge:10.0.0.191")
->>>>>>> 35cb0068acff9d72e865ab87b47ceca433f326b8
+    minecraft 'net.minecraftforge:forge:1.20.1-47.2.0'
 }
 
 

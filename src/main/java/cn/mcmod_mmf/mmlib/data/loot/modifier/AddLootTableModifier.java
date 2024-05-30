@@ -35,12 +35,10 @@ public class AddLootTableModifier extends LootModifier
         return true;
     }
     
-    @SuppressWarnings("deprecation")
     @Nonnull
     @Override
     protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         if (this.canApplyModifier()) {
-//            LootTable extraTable = context.getLootTable(this.lootTable);
             LootTable extraTable = context.getResolver().getLootTable(this.lootTable);
             extraTable.getRandomItems(context, generatedLoot::add);
         }

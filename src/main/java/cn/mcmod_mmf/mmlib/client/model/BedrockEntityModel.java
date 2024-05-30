@@ -28,6 +28,7 @@ public class BedrockEntityModel<T extends Entity> extends EntityModel<T> impleme
     private final List<BedrockPart> shouldRender;
     private BedrockModelPOJO modelPOJO;
     private AABB renderBoundingBox;
+    private boolean emissive;
 
     public BedrockEntityModel() {
         super(RenderType::entityTranslucent);
@@ -35,6 +36,7 @@ public class BedrockEntityModel<T extends Entity> extends EntityModel<T> impleme
         indexBones = Maps.newHashMap();
         shouldRender = Lists.newLinkedList();
         renderBoundingBox = new AABB(-1, 0, -1, 1, 2, 1);
+        emissive = false;
     }
 
     public BedrockEntityModel(BedrockModelPOJO pojo) {
@@ -45,9 +47,7 @@ public class BedrockEntityModel<T extends Entity> extends EntityModel<T> impleme
     @Override
     @ParametersAreNonnullByDefault
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        for (BedrockPart model : this.getShouldRender()) {
-            model.render(poseStack, buffer, packedLight, packedOverlay);
-        }
+        this.renderBedrockModel(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
     @Override
@@ -89,5 +89,15 @@ public class BedrockEntityModel<T extends Entity> extends EntityModel<T> impleme
     @Override
     public void setBedrockModelPOJO(BedrockModelPOJO pojo) {
         this.modelPOJO = pojo;
+    }
+    
+    @Override
+    public boolean isEmissive() {
+        return this.emissive;
+    }
+
+    @Override
+    public void setEmissive(boolean emissive) {
+        this.emissive = emissive;
     }
 }
