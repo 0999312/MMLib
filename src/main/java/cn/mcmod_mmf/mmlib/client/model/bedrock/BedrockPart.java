@@ -1,5 +1,6 @@
 package cn.mcmod_mmf.mmlib.client.model.bedrock;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
@@ -10,8 +11,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 import java.util.Random;
-
-import org.apache.commons.compress.utils.Lists;
 
 @OnlyIn(Dist.CLIENT)
 public final class BedrockPart {
@@ -69,14 +68,14 @@ public final class BedrockPart {
             this.translateAndRotate(poseStack);
             if(this.emissive == renderEmissive)
                 this.compile(poseStack.last(), consumer, texU, texV, red, green, blue, alpha);
-            
+
             for (BedrockPart part : this.children) {
                 if(renderEmissive)
                     part.renderEmissive(poseStack, consumer, texU, texV, red, green, blue, alpha);
                 else
                     part.render(poseStack, consumer, texU, texV, red, green, blue, alpha);
             }
-
+            
             poseStack.popPose();
         }
     }
@@ -98,9 +97,8 @@ public final class BedrockPart {
 
     private void compile(PoseStack.Pose pose, VertexConsumer consumer, int texU, int texV, float red, float green,
             float blue, float alpha) {
-        for (BedrockCube bedrockCube : this.cubes) {
-            bedrockCube.compile(pose, consumer, texU, texV, red, green, blue, alpha);
-        }
+        for(BedrockCube cube : this.cubes)
+            cube.compile(pose, consumer, texU, texV, red, green, blue, alpha);
     }
     
     public boolean isEmissive() {
