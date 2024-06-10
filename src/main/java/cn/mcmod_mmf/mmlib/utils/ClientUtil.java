@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import cn.mcmod_mmf.mmlib.Main;
+import cn.mcmod_mmf.mmlib.client.model.bedrock.BedrockVersion;
 import cn.mcmod_mmf.mmlib.client.model.pojo.BedrockModelPOJO;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -23,7 +24,7 @@ public class ClientUtil {
             return;
         } else {
             // 先判断是不是 1.10.0 版本基岩版模型文件
-            if (pojo.getFormatVersion().equals("1.10.0")) {
+            if (pojo.getFormatVersion().equals(BedrockVersion.LEGACY.getVersion())) {
                 // 如果 model 字段不为空
                 if (pojo.getGeometryModelLegacy() != null) {
                     Main.getLogger().info("Loaded 1.10.0 version model : {}", modelLocation);
@@ -37,11 +38,11 @@ public class ClientUtil {
             }
 
             // 判定是不是 1.12.0 版本基岩版模型文件
-            if (pojo.getFormatVersion().equals("1.12.0")) {
+            if (pojo.getFormatVersion().compareTo(BedrockVersion.NEW.getVersion()) >= 0) {
                 // 如果 model 字段不为空
                 if (pojo.getGeometryModelNew() != null) {
                     MODEL_MAP.put(modelLocation, pojo);
-                    Main.getLogger().info("Loaded 1.12.0 version model : {}", modelLocation);
+                    Main.getLogger().info("Loaded {} version model : {}", pojo.getFormatVersion(), modelLocation);
                     return;
                 } else {
                     // 否则日志给出提示
@@ -50,7 +51,7 @@ public class ClientUtil {
                 }
             }
 
-            Main.getLogger().error("{} model version is not 1.10.0 or 1.12.0", modelLocation);
+            Main.getLogger().error("{} model version is not 1.10.0 or new version bedrock model", modelLocation);
         }
     }
 

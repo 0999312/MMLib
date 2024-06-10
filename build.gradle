@@ -1,10 +1,13 @@
 plugins {
     id 'eclipse'
+    id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '5.1.+'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+     // This should be below the net.minecraftforge.gradle plugin
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
-version = '1.4.6-1.20.1'
+version = '1.4.7-1.20.1'
 group = 'cn.mcmod_mmf.mysterious_mountain_lib'
 archivesBaseName = 'mysterious_mountain_lib'
 
@@ -75,17 +78,7 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    // JEI, Tinker's Construct, Mantle, Iron Chests, Natura, etc.
-    maven { url = "https://dvs1.progwml6.com/files/maven" }
-    // Patchouli
-    maven { url = 'https://maven.blamejared.com' }
-    // Curse Forge
-    maven {
-        url = "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
+
 }
 
 dependencies {

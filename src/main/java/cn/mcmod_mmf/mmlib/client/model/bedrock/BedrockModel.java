@@ -51,7 +51,7 @@ public interface BedrockModel {
         String formatVersion = pojo.getFormatVersion();
         if (formatVersion.equals(BedrockVersion.LEGACY.getVersion())) {
             loadLegacyModel(pojo);
-        } else if (formatVersion.equals(BedrockVersion.NEW.getVersion())) {
+        } else if (formatVersion.compareTo(BedrockVersion.NEW.getVersion()) >= 0) {
             loadNewModel(pojo);
         }
         this.setBedrockModelPOJO(pojo);
