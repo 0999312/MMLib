@@ -7,7 +7,7 @@ plugins {
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
-version = '1.4.7-1.20.1'
+version = '1.4.12-1.20.1'
 group = 'cn.mcmod_mmf.mysterious_mountain_lib'
 archivesBaseName = 'mysterious_mountain_lib'
 
@@ -78,11 +78,14 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-
+    maven {
+        url = "https://api.modrinth.com/maven"
+    }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.1-47.2.0'
+    minecraft 'net.minecraftforge:forge:1.20.1-47.3.11'
+    implementation fg.deobf("maven.modrinth:epic-fight:20.9.2")
 }
 
 

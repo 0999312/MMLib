@@ -40,7 +40,8 @@ public class Main {
     public static final RegistryObject<SoundEvent> presented_by_zaia = SOUNDS.register("presented_by_zaia",
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, "presented_by_zaia")));
 
-    public Main() {
+    @SuppressWarnings("removal")
+	public Main() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::setup);
         MinecraftForge.EVENT_BUS.register(this);

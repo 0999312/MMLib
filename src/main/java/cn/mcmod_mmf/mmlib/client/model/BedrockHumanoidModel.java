@@ -26,6 +26,7 @@ public class BedrockHumanoidModel<T extends LivingEntity> extends BedrockEntityM
     public HumanoidModel.ArmPose rightArmPose;
     public boolean crouching;
     public float swimAmount;
+	public BedrockPart hat;
 
     public BedrockHumanoidModel() {
         super();
@@ -43,6 +44,7 @@ public class BedrockHumanoidModel<T extends LivingEntity> extends BedrockEntityM
     public void loadModel(BedrockModelPOJO pojo) {
         super.loadModel(pojo);
         this.head = this.getChild("head");
+        this.hat = this.getChild("hat");
         this.body = this.getChild("body");
         this.rightArm = this.getChild("right_arm");
         this.leftArm = this.getChild("left_arm");
@@ -212,7 +214,6 @@ public class BedrockHumanoidModel<T extends LivingEntity> extends BedrockEntityM
             this.rightLeg.xRot = Mth.lerp(this.swimAmount, this.rightLeg.xRot, 0.3F * Mth.cos(limbSwing * 0.33333334F));
         }
 
-//        this.hat.copyFrom(this.head);
     }
 
     protected void poseRightArm(T p_102876_) {
