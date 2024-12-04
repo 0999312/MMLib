@@ -1,18 +1,8 @@
 package cn.mcmod_mmf.mmlib.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.fluids.FluidStack;
 
 public class RenderUtils {
     /**
@@ -46,44 +36,6 @@ public class RenderUtils {
      */
     public static void setup(ResourceLocation texture) {
         setup(texture, 1.0f, 1.0f, 1.0f, 1.0f);
-    }
-    
-    public static void renderFluidStack(int x, int y, int width, int height, float depth, FluidStack fluidStack) {
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        IClientFluidTypeExtensions props = IClientFluidTypeExtensions.of(fluidStack.getFluid());
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(props.getStillTexture());
-
-        int col = props.getTintColor(fluidStack);
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuilder();
-        float u1 = sprite.getU0();
-        float v1 = sprite.getV0();
-        float u2 = sprite.getU1();
-        float v2 = sprite.getV1();
-        do {
-            int currentHeight = Math.min(sprite.getX(), height);
-            height -= currentHeight;
-            int x2 = x;
-            int width2 = width;
-            do {
-                int currentWidth = Math.min(sprite.getY(), width2);
-                width2 -= currentWidth;
-                bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-                bufferbuilder.vertex(x2, y, depth).uv(u1, v1).color((col >> 16 & 255), (col >> 8 & 255), (col & 255), 255).endVertex();
-                bufferbuilder.vertex(x2, y + currentHeight, depth).uv(u1, v2).color((col >> 16 & 255), (col >> 8 & 255), (col & 255), 255).endVertex();
-                bufferbuilder.vertex(x2 + currentWidth, y + currentHeight, depth).uv(u2, v2).color((col >> 16 & 255), (col >> 8 & 255), (col & 255), 255).endVertex();
-                bufferbuilder.vertex(x2 + currentWidth, y, depth).uv(u2, v1).color((col >> 16 & 255), (col >> 8 & 255), (col & 255), 255).endVertex();
-                tessellator.end();
-                x2 += currentWidth;
-            } while (width2 > 0);
-
-            y += currentHeight;
-        } while (height > 0);
-        bufferbuilder.unsetDefaultColor();
-        RenderSystem.disableBlend();
     }
     
     public static void setColorRGBA(int color) {

@@ -1,0 +1,45 @@
+{
+  "required": true,
+  "package": "cn.mcmod_mmf.mmlib.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "mixins.mmlib.refmap.json",
+	"mixins": [
+    "VillagerMixin",
+    "VillagerInvoker",
+    "TradeWithVillagerMixin",
+    "TradeWithVillagerInvoker"
+	],
+	"client": [
+	  "client.RenderSectionMixin",
+	  "client.RenderTypeMixin",
+	  "client.SectionBufferBuilderPackMixin",
+	  "client.SectionCompilerMixin",
+	  "client.SimpleBakedModelMixin",
+	  "client.compat.embeddium.EmbeddiumChunkBufferBuildersMixin",
+	  "client.compat.embeddium.EmbeddiumChunkBuilderMeshingTaskMixin",
+	  "client.compat.embeddium.EmbeddiumDefaultMaterialsMixin",
+	  "client.compat.embeddium.EmbeddiumChunkShaderInterfaceMixin",
+	  "client.compat.embeddium.EmbeddiumMaterialMixin",
+	  "client.compat.embeddium.EmbeddiumRenderRegionManagerMixin",
+	  "client.compat.embeddium.EmbeddiumShaderChunkRendererMixin",
+	  "client.compat.embeddium.EmbeddiumWorldRendererMixin",
+	  "client.compat.embeddium.EmbeddiumTerrainRenderPassMixin",
+	  "client.compat.sodium.SodiumChunkBufferBuildersMixin",
+	  "client.compat.sodium.SodiumChunkBuilderMeshingTaskMixin",
+	  "client.compat.sodium.SodiumDefaultMaterialsMixin",
+	  "client.compat.sodium.SodiumDefaultShaderInterfaceMixin",
+	  "client.compat.sodium.SodiumMaterialMixin",
+	  "client.compat.sodium.SodiumRenderRegionManagerMixin",
+	  "client.compat.sodium.SodiumShaderChunkRendererMixin",
+	  "client.compat.sodium.SodiumWorldRendererMixin",
+	  "client.compat.sodium.SodiumTerrainRenderPassMixin",
+	  "client.compat.iris.ShadowRendererMixin",
+	  "client.compat.iris.SodiumProgramsMixin",
+	  "client.compat.iris.SodiumShaderMixin",
+	  "client.compat.iris.WorldRenderingPhaseMixin"
+	],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

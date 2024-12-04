@@ -11,15 +11,14 @@ import com.google.gson.JsonObject;
 
 import cn.mcmod_mmf.mmlib.item.IFoodLike;
 import cn.mcmod_mmf.mmlib.item.info.FoodInfo;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class TFCFoodDefinitionProvider implements DataProvider {
 
@@ -42,7 +41,7 @@ public class TFCFoodDefinitionProvider implements DataProvider {
     }
 
     public void addData(Item item, FoodInfo data) {
-        this.datas.computeIfAbsent(ForgeRegistries.ITEMS.getKey(item), loc->{
+        this.datas.computeIfAbsent(BuiltInRegistries.ITEM.getKey(item), loc->{
             existingFileHelper.trackGenerated(loc, resourceType);
             return data;
         });
@@ -60,7 +59,7 @@ public class TFCFoodDefinitionProvider implements DataProvider {
             Path path = outputFolder.resolve(pathString);
 
             JsonObject jsonObj = new JsonObject();
-            jsonObj.add("ingredient", Ingredient.of(ForgeRegistries.ITEMS.getValue(loc)).toJson());
+//            jsonObj.add("ingredient", Ingredient.of(BuiltInRegistries.ITEM.get(loc)));
             jsonObj.addProperty("hunger", data.getAmount());
             jsonObj.addProperty("saturation", data.getCalories());
             jsonObj.addProperty("decayModifier", data.getDecayModifier());

@@ -13,34 +13,34 @@ import net.minecraft.world.level.material.Fluid;
 
 public class TagUtils {
     public static TagKey<Item> modItemTag(String modid, String path) {
-        return ItemTags.create(new ResourceLocation(modid, path));
+        return ItemTags.create(ResourceLocation.tryBuild(modid, path));
     }
 
     public static TagKey<Block> modBlockTag(String modid, String path) {
-        return BlockTags.create(new ResourceLocation(modid, path));
+        return BlockTags.create(ResourceLocation.tryBuild(modid, path));
     }
     
     public static TagKey<EntityType<?>> modEntityTag(String modid, String path) {
-        return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(modid, path));
+        return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.tryBuild(modid, path));
     }
 
     public static TagKey<Fluid> modFluidTag(String modid, String path) {
-        return FluidTags.create(new ResourceLocation(modid, path));
+        return FluidTags.create(ResourceLocation.tryBuild(modid, path));
     }
     
     public static TagKey<Item> forgeItemTag(String path) {
-        return ItemTags.create(new ResourceLocation("forge", path));
+        return ItemTags.create(ResourceLocation.tryBuild("c", path));
     }
     
     public static TagKey<Block> forgeBlockTag(String path) {
-        return BlockTags.create(new ResourceLocation("forge", path));
+        return BlockTags.create(ResourceLocation.tryBuild("c", path));
     }
     
     public static TagKey<EntityType<?>> forgeEntityTag(String path) {
-        return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("forge", path));
+        return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.tryBuild("c", path));
     }
 
     public static TagKey<Fluid> forgeFluidTag(String path) {
-        return FluidTags.create(new ResourceLocation("forge", path));
+        return FluidTags.create(ResourceLocation.tryBuild("c", path));
     }
 }

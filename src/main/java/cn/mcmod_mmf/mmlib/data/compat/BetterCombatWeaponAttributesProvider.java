@@ -10,14 +10,14 @@ import org.apache.commons.compress.utils.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class BetterCombatWeaponAttributesProvider implements DataProvider {
 
@@ -35,7 +35,7 @@ public class BetterCombatWeaponAttributesProvider implements DataProvider {
     }
 
     public void addData(Item item, String attribute) {
-        this.datas.computeIfAbsent(ForgeRegistries.ITEMS.getKey(item), loc->{
+        this.datas.computeIfAbsent(BuiltInRegistries.ITEM.getKey(item), loc->{
             existingFileHelper.trackGenerated(loc, resourceType);
             return attribute;
         });

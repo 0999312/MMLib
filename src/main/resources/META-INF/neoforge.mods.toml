@@ -1,0 +1,31 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+[[mods]] #mandatory
+modId="${mod_id}"
+version="${mod_version}" 
+displayName="${mod_name}"
+credits="MCMOD.cn"
+authors="${mod_authors}"
+description='''
+This is the library for Syameimaru Zheng's most of mods.
+'''
+[[mixins]]
+config="mixins.mmlib.json"
+
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
+
+[[dependencies.mysterious_mountain_lib]]
+    modId="neoforge"
+    type="required"
+    versionRange="${neo_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.mysterious_mountain_lib]]
+    modId="minecraft"
+    type="required"
+    # This version range declares a minimum of the current minecraft version up to but not including the next major version
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"

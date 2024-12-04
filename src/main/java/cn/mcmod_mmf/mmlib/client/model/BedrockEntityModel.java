@@ -46,9 +46,12 @@ public class BedrockEntityModel<T extends Entity> extends EntityModel<T> impleme
 
     @Override
     @ParametersAreNonnullByDefault
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        this.renderBedrockModel(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-    }
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay,
+			int color) {
+      for (BedrockPart model : this.getShouldRender()) {
+	      model.render(poseStack, buffer, packedLight, packedOverlay, color);
+	  }
+	}
 
     @Override
     public HashMap<String, BedrockPart> getModelMap() {

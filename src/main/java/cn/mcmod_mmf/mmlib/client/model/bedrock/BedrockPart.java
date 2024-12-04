@@ -6,8 +6,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.minecraft.client.model.geom.PartPose;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 import java.util.Random;
@@ -44,39 +44,36 @@ public final class BedrockPart {
         this.z = z;
     }
 
-    public void render(PoseStack poseStack, VertexConsumer consumer, int texU, int texV) {
-        this.render(poseStack, consumer, texU, texV, 1.0F, 1.0F, 1.0F, 1.0F);
+    public void render(PoseStack poseStack, VertexConsumer consumer, int packedLight, int overlay) {
+        this.render(poseStack, consumer, packedLight, overlay, -1);
     }
 
-    public void render(PoseStack poseStack, VertexConsumer consumer, int texU, int texV, float red, float green,
-            float blue, float alpha) {
+    public void render(PoseStack poseStack, VertexConsumer consumer, int packedLight, int overlay, int color) {
         if (this.visible) 
-            renderCubes(false, poseStack, consumer, texU, texV, red, green, blue, alpha);
+            renderCubes(false, poseStack, consumer, packedLight, overlay, color);
     }
     
-    public void renderEmissive(PoseStack poseStack, VertexConsumer consumer, int texU, int texV) {
-        this.renderEmissive(poseStack, consumer, texU, texV, 1.0F, 1.0F, 1.0F, 1.0F);
+    public void renderEmissive(PoseStack poseStack, VertexConsumer consumer, int packedLight, int overlay) {
+        this.renderEmissive(poseStack, consumer, packedLight, overlay, -1);
     }
 
-    public void renderEmissive(PoseStack poseStack, VertexConsumer consumer, int texU, int texV, float red, float green,
-            float blue, float alpha) {
+    public void renderEmissive(PoseStack poseStack, VertexConsumer consumer, int packedLight, int overlay, int color) {
         if (this.visible) 
-            renderCubes(true, poseStack, consumer, texU, texV, red, green, blue, alpha);
+            renderCubes(true, poseStack, consumer, packedLight, overlay, color);
     }
 
-    public void renderCubes(boolean renderEmissive, PoseStack poseStack, VertexConsumer consumer, int texU, int texV, float red, float green,
-            float blue, float alpha) {
+    public void renderCubes(boolean renderEmissive, PoseStack poseStack, VertexConsumer consumer, int packedLight, int overlay, int color) {
         if (!this.isEmpty()) {
             poseStack.pushPose();
             this.translateAndRotate(poseStack);
             if(this.emissive == renderEmissive)
-                this.compile(poseStack.last(), consumer, texU, texV, red, green, blue, alpha);
+                this.compile(poseStack.last(), consumer, packedLight, overlay, color);
             
             for (BedrockPart part : this.children) {
                 if(renderEmissive)
-                    part.renderEmissive(poseStack, consumer, texU, texV, red, green, blue, alpha);
+                    part.renderEmissive(poseStack, consumer, packedLight, overlay, color);
                 else
-                    part.render(poseStack, consumer, texU, texV, red, green, blue, alpha);
+                    part.render(poseStack, consumer, packedLight, overlay, color);
             }
 
             poseStack.popPose();
@@ -90,10 +87,9 @@ public final class BedrockPart {
         }
      }
 
-    private void compile(PoseStack.Pose pose, VertexConsumer consumer, int texU, int texV, float red, float green,
-            float blue, float alpha) {
+    private void compile(PoseStack.Pose pose, VertexConsumer consumer, int packedLight, int overlay, int color) {
         for (BedrockCube bedrockCube : this.cubes) {
-            bedrockCube.compile(pose, consumer, texU, texV, red, green, blue, alpha);
+            bedrockCube.compile(pose, consumer, packedLight, overlay, color);
         }
     }
 

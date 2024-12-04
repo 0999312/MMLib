@@ -176,8 +176,7 @@ public class BedrockCube {
         return new BedrockPolygon(positionsIn, u1, v1, u2, v2, texWidth, texHeight, false, direction);
     }
 
-    public void compile(PoseStack.Pose pose, VertexConsumer consumer, int texU, int texV, float red, float green,
-            float blue, float alpha) {
+    public void compile(PoseStack.Pose pose, VertexConsumer consumer, int light, int overlay, int color) {
         Matrix4f matrix4f = pose.pose();
         Matrix3f matrix3f = pose.normal();
         Vector3f vector3f = null;
@@ -190,7 +189,7 @@ public class BedrockCube {
 
             for (BedrockVertex vertex : polygon.vertices) {
                 vector4f = matrix4f.transform(new Vector4f(this.vectors[vertex.posIndex], 1.0F));
-                consumer.vertex(vector4f.x, vector4f.y, vector4f.z, red, green, blue, alpha, vertex.u, vertex.v, texV, texU, nx, ny, nz);
+                consumer.addVertex(vector4f.x, vector4f.y, vector4f.z, color, vertex.u, vertex.v, overlay, light, nx, ny, nz);
             }
         }
     }

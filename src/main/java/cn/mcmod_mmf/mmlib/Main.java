@@ -1,23 +1,22 @@
 package cn.mcmod_mmf.mmlib;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -35,21 +34,20 @@ public class Main {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS,
+    public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT,
             MODID);
-    public static final RegistryObject<SoundEvent> presented_by_zaia = SOUNDS.register("presented_by_zaia",
-            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, "presented_by_zaia")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> presented_by_zaia = SOUNDS.register("presented_by_zaia",
+            () -> SoundEvent.createVariableRangeEvent(ResourceLocation.tryBuild(MODID, "presented_by_zaia")));
 
-    public Main() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public Main(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::setup);
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
         SOUNDS.register(modEventBus);
         GLMRegistry.GLM.register(modEventBus);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MMLibConfig.COMMON_CONFIG);
+        modContainer.registerConfig(ModConfig.Type.COMMON, MMLibConfig.COMMON_CONFIG);
     }
 
-    private void setup(final FMLCommonSetupEvent event) {
+    private void setup(FMLCommonSetupEvent event) {
         LOGGER.info("Presented by Zaia");
     }
 
@@ -70,7 +68,7 @@ public class Main {
             if (april_first) {
                 if (event.getEntity() instanceof ServerPlayer player) {
                     player.connection.send(new ClientboundSoundPacket(
-                            presented_by_zaia.getHolder().get(), SoundSource.PLAYERS, player.getX(),
+                            presented_by_zaia, SoundSource.PLAYERS, player.getX(),
                             player.getY(), player.getZ(), 1F, 1F, player.getRandom().nextLong()));
                 }
             }

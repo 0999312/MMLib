@@ -16,9 +16,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 
-@SuppressWarnings("deprecation")
 public class HighCropBlock extends BaseCropBlock {
     public static final BooleanProperty UPPER = BooleanProperty.create("upper");
     
@@ -73,29 +72,31 @@ public class HighCropBlock extends BaseCropBlock {
     @Override
     public void randomTick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
         if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
-        float f = getGrowthSpeed(this, worldIn, pos);
-        int age = this.getAge(state);
+
         if (worldIn.getRawBrightness(pos, 0) >= 9) {
+           float f = getGrowthSpeed(state, worldIn, pos);
+           int age = this.getAge(state);
            if (age < this.getMaxAge()) {
-              if (ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt((int)(25.0F / f) + 1) == 0)) {
+              if (CommonHooks.canCropGrow(worldIn, pos, state, rand.nextInt((int)(25.0F / f) + 1) == 0)) {
                   worldIn.setBlock(pos, this.getStateForAge(age + 1).setValue(this.getUpperProperty(), state.getValue(this.getUpperProperty())), 2);
-                 ForgeHooks.onCropsGrowPost(worldIn, pos, state);
+                  CommonHooks.fireCropGrowPost(worldIn, pos, state);
               }
            }
-        }
-        if(state.getValue(this.getUpperProperty()))
-            return;
-        if (age >= this.getGrowUpperAge()) {
-            if (ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt((int)(25.0F / f) + 1) == 0)) {
-                if (this.defaultBlockState().canSurvive(worldIn, pos.above()) && worldIn.isEmptyBlock(pos.above())) {
-                    worldIn.setBlockAndUpdate(pos.above(), this.defaultBlockState().setValue(this.getUpperProperty(), true));
-                    ForgeHooks.onCropsGrowPost(worldIn, pos, state);
-                }
-            }
+           if(state.getValue(this.getUpperProperty()))
+               return;
+           if (age >= this.getGrowUpperAge()) {
+               if (CommonHooks.canCropGrow(worldIn, pos, state, rand.nextInt((int)(25.0F / f) + 1) == 0)) {
+                   if (this.defaultBlockState().canSurvive(worldIn, pos.above()) && worldIn.isEmptyBlock(pos.above())) {
+                       worldIn.setBlockAndUpdate(pos.above(), this.defaultBlockState().setValue(this.getUpperProperty(), true));
+                       CommonHooks.fireCropGrowPost(worldIn, pos, state);
+                   }
+               }
+           }
         }
     }
+    
     @Override
-    public boolean isValidBonemealTarget(LevelReader worldIn, BlockPos pos, BlockState state, boolean isClient) {
+    public boolean isValidBonemealTarget(LevelReader worldIn, BlockPos pos, BlockState state) {
         BlockState upperState = worldIn.getBlockState(pos.above());
         if (upperState.is(this)) {
             return !(this.isMaxAge(upperState));
@@ -124,8 +125,8 @@ public class HighCropBlock extends BaseCropBlock {
             BlockState top = worldIn.getBlockState(pos.above());
             if (top.is(this)) {
                 BonemealableBlock growable = (BonemealableBlock) worldIn.getBlockState(pos.above()).getBlock();
-                if (growable.isValidBonemealTarget(worldIn, pos.above(), top, false)) {
-                    growable.performBonemeal(worldIn, worldIn.random, pos.above(), top);
+                if (growable.isValidBonemealTarget(worldIn, pos.above(), top)) {
+                    growable.performBonemeal(worldIn, worldIn.getRandom(), pos.above(), top);
                 }
             } else {
                 int remainingGrowth = ageGrowth - this.getMaxAge() - 1;

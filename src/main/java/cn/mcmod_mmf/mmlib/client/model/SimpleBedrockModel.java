@@ -12,8 +12,8 @@ import cn.mcmod_mmf.mmlib.client.model.pojo.BonesItem;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
@@ -43,14 +43,15 @@ public class SimpleBedrockModel extends Model implements BedrockModel {
         this();
         loadModel(pojo);
     }
-
+    
     @Override
     @ParametersAreNonnullByDefault
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        for (BedrockPart model : this.getShouldRender()) {
-            model.render(poseStack, buffer, packedLight, packedOverlay);
-        }
-    }
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay,
+			int color) {
+      for (BedrockPart model : this.getShouldRender()) {
+	      model.render(poseStack, buffer, packedLight, packedOverlay, color);
+	  }
+	}
 
     @Override
     public HashMap<String, BedrockPart> getModelMap() {
@@ -96,5 +97,7 @@ public class SimpleBedrockModel extends Model implements BedrockModel {
     public void setEmissive(boolean emissive) {
         this.emissive = emissive;
     }
+
+
 
 }

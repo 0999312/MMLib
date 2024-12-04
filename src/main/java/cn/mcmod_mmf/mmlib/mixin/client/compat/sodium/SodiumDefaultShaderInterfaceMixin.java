@@ -1,0 +1,42 @@
+package cn.mcmod_mmf.mmlib.mixin.client.compat.sodium;
+
+import net.caffeinemc.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
+import net.caffeinemc.mods.sodium.client.render.chunk.shader.ChunkShaderTextureSlot;
+import net.caffeinemc.mods.sodium.client.render.chunk.shader.DefaultShaderInterface;
+import net.caffeinemc.mods.sodium.client.render.chunk.shader.ShaderBindingContext;
+import net.caffeinemc.mods.sodium.client.render.chunk.terrain.TerrainRenderPass;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import cn.mcmod_mmf.mmlib.client.render.sections.compat.impl.sodium.SodiumEntityTextureTerrainRenderPass;
+
+/**
+ * @author Argon4W
+ */
+@Pseudo
+@Mixin(DefaultShaderInterface.class)
+public abstract class SodiumDefaultShaderInterfaceMixin {
+    @Shadow @Deprecated(
+        forRemoval = true
+    ) protected abstract void bindTexture(ChunkShaderTextureSlot slot, int textureId);
+
+    @Unique
+    private TerrainRenderPass eyelib$terrainRenderPass;
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    public void constructor(ShaderBindingContext context, ChunkShaderOptions options, CallbackInfo ci) {
+        eyelib$terrainRenderPass = options.pass();
+    }
+
+    @Inject(method = "setupState", at = @At("TAIL"))
+    public void setupState(CallbackInfo ci) {
+        if (eyelib$terrainRenderPass instanceof SodiumEntityTextureTerrainRenderPass pass) {
+            bindTexture(ChunkShaderTextureSlot.BLOCK, pass.getTexture().getId());
+        }
+    }
+}

@@ -2,8 +2,8 @@ package cn.mcmod_mmf.mmlib.fluid;
 
 import java.util.function.Consumer;
 
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 public class ConsumerFluidTank extends FluidTank {
 

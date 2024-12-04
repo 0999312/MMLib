@@ -1,14 +1,15 @@
 package cn.mcmod_mmf.mmlib.data.loot.modifier;
 
-import com.mojang.serialization.Codec;
+import java.util.function.Supplier;
+
+import com.mojang.serialization.MapCodec;
 
 import cn.mcmod_mmf.mmlib.Main;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class GLMRegistry {
-    public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLM = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, Main.MODID);
-    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> ADD_LOOT_TABLE = GLM.register("add_loot_table", AddLootTableModifier.CODEC);
+    public static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> GLM = DeferredRegister.create(NeoForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS, Main.MODID);
+    public static final Supplier<MapCodec<? extends IGlobalLootModifier>> ADD_LOOT_TABLE = GLM.register("add_loot_table", AddLootTableModifier.CODEC);
 }

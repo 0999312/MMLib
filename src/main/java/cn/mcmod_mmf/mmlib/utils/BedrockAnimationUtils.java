@@ -6,8 +6,8 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.CrossbowItem;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class BedrockAnimationUtils {
@@ -26,7 +26,7 @@ public class BedrockAnimationUtils {
       BedrockPart.yRot = p_102090_ ? -0.8F : 0.8F;
       BedrockPart.xRot = -0.97079635F;
       BedrockPart1.xRot = BedrockPart.xRot;
-      float f = (float)CrossbowItem.getChargeDuration(p_102089_.getUseItem());
+      float f = (float)CrossbowItem.getChargeDuration(p_102089_.getUseItem(), p_102089_);
       float f1 = Mth.clamp((float)p_102089_.getTicksUsingItem(), 0.0F, f);
       float f2 = f1 / f;
       BedrockPart1.yRot = Mth.lerp(f2, 0.4F, 0.85F) * (float)(p_102090_ ? 1 : -1);
