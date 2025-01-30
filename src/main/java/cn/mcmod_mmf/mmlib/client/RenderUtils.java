@@ -3,8 +3,14 @@ package cn.mcmod_mmf.mmlib.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.ModList;
 
 public class RenderUtils {
+	
+	public static boolean isAcceleratedRendering() {
+		return ModList.get().isLoaded("acceleratedrendering");
+	}
+	
     /**
      * Binds a texture for rendering
      * 

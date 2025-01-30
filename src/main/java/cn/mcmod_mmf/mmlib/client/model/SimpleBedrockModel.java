@@ -33,7 +33,7 @@ public class SimpleBedrockModel extends Model implements BedrockModel {
         super(RenderType::entityTranslucent);
         modelMap = Maps.newHashMap();
         indexBones = Maps.newHashMap();
-        shouldRender = Lists.newLinkedList();
+        shouldRender = Lists.newArrayList();
         modelPOJO = null;
         renderBoundingBox = new AABB(-1, 0, -1, 1, 2, 1);
         emissive = false;

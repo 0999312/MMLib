@@ -23,8 +23,8 @@ public class BedrockCube {
     public final float maxY;
     public final float maxZ;
 
-    private final List<BedrockPolygon> polygons;
-    private final Vector3f[] vectors;
+    public final List<BedrockPolygon> polygons;
+    public final Vector3f[] vectors;
 
     public BedrockCube(float x, float y, float z, float width, float height, float depth, float delta, float texWidth,
             float texHeight, boolean mirror) {
@@ -81,14 +81,14 @@ public class BedrockCube {
         boolean nullFlag = (zFlag && xFlag) || (xFlag && yFlag) || (zFlag && yFlag);
 
         if (!nullFlag) {
-            BedrockVertex vertex1 = new BedrockVertex(0, 0.0F, 0.0F);
-            BedrockVertex vertex2 = new BedrockVertex(1, 0.0F, 8.0F);
-            BedrockVertex vertex3 = new BedrockVertex(2, 8.0F, 8.0F);
-            BedrockVertex vertex4 = new BedrockVertex(3, 8.0F, 0.0F);
-            BedrockVertex vertex5 = new BedrockVertex(4, 0.0F, 0.0F);
-            BedrockVertex vertex6 = new BedrockVertex(5, 0.0F, 8.0F);
-            BedrockVertex vertex7 = new BedrockVertex(6, 8.0F, 8.0F);
-            BedrockVertex vertex8 = new BedrockVertex(7, 8.0F, 0.0F);
+            BedrockVertex vertex1 = new BedrockVertex(this.vectors[0], 0.0F, 0.0F);
+            BedrockVertex vertex2 = new BedrockVertex(this.vectors[1], 0.0F, 8.0F);
+            BedrockVertex vertex3 = new BedrockVertex(this.vectors[2], 8.0F, 8.0F);
+            BedrockVertex vertex4 = new BedrockVertex(this.vectors[3], 8.0F, 0.0F);
+            BedrockVertex vertex5 = new BedrockVertex(this.vectors[4], 0.0F, 0.0F);
+            BedrockVertex vertex6 = new BedrockVertex(this.vectors[5], 0.0F, 8.0F);
+            BedrockVertex vertex7 = new BedrockVertex(this.vectors[6], 8.0F, 8.0F);
+            BedrockVertex vertex8 = new BedrockVertex(this.vectors[7], 8.0F, 0.0F);
 
             depth = (float) (depth < 1.0F && depth > 0.0F ? Math.ceil(depth) : Math.floor(depth));
             width = (float) (width < 1.0F && depth > 0.0F ? Math.ceil(width) : Math.floor(width));
@@ -129,14 +129,14 @@ public class BedrockCube {
             float texHeight, FaceUVsItem faces) {
         this(x, y, z, width, height, depth, delta, texWidth, texHeight, false);
 
-        BedrockVertex vertex1 = new BedrockVertex(0, 0.0F, 0.0F);
-        BedrockVertex vertex2 = new BedrockVertex(1, 0.0F, 8.0F);
-        BedrockVertex vertex3 = new BedrockVertex(2, 8.0F, 8.0F);
-        BedrockVertex vertex4 = new BedrockVertex(3, 8.0F, 0.0F);
-        BedrockVertex vertex5 = new BedrockVertex(4, 0.0F, 0.0F);
-        BedrockVertex vertex6 = new BedrockVertex(5, 0.0F, 8.0F);
-        BedrockVertex vertex7 = new BedrockVertex(6, 8.0F, 8.0F);
-        BedrockVertex vertex8 = new BedrockVertex(7, 8.0F, 0.0F);
+        BedrockVertex vertex1 = new BedrockVertex(this.vectors[0], 0.0F, 0.0F);
+        BedrockVertex vertex2 = new BedrockVertex(this.vectors[1], 0.0F, 8.0F);
+        BedrockVertex vertex3 = new BedrockVertex(this.vectors[2], 8.0F, 8.0F);
+        BedrockVertex vertex4 = new BedrockVertex(this.vectors[3], 8.0F, 0.0F);
+        BedrockVertex vertex5 = new BedrockVertex(this.vectors[4], 0.0F, 0.0F);
+        BedrockVertex vertex6 = new BedrockVertex(this.vectors[5], 0.0F, 8.0F);
+        BedrockVertex vertex7 = new BedrockVertex(this.vectors[6], 8.0F, 8.0F);
+        BedrockVertex vertex8 = new BedrockVertex(this.vectors[7], 8.0F, 0.0F);
 
         BedrockPolygon downQuad = getTexturedQuad(new BedrockVertex[] { vertex6, vertex5, vertex1, vertex2 }, texWidth,
                 texHeight, Direction.DOWN, faces);
@@ -177,6 +177,7 @@ public class BedrockCube {
     }
 
     public void compile(PoseStack.Pose pose, VertexConsumer consumer, int light, int overlay, int color) {
+    	
         Matrix4f matrix4f = pose.pose();
         Matrix3f matrix3f = pose.normal();
         Vector3f vector3f = null;
@@ -188,7 +189,7 @@ public class BedrockCube {
             float nz = vector3f.z();
 
             for (BedrockVertex vertex : polygon.vertices) {
-                vector4f = matrix4f.transform(new Vector4f(this.vectors[vertex.posIndex], 1.0F));
+                vector4f = matrix4f.transform(new Vector4f(vertex.pos, 1.0F));
                 consumer.addVertex(vector4f.x, vector4f.y, vector4f.z, color, vertex.u, vertex.v, overlay, light, nx, ny, nz);
             }
         }
