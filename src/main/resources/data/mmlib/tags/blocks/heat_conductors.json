@@ -1,7 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "minecraft:hopper",
-    "#farmersdelight:heat_conductors"
-  ]
-}

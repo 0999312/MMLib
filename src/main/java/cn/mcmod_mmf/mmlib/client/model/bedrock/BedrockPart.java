@@ -107,7 +107,7 @@ public final class BedrockPart {
         if (!this.isEmpty()) {
             poseStack.pushPose();
             this.translateAndRotate(poseStack);
-            if(this.emissive == renderEmissive)
+//            if(this.emissive == renderEmissive)
                 this.compile(poseStack.last(), consumer, texU, texV, red, green, blue, alpha);
             
             for (BedrockPart part : this.children.values()) {
@@ -126,6 +126,10 @@ public final class BedrockPart {
         if (this.xRot != 0.0F || this.yRot != 0.0F || this.zRot != 0.0F) {
            poseStack.mulPose(new Quaternionf().rotationZYX(this.zRot, this.yRot, this.xRot));
         }
+        
+        if (this.xScale != 1.0F || this.yScale != 1.0F || this.zScale != 1.0F) {
+        	poseStack.scale(this.xScale, this.yScale, this.zScale);
+         }
      }
 
     private void compile(PoseStack.Pose pose, VertexConsumer consumer, int texU, int texV, float red, float green,

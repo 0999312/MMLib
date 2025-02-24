@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:hopper",
+    {
+      "id":"#farmersdelight:heat_conductors",
+      "required": false
+    }
+  ]
+}

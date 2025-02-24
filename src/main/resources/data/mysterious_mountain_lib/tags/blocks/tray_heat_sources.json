@@ -4,6 +4,9 @@
     "minecraft:lava",
     "#minecraft:campfires",
     "#minecraft:fire",
-    "#farmersdelight:tray_heat_sources"
+    {
+    "id":"#farmersdelight:tray_heat_sources",
+    "required": false
+    }
   ]
 }

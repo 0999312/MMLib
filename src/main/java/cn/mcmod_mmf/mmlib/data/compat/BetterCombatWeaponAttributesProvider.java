@@ -41,7 +41,7 @@ public class BetterCombatWeaponAttributesProvider implements DataProvider {
         });
     }
 
-    private void addDatas() {
+    public void addDatas() {
 
     }
 

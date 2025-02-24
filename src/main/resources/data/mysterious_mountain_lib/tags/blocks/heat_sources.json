@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:magma_block",
+    "#mysterious_mountain_lib:tray_heat_sources",
+    {
+      "id":"#farmersdelight:heat_sources",
+      "required": false
+    }
+  ]
+}
