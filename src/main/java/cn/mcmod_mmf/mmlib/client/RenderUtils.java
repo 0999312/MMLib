@@ -64,12 +64,12 @@ public class RenderUtils {
         float u2 = sprite.getU1();
         float v2 = sprite.getV1();
         do {
-            int currentHeight = Math.min(sprite.getX(), height);
+            int currentHeight = Math.min(sprite.contents().height(), height);
             height -= currentHeight;
             int x2 = x;
             int width2 = width;
             do {
-                int currentWidth = Math.min(sprite.getY(), width2);
+                int currentWidth = Math.min(sprite.contents().width(), width2);
                 width2 -= currentWidth;
                 bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
                 bufferbuilder.vertex(x2, y, depth).uv(u1, v1).color((col >> 16 & 255), (col >> 8 & 255), (col & 255), 255).endVertex();

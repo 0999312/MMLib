@@ -71,4 +71,5 @@ public class MultiModelBakedModel implements BakedModel {
 	public boolean using2DDisplay(ItemDisplayContext type) {
 		return type == ItemDisplayContext.GUI || type == ItemDisplayContext.FIXED || type == ItemDisplayContext.GROUND;
 	}
+
 }

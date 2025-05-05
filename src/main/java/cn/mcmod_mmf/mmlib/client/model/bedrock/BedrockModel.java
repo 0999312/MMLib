@@ -48,6 +48,7 @@ public interface BedrockModel {
         this.getModelMap().clear();
         this.getIndexBones().clear();
         this.getShouldRender().clear();
+        this.setEmissive(false);
         String formatVersion = pojo.getFormatVersion();
         if (formatVersion.equals(BedrockVersion.LEGACY.getVersion())) {
             loadLegacyModel(pojo);
@@ -60,7 +61,7 @@ public interface BedrockModel {
     public default void loadNewModel(BedrockModelPOJO pojo) {
         assert pojo.getGeometryModelNew() != null;
         pojo.getGeometryModelNew().deco();
-
+        
         Description description = pojo.getGeometryModelNew().getDescription();
 
         int texWidth = description.getTextureWidth();
