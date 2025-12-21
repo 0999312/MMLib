@@ -8,7 +8,7 @@ plugins {
     id 'org.spongepowered.mixin' version '0.7.+'
 }
 
-version = '1.5.21-1.20.1'
+version = '1.6.31-1.20.1'
 group = 'cn.mcmod_mmf.mysterious_mountain_lib'
 archivesBaseName = 'mysterious_mountain_lib'
 
@@ -108,7 +108,12 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.20.1-47.3.11'
         // Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    implementation fg.deobf("maven.modrinth:epic-fight:20.9.2")
+    
+    compileOnly           "org.projectlombok:lombok:1.18.38"
+    annotationProcessor   "org.projectlombok:lombok:1.18.38"
+    
+    implementation fg.deobf("maven.modrinth:acceleratedrendering:1.0.6-1.20.1-alpha")
+    
 }
 
 

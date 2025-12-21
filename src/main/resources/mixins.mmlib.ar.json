@@ -1,0 +1,17 @@
+{
+  "package": "cn.mcmod_mmf.mmlib.client.compat.ar",
+  "plugin": "cn.mcmod_mmf.mmlib.client.compat.ar.ARMixinPlugin",
+  "compatibilityLevel": "JAVA_17",
+  "required": true,
+  "minVersion": "0.8",
+  "refmap": "slashblade.refmap.json",
+  "mixins": [
+    
+  ],
+  "client": [
+	"AcceleratedBedrockPart"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

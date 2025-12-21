@@ -20,7 +20,7 @@ public abstract class VillagerMixin implements VillagerInvoker{
 	private void onWantsToPickUp(ItemStack stack, CallbackInfoReturnable<Boolean> ci) {
 		Item item = stack.getItem();
 		boolean isFarmerDesiredSeed = stack.is(ItemTags.VILLAGER_PLANTABLE_SEEDS); 
-		boolean result = (VillagerUtils.getFoodPoints().containsKey(item) || isFarmerDesiredSeed) && 
+		boolean result = (VillagerUtils.getFoodPoints().containsKey(item)|| ci.getReturnValueZ() || isFarmerDesiredSeed) && 
 				((Villager) (Object) this).getInventory().canAddItem(stack);
 		ci.setReturnValue(result);
 	}

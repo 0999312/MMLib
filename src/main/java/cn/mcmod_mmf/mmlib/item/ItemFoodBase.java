@@ -14,10 +14,18 @@ import net.minecraft.world.level.Level;
 
 public class ItemFoodBase extends Item implements IFoodLike {
     private final FoodInfo info;
-
+    private final FoodProperties finalFoodProperties;
     public ItemFoodBase(Item.Properties prop, FoodInfo info) {
         super(prop);
         this.info = info;
+        FoodProperties.Builder food = new FoodProperties.Builder().nutrition(getFoodInfo().getAmount())
+                .saturationMod(getFoodInfo().getCalories());
+        if (info.isAlwaysEat())
+            food.alwaysEat();
+        if (info.getEatTime() <= 16)
+            food.fast();
+        this.info.getEffects().forEach((k) -> food.effect(k.getFirst(), k.getSecond()));
+        this.finalFoodProperties = food.build();
     }
 
     @Override
@@ -65,15 +73,7 @@ public class ItemFoodBase extends Item implements IFoodLike {
 
     @Override
     public FoodProperties getFoodProperties() {
-        FoodProperties.Builder food = new FoodProperties.Builder().nutrition(getFoodInfo().getAmount())
-                .saturationMod(getFoodInfo().getCalories());
-        if (getFoodInfo().isAlwaysEat())
-            food.alwaysEat();
-        if (getFoodInfo().getEatTime() <= 16)
-            food.fast();
-        this.getFoodInfo().getEffects().forEach((k) -> food.effect(k.getFirst(), k.getSecond()));
-
-        return food.build();
+        return this.finalFoodProperties;
     }
 
     @Override

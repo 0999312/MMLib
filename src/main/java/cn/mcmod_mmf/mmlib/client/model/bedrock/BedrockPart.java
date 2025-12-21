@@ -19,7 +19,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 @OnlyIn(Dist.CLIENT)
-public final class BedrockPart {
+public class BedrockPart {
     private final ObjectList<BedrockCube> cubes;
     private final Map<String, BedrockPart> children;
 
@@ -132,7 +132,7 @@ public final class BedrockPart {
         }
      }
 
-    private void compile(PoseStack.Pose pose, VertexConsumer consumer, int texU, int texV, float red, float green,
+    public void compile(PoseStack.Pose pose, VertexConsumer consumer, int texU, int texV, float red, float green,
             float blue, float alpha) {
         for (BedrockCube bedrockCube : this.getCubes()) {
             bedrockCube.compile(pose, consumer, texU, texV, red, green, blue, alpha);
@@ -195,7 +195,7 @@ public final class BedrockPart {
 	}
 
 	public BedrockPart getChild(String childPartName) {
-		return this.children.get(childPartName);
+		return this.children.get(childPartName) == null ? new BedrockPart() : this.children.get(childPartName);
 	}
 
 }

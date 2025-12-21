@@ -17,37 +17,36 @@ import java.util.function.Supplier;
 /**
  * Credits to Commoble for this implementation!
  */
-public class AddLootTableModifier extends LootModifier
-{
-    public static final Supplier<Codec<AddLootTableModifier>> CODEC = Suppliers.memoize(() ->
-            RecordCodecBuilder.create(inst -> codecStart(inst)
-                    .and(ResourceLocation.CODEC.fieldOf("lootTable").forGetter((m) -> m.lootTable))
-                    .apply(inst, AddLootTableModifier::new)));
+public class AddLootTableModifier extends LootModifier {
+	public static final Supplier<Codec<AddLootTableModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(
+			inst -> codecStart(inst).and(ResourceLocation.CODEC.fieldOf("lootTable").forGetter((m) -> m.lootTable))
+					.apply(inst, AddLootTableModifier::new)));
 
-    private final ResourceLocation lootTable;
+	private final ResourceLocation lootTable;
 
-    protected AddLootTableModifier(LootItemCondition[] conditionsIn, ResourceLocation lootTable) {
-        super(conditionsIn);
-        this.lootTable = lootTable;
-    }
+	protected AddLootTableModifier(LootItemCondition[] conditionsIn, ResourceLocation lootTable) {
+		super(conditionsIn);
+		this.lootTable = lootTable;
+	}
 
-    public boolean canApplyModifier() {
-        return true;
-    }
-    
-    @Nonnull
-    @Override
-    protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        if (this.canApplyModifier()) {
-            LootTable extraTable = context.getResolver().getLootTable(this.lootTable);
-            extraTable.getRandomItems(context, generatedLoot::add);
-        }
-        return generatedLoot;
-    }
+	public boolean canApplyModifier() {
+		return true;
+	}
 
-    @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
-        return CODEC.get();
-    }
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
+		if (this.canApplyModifier()) {
+			LootTable extraTable = context.getResolver().getLootTable(this.lootTable);
+			extraTable.getRandomItemsRaw(context,
+					LootTable.createStackSplitter(context.getLevel(), generatedLoot::add));
+		}
+		return generatedLoot;
+	}
+
+	@Override
+	public Codec<? extends IGlobalLootModifier> codec() {
+		return CODEC.get();
+	}
 }
-

@@ -6,7 +6,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.animal.Cat;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.animal.Ocelot;
+import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.monster.Strider;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.crafting.CompoundIngredient;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -14,6 +22,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -44,6 +53,7 @@ public class Main {
 	public Main() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::setup);
+        modEventBus.addListener(this::setupComplete);
         MinecraftForge.EVENT_BUS.register(this);
         SOUNDS.register(modEventBus);
         GLMRegistry.GLM.register(modEventBus);
@@ -52,6 +62,16 @@ public class Main {
 
     private void setup(final FMLCommonSetupEvent event) {
         LOGGER.info("Presented by Zaia");
+    }
+    
+    private void setupComplete(final FMLLoadCompleteEvent event) {
+		Chicken.FOOD_ITEMS = CompoundIngredient.of(Chicken.FOOD_ITEMS, Ingredient.of(CommonTags.CHICKEN_FOOD));
+		Pig.FOOD_ITEMS = CompoundIngredient.of(Pig.FOOD_ITEMS, Ingredient.of(CommonTags.PIG_FOOD));
+		Strider.FOOD_ITEMS = CompoundIngredient.of(Strider.FOOD_ITEMS, Ingredient.of(CommonTags.STRIDER_FOOD));
+		Strider.TEMPT_ITEMS = CompoundIngredient.of(Strider.TEMPT_ITEMS, Ingredient.of(CommonTags.STRIDER_FOOD));
+		Ocelot.TEMPT_INGREDIENT = CompoundIngredient.of(Ocelot.TEMPT_INGREDIENT, Ingredient.of(CommonTags.CAT_FOOD));
+		Cat.TEMPT_INGREDIENT = CompoundIngredient.of(Cat.TEMPT_INGREDIENT, Ingredient.of(CommonTags.CAT_FOOD));
+		AbstractHorse.FOOD_ITEMS = CompoundIngredient.of(AbstractHorse.FOOD_ITEMS, Ingredient.of(CommonTags.HORSE_FOOD));
     }
 
     public static Logger getLogger() {

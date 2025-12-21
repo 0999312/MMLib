@@ -13,6 +13,5 @@ public interface VillagerInvoker {
 	
 	@Invoker(value = "hungry")
 	public boolean hungryInvoker();
-	
 
 }
