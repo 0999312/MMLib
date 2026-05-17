@@ -13,7 +13,10 @@ import net.minecraft.world.level.block.Block;
 public class ItemFoodSeeds extends ItemNameBlockItem implements IFoodLike{
     private final FoodInfo info;
     public ItemFoodSeeds(Block block, Item.Properties prop, FoodInfo info) {
-        super(block, prop);
+        super(block, prop.food( 
+     		new FoodProperties(info.getAmount(), info.getCalories(), info.isAlwaysEat(), info.getEatTime(),  
+     				Optional.empty(), List.of()) 
+     		));
         this.info = info;
     }
     
