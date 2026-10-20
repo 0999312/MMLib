@@ -174,7 +174,7 @@ public class BedrockPart {
     public void addChild(String name, BedrockPart model) {
         if(this.isEmissive())
             model.setEmissive();
-        if(this.getChild(name)!=null) {
+        if(!this.getChild(name).isEmpty()) {
         	this.addChild(name+"0", model);
         }
         else {
