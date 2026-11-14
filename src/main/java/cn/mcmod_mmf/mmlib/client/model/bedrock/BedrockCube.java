@@ -177,6 +177,30 @@ public class BedrockCube {
     private BedrockPolygon getTexturedQuad(BedrockVertex[] positionsIn, float texWidth, float texHeight,
             Direction direction, FaceUVsItem faces) {
         FaceItem face = faces.getFace(direction) != null ? faces.getFace(direction) : FaceItem.empty();
+        switch (face.getUvRotation()) {
+            case 90 -> {
+                BedrockVertex tmp = positionsIn[3];
+                positionsIn[3] = positionsIn[2];
+                positionsIn[2] = positionsIn[1];
+                positionsIn[1] = positionsIn[0];
+                positionsIn[0] = tmp;
+            }
+            case 180 -> {
+                BedrockVertex t0 = positionsIn[0];
+                BedrockVertex t1 = positionsIn[1];
+                positionsIn[0] = positionsIn[2];
+                positionsIn[1] = positionsIn[3];
+                positionsIn[2] = t0;
+                positionsIn[3] = t1;
+            }
+            case 270 -> {
+                BedrockVertex tmp = positionsIn[0];
+                positionsIn[0] = positionsIn[1];
+                positionsIn[1] = positionsIn[2];
+                positionsIn[2] = positionsIn[3];
+                positionsIn[3] = tmp;
+            }
+        }
         if (MathUtil.equalFloat(face.getUvSize()[0], 0.0F) && MathUtil.equalFloat(face.getUvSize()[1], 0.0F))
             return null;
         float u1 = face.getUv()[0];
