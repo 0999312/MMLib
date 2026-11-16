@@ -10,6 +10,9 @@ import net.minecraft.world.item.ItemNameBlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
+import java.util.List;
+import java.util.Optional;
+
 public class ItemFoodSeeds extends ItemNameBlockItem implements IFoodLike{
     private final FoodInfo info;
     public ItemFoodSeeds(Block block, Item.Properties prop, FoodInfo info) {
