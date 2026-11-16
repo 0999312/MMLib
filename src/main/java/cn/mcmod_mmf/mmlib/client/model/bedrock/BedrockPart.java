@@ -3,8 +3,6 @@ package cn.mcmod_mmf.mmlib.client.model.bedrock;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
-import cn.mcmod_mmf.mmlib.client.RenderUtils;
-import cn.mcmod_mmf.mmlib.client.compat.AcceleratedRenderingBedrockPart;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.minecraft.client.model.geom.PartPose;
@@ -18,7 +16,7 @@ import org.apache.commons.compress.utils.Lists;
 import org.joml.Quaternionf;
 
 @OnlyIn(Dist.CLIENT)
-public final class BedrockPart {
+public class BedrockPart {
     public final ObjectList<BedrockCube> cubes;
     private final List<BedrockPart> children;
 
@@ -89,18 +87,9 @@ public final class BedrockPart {
         }
      }
 
-    private void compile(PoseStack.Pose pose, VertexConsumer consumer, int packedLight, int overlay, int color) {
-    	boolean arFlag = false;
-    	if(RenderUtils.isAcceleratedRendering()) {
-    		AcceleratedRenderingBedrockPart arPart = new AcceleratedRenderingBedrockPart(this);
-    		arFlag = arPart.compile(pose, consumer, packedLight, overlay, color);
-
-    	}
-    	
-    	if(!arFlag) {
-	        for (BedrockCube bedrockCube : this.cubes) {
-	            bedrockCube.compile(pose, consumer, packedLight, overlay, color);
-	        }
+    public void compile(PoseStack.Pose pose, VertexConsumer consumer, int packedLight, int overlay, int color) {
+        for (BedrockCube bedrockCube : this.cubes) {
+            bedrockCube.compile(pose, consumer, packedLight, overlay, color);
         }
     }
 

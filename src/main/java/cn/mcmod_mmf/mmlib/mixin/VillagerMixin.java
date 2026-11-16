@@ -18,7 +18,7 @@ public abstract class VillagerMixin implements VillagerInvoker{
 	@Inject(method = "wantsToPickUp", at = @At(value = "TAIL"), cancellable = true)
 	private void onWantsToPickUp(ItemStack stack, CallbackInfoReturnable<Boolean> ci) {
 		Item item = stack.getItem();
-		boolean result = (VillagerUtils.getFoodPoints().containsKey(item)) && 
+		boolean result = ci.getReturnValue() || (VillagerUtils.getFoodPoints().containsKey(item)) && 
 				((Villager) (Object) this).getInventory().canAddItem(stack);
 		ci.setReturnValue(result);
 	}

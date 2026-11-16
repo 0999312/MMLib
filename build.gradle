@@ -141,7 +141,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
      implementation "maven.modrinth:sodium:mc1.21-0.6.0-beta.2-neoforge"
      implementation "maven.modrinth:iris:1.8.0-beta.2+1.21-neoforge"
-     implementation ("com.github.argon4w:AcceleratedRendering:0.0.1-1.21")
+     implementation "maven.modrinth:acceleratedrendering:1.0.1-1.21.1-alpha"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
